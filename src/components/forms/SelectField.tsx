@@ -51,7 +51,7 @@ const SelectField: React.FC<SelectInputProps> = ({
   // }, [formState]);
   return (
     <div className="flex flex-col gap-1.5">
-      <label className=" font-thin text-gray-600">
+      <label className=" font-light">
         {label}
         {required && <span className="text-red-500 pl-1">*</span>}
       </label>
