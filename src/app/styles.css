@@ -1,0 +1,25 @@
+.isActiveRoute {
+  @apply text-blue-600 bg-[#f5e9eb78] items-center flex border-l-[3px] border-blue-600 font-medium;
+}
+
+.inactiveRoute {
+  @apply py-1 border-l-[3px] border-transparent hover:text-blue-600 cursor-pointer font-normal;
+}
+.isActiveMenuList {
+  @apply  bg-[#f5e9eb78] py-1 border-l-[3px] border-blue-600;
+}
+
+.isNotActiveMenuList {
+  @apply  py-1 border-l-[3px] border-transparent;
+}
+/* .submenu {
+  transition: height 0.3s ease-in-out;
+}
+
+.slide-down {
+  height: auto;
+}
+
+.slide-up {
+  height: 0;
+} */
