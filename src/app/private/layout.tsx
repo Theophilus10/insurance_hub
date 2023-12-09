@@ -87,13 +87,13 @@ const layout = ({ children }: { children: React.ReactNode }) => {
               user={user}
             />
             <section className="bg-[#f5e9eb78] w-full h-full flex-grow flex flex-col">
-              <div
+              {/* <div
                 className={`px-6 pt-3 text-gray-500 font-medium text-[22px] ${
                   !pageDetails.showTitle && "hidden"
                 }`}
               >
                 {pageDetails.title}
-              </div>
+              </div> */}
               <div className=" w-full h-full flex-grow overflow-hidden px-6 pt-3 ">
                 {children}
               </div>
