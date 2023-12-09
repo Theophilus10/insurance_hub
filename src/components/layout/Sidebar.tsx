@@ -40,7 +40,7 @@ const Sidebar: React.FC<ISideBar> = ({
         </ul>
       </li>
       <span className={`text-sm text-gray-400 font-thin pl-2 pt-4`}>
-        General Setups
+        Setups
       </span>
       <li>
         <ul className="flex flex-col gap-4">
