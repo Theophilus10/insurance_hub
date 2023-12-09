@@ -3,7 +3,7 @@ import PrivateRoute from "@app/components/layout/PrivateRoute";
 import React, { createContext, useState } from "react";
 import LogoUrl from "@app/assets/images/logo.png";
 import Image from "next/image";
-import Sidebar from "@app/components/layout/Sidebar";
+// import Sidebar from "@app/components/layout/sideNav";
 import Navbar from "@app/components/layout/Navbar";
 import Divider from "@app/components/ui/Divider";
 import IconifyIcon from "@app/components/icon";
@@ -11,6 +11,8 @@ import useAppMenuContext from "@app/context/useAppMenuContext";
 import userContext from "@app/context/userContext";
 import { useRouter } from "next/navigation";
 import AlertModal from "@app/components/alerts/alertModal";
+import Sidebar from "@app/components/layout/sideBar";
+import { generalMenuItems, marineMenuItems } from "@app/data/menuItems";
 
 export const LayoutContext = createContext<any>({});
 
@@ -70,7 +72,11 @@ const layout = ({ children }: { children: React.ReactNode }) => {
               />
             </div>
             <div className="mt-5 h-full overflow-y-auto flex-grow">
-              <Sidebar menuItems={menuItems} hideSidebar={hideSidebar} />
+              {/* <Sidebar menuItems={menuItems} hideSidebar={hideSidebar} /> */}
+              <Sidebar
+                generalRouteItems={generalMenuItems}
+                basicRouteItems={menuItems}
+              />
             </div>
           </aside>
           <section id="content" className="w-full h-full">
