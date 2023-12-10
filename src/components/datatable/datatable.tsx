@@ -22,13 +22,14 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
-import { DataTablePagination } from './pagination';
-import { useState } from 'react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import TableSearchbox from '../ui/tableSearchbox';
+  DropdownMenuTrigger, 
+} from "../ui/dropdown-menu";
+import { DataTablePagination } from "./pagination";
+import { useState } from "react";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import TableSearchbox from "../ui/tableSearchbox";
+import TableRowActions, { ITableRowActionList } from "./tableRowActions";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -36,6 +37,11 @@ interface DataTableProps<TData, TValue> {
   showAddButton?: boolean;
   addButtonLabel?: string;
   addButtonFunction?: () => void;
+  searchPlaceholder?: string;
+  onRowAction?: (action: string, row: Record<string, any>) => void;
+  tableRowActionList?: ITableRowActionList[];
+  allowCustomRowActionList?: boolean;
+  showActions?: boolean;
 }
 
 export default function DataTable<TData, TValue>({
@@ -44,6 +50,11 @@ export default function DataTable<TData, TValue>({
   showAddButton = true,
   addButtonLabel = 'New Record',
   addButtonFunction,
+  searchPlaceholder = "Search...",
+  onRowAction,
+  tableRowActionList = [],
+  allowCustomRowActionList = false,
+  showActions = false,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -61,9 +72,9 @@ export default function DataTable<TData, TValue>({
   return (
     <div className='rounded-md border p-4 bg-white'>
       <div className='flex items-center justify-between mb-5'>
-        {/* <Input className=" w-3/12" placeholder="Search..." /> */}
-        <div className='w-3/12'>
-          <TableSearchbox />
+
+        <div className="w-3/12">
+          <TableSearchbox placeholder={searchPlaceholder} />
         </div>
         <div className='flex items-center gap-3'>
           {showAddButton && (
@@ -120,6 +131,7 @@ export default function DataTable<TData, TValue>({
                   </TableHead>
                 );
               })}
+              {showActions && <TableHead>Actions</TableHead>}
             </TableRow>
           ))}
         </TableHeader>
@@ -135,6 +147,17 @@ export default function DataTable<TData, TValue>({
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
+                {showActions && (
+                  <TableCell>
+                    <TableRowActions
+                      actionList={tableRowActionList}
+                      allowCustomRowActionList={allowCustomRowActionList}
+                      onRowAction={(action) =>
+                        onRowAction && onRowAction(action, row.original!)
+                      }
+                    />
+                  </TableCell>
+                )}
               </TableRow>
             ))
           ) : (
