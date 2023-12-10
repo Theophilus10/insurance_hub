@@ -92,7 +92,7 @@ const NestedItems: React.FC<{
   } else {
     return (
       <li
-        className={`flex flex-col gap-2 
+        className={`flex flex-col gap-2
         ${subMenuItem === index ? "isActiveMenuList open" : "closed "}
       `}
       >

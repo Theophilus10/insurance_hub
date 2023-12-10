@@ -38,19 +38,12 @@ const editor = () => {
       initialValues={initialValues}
       className="flex flex-col gap-5 w-full h-full"
     >
-      <SelectField
-        name="customerType"
-        label="Institution Type"
-        placeholder="Select institution type"
-        options={[]}
-        required
-      />
       <InputField
         name="name"
-        label="Institution Name"
+        label="Branch Name"
         type="text"
         required
-        placeholder="Enter institution name"
+        placeholder="Enter branch name"
       />
 
       <InputField
@@ -71,7 +64,12 @@ const editor = () => {
         type="text"
         placeholder="Enter office location"
       />
-
+      <InputField
+        name="taxIdentificationNumber"
+        label="Region"
+        type="text"
+        placeholder="Enter Region"
+      />
       <InputField
         name="email"
         label="Website"

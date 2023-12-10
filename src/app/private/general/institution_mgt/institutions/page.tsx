@@ -1,6 +1,6 @@
 "use client";
 
-import React, { use, useState } from "react";
+import React, { use, useContext, useState } from "react";
 import Editor from "./partials/editor";
 import Modal from "@app/components/ui/modal";
 import DataTable from "@app/components/datatable/datatable";
@@ -9,6 +9,7 @@ import { columns } from "./partials/columns";
 import { ITableRowActionList } from "@app/components/datatable/tableRowActions";
 import AlertModal from "@app/components/alerts/alertModal";
 import { useRouter } from "next/navigation";
+import { InstitutionLayout } from "./layout";
 
 const actions: ITableRowActionList[] = [
   { title: "Edit", icon: "fe:edit", accessor: "edit" },
@@ -26,6 +27,8 @@ const actions: ITableRowActionList[] = [
 ];
 const page = () => {
   const [openModal, setOpenModal] = useState(false);
+  const { setBreadCrumbOptions, breadCrumbOptions } =
+    useContext(InstitutionLayout);
   const router = useRouter();
   const [edit, setEdit] = useState(false);
   const [alert, setAlert] = useState({ recordId: 0, open: false });
@@ -45,6 +48,7 @@ const page = () => {
         break;
 
       case "branches":
+        setBreadCrumbOptions([...breadCrumbOptions, { title: "Branch List" }]);
         router.replace(
           `/private/general/institution_mgt/institutions/${row.id}`
         );
@@ -61,9 +65,9 @@ const page = () => {
   };
   return (
     <div className="flex flex-col w-full h-full gap-4 pt-2">
-      <div className={` text-gray-500 font-medium text-[22px]`}>
+      {/* <div className={` text-gray-500 font-medium text-[22px]`}>
         Institutions List
-      </div>
+      </div> */}
       <DataTable
         data={data}
         columns={columns}
@@ -77,7 +81,7 @@ const page = () => {
       <Modal
         open={openModal}
         size="xl"
-        title={edit ? "Upate Institution" : "New Institution"}
+        title={edit ? "Update Institution" : "New Institution"}
         closeModal={toggleModal}
       >
         <Editor />
