@@ -11,8 +11,8 @@ import useAppMenuContext from "@app/context/useAppMenuContext";
 import userContext from "@app/context/userContext";
 import { useRouter } from "next/navigation";
 import AlertModal from "@app/components/alerts/alertModal";
+import { generalMenuItems } from "@app/data/menuItems";
 import Sidebar from "@app/components/layout/sideBar";
-import { generalMenuItems, marineMenuItems } from "@app/data/menuItems";
 
 export const LayoutContext = createContext<any>({});
 

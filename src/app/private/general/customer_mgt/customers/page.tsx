@@ -1,37 +1,37 @@
 "use client";
-import Table, { DataRow } from "@app/components/ui/Table";
+
 import React, { useEffect } from "react";
 import Editor from "./partials/editor";
 import useLayoutContext from "@app/context/useLayoutContext";
 import ScrollSection from "@app/components/ui/scrollSection";
 import { TableColumn } from "react-data-table-component";
 
-const columns: TableColumn<DataRow>[] = [
-  {
-    name: <div className="text-base">Name</div>,
-    selector: (row: any) => row.name,
-  },
-  {
-    name: <div className="text-base">Customer Type</div>,
-    selector: (row: any) => row.customer_type,
-  },
-  {
-    name: <div className="text-base">Identification Type</div>,
-    selector: (row: any) => row.identification_type,
-  },
-  {
-    name: <div className="text-base">ID Number</div>,
-    selector: (row: any) => row.idNumber,
-  },
-  {
-    name: <div className="text-base">Customer Category</div>,
-    selector: (row: any) => row.customer_category,
-  },
-  {
-    name: <div className="text-base">Occupation</div>,
-    selector: (row: any) => row.occupation,
-  },
-];
+// const columns: TableColumn<DataRow>[] = [
+//   {
+//     name: <div className="text-base">Name</div>,
+//     selector: (row: any) => row.name,
+//   },
+//   {
+//     name: <div className="text-base">Customer Type</div>,
+//     selector: (row: any) => row.customer_type,
+//   },
+//   {
+//     name: <div className="text-base">Identification Type</div>,
+//     selector: (row: any) => row.identification_type,
+//   },
+//   {
+//     name: <div className="text-base">ID Number</div>,
+//     selector: (row: any) => row.idNumber,
+//   },
+//   {
+//     name: <div className="text-base">Customer Category</div>,
+//     selector: (row: any) => row.customer_category,
+//   },
+//   {
+//     name: <div className="text-base">Occupation</div>,
+//     selector: (row: any) => row.occupation,
+//   },
+// ];
 
 const page = () => {
   const { setPageDetails } = useLayoutContext();
@@ -44,14 +44,14 @@ const page = () => {
         Customer List
       </div>
       <ScrollSection className="bg-white p-4  h-full w-full shadow-sm border ">
-        <Table
+        {/* <Table
           modalSize="2xl"
           Editor={Editor}
           tableColumn={columns}
           addButtonLabel="New Customer"
           addNewRecordLabel="New Customer"
           updateRecordLabel="Update Customer"
-        />
+        /> */}
       </ScrollSection>
     </div>
   );
