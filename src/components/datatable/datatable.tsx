@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   ColumnDef,
@@ -9,7 +9,7 @@ import {
   SortingState,
   getSortedRowModel,
   VisibilityState,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 import {
   Table,
   TableBody,
@@ -17,12 +17,12 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../ui/table";
+} from '../ui/table';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuTrigger,
+  DropdownMenuTrigger, 
 } from "../ui/dropdown-menu";
 import { DataTablePagination } from "./pagination";
 import { useState } from "react";
@@ -48,7 +48,7 @@ export default function DataTable<TData, TValue>({
   columns,
   data,
   showAddButton = true,
-  addButtonLabel = "New Record",
+  addButtonLabel = 'New Record',
   addButtonFunction,
   searchPlaceholder = "Search...",
   onRowAction,
@@ -70,40 +70,40 @@ export default function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="rounded-md border p-4 bg-white">
-      <div className="flex items-center justify-between mb-5">
-        {/* <Input className=" w-3/12" placeholder="Search..." /> */}
+    <div className='rounded-md border p-4 bg-white'>
+      <div className='flex items-center justify-between mb-5'>
+
         <div className="w-3/12">
           <TableSearchbox placeholder={searchPlaceholder} />
         </div>
-        <div className="flex items-center gap-3">
+        <div className='flex items-center gap-3'>
           {showAddButton && (
             <Button
               label={addButtonLabel}
-              variant="primary"
+              variant='primary'
               onClick={() => addButtonFunction && addButtonFunction()}
             />
           )}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
-                variant="outline"
-                className="ml-auto border-teal-300 bg-teal-50"
+                variant='outline'
+                className='ml-auto border-teal-300 bg-teal-50'
               >
                 Columns
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align='end'>
               {table
                 .getAllColumns()
-                .filter((column) => column.getCanHide())
-                .map((column) => {
+                .filter(column => column.getCanHide())
+                .map(column => {
                   return (
                     <DropdownMenuCheckboxItem
                       key={column.id}
-                      className="capitalize cursor-pointer"
+                      className='capitalize cursor-pointer'
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) =>
+                      onCheckedChange={value =>
                         column.toggleVisibility(!!value)
                       }
                     >
@@ -115,13 +115,13 @@ export default function DataTable<TData, TValue>({
           </DropdownMenu>
         </div>
       </div>
-      <Table className="mb-5">
-        <TableHeader className="bg-gray-100">
-          {table.getHeaderGroups().map((headerGroup) => (
+      <Table className='mb-5'>
+        <TableHeader className='bg-gray-100'>
+          {table.getHeaderGroups().map(headerGroup => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
+              {headerGroup.headers.map(header => {
                 return (
-                  <TableHead key={header.id} className="h-7 whitespace-nowrap">
+                  <TableHead key={header.id} className='h-7 whitespace-nowrap'>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -137,12 +137,12 @@ export default function DataTable<TData, TValue>({
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
+            table.getRowModel().rows.map(row => (
               <TableRow
                 key={row.id}
-                data-state={row.getIsSelected() && "selected"}
+                data-state={row.getIsSelected() && 'selected'}
               >
-                {row.getVisibleCells().map((cell) => (
+                {row.getVisibleCells().map(cell => (
                   <TableCell key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
@@ -162,7 +162,7 @@ export default function DataTable<TData, TValue>({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
+              <TableCell colSpan={columns.length} className='h-24 text-center'>
                 No results.
               </TableCell>
             </TableRow>
