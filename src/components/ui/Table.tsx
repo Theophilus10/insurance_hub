@@ -1,42 +1,17 @@
 "use client";
 
 import React, { useReducer } from "react";
-import DataTable, { createTheme } from "react-data-table-component";
+import DataTable, {
+  TableColumn,
+  createTheme,
+} from "react-data-table-component";
 import TableSearchbox from "./tableSearchbox";
 import { Button } from "./button";
 import SideModal from "./sideModal";
 import { ContentSize } from "@app/types/appTypes";
 import AlertModal from "../alerts/alertModal";
 import TableFilter from "./tableFilter";
-
-
-
-const columns = [
-  {
-    name: <div className="text-base">Name</div>,
-    selector: (row: any) => row.name,
-  },
-  {
-    name: <div className="text-base">Customer Type</div>,
-    selector: (row: any) => row.customer_type,
-  },
-  {
-    name: <div className="text-base">Identification Type</div>,
-    selector: (row: any) => row.identification_type,
-  },
-  {
-    name: <div className="text-base">ID Number</div>,
-    selector: (row: any) => row.idNumber,
-  },
-  {
-    name: <div className="text-base">Customer Category</div>,
-    selector: (row: any) => row.customer_category,
-  },
-  {
-    name: <div className="text-base">Occupation</div>,
-    selector: (row: any) => row.occupation,
-  },
-];
+import Modal from "./modal";
 
 const data = [
   {
@@ -86,26 +61,30 @@ const data = [
   },
 ];
 
+export type DataRow = Record<string, any>;
+
 interface ITable {
   addNewRecordLabel?: string;
   addButtonLabel?: string;
   updateRecordLabel?: string;
-  sideModalSize?: ContentSize;
+  modalSize?: ContentSize;
   Editor?: any;
   searchPlaceholder?: string;
   showAddButton?: boolean;
   showSearchBox?: boolean;
+  tableColumn: TableColumn<DataRow>[];
 }
 
 const Table: React.FC<ITable> = ({
   addButtonLabel = "New Record",
   addNewRecordLabel = "Add New Record",
   updateRecordLabel = "Update Record",
-  sideModalSize = "md",
+  modalSize = "md",
   Editor,
   searchPlaceholder = "Search...",
   showAddButton = true,
   showSearchBox = true,
+  tableColumn,
 }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -147,23 +126,32 @@ const Table: React.FC<ITable> = ({
         </div>
       </div>
       <DataTable
-        columns={columns}
+        columns={tableColumn}
         data={data}
         striped
         pagination
         responsive
         defaultSortFieldId={1}
         defaultSortAsc
+
         // theme="solarized"
       />
-      <SideModal
+      <Modal
         open={state.openSideModal}
-        closeModal={toggleSideModal}
-        size={sideModalSize}
+        size={modalSize}
         title={state.editorHeading}
+        closeModal={toggleSideModal}
       >
         <Editor />
-      </SideModal>
+      </Modal>
+      {/* <SideModal
+        open={state.openSideModal}
+        closeModal={toggleSideModal}
+        size={modalSize}
+       
+      >
+        <Editor />
+      </SideModal> */}
       <AlertModal
         open={state.openAlertModal}
         onCancel={toggleAlertModal}

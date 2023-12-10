@@ -22,12 +22,12 @@ const initialValues = {
 const schema = z.object({
   // name: z
   //   .string()
-  //   .min(1, "Name is required")
+  //   .min(1, "Name is ")
   //   .min(3, "Enter a valid name")
   //   .max(7, "Name too long"),
-  // email: z.string().min(1, "Email is required").email(),
-  // gender: z.string().min(1, "Gender is required"),
-  // dob: z.string().min(1, "Date of Birth is required"),
+  // email: z.string().min(1, "Email is ").email(),
+  // gender: z.string().min(1, "Gender is "),
+  // dob: z.string().min(1, "Date of Birth is "),
 });
 
 const editor = () => {
@@ -37,47 +37,99 @@ const editor = () => {
       initialValues={initialValues}
       className="flex flex-col gap-2 w-full h-full"
     >
-      <InputField name="name" label="Name" type="text" />
+      <div className="grid grid-cols-2 gap-4">
+        <InputField name="name" label="Name" type="text" />
 
-      <SelectField
-        name="customerType"
-        label="Customer Type"
-        required
-        options={[]}
-      />
-      <SelectField
-        name="customerCategory"
-        label="Customer Category"
-        required
-        options={[]}
-      />
-      <SelectField
-        name="identificationType"
-        label="Identification Type"
-        required
-        options={[]}
-      />
-      <InputField
-        name="identificationCardNumber"
-        label="Identification Card Number"
-        type="text"
-      />
+        <SelectField
+          name="customerType"
+          label="Customer Type"
+          //
+          options={[]}
+        />
+        <SelectField
+          name="customerCategory"
+          label="Customer Category"
+          //
+          options={[]}
+        />
+        <SelectField
+          name="identificationType"
+          label="Identification Type"
+          //
+          options={[]}
+        />
+        <InputField
+          name="identificationCardNumber"
+          label="Identification Card Number"
+          type="text"
+        />
 
-      <InputField
-        name="taxIdentificationNumber"
-        label="Tax Identification Number"
-        type="text"
-      />
-      <SelectField name="occupation" label="Occupation" required options={[]} />
-      <InputField name="email" label="Email" type="text" />
-      <InputField name="phone" label="Phone Number" type="text" />
-      <InputField name="digitalAddress" label="Digital Address" type="text" />
-      <InputField name="postalAddress" label="Postal Address" type="text" />
-      <InputField
-        name="residential Address"
-        label="Residential Address"
-        type="text"
-      />
+        <InputField
+          name="taxIdentificationNumber"
+          label="Tax Identification Number"
+          type="text"
+        />
+        <SelectField name="occupation" label="Occupation" options={[]} />
+        <InputField name="email" label="Email" type="text" />
+        <InputField name="phone" label="Phone Number" type="text" />
+        <InputField name="digitalAddress" label="Digital Address" type="text" />
+        <InputField name="postalAddress" label="Postal Address" type="text" />
+        <InputField
+          name="residential Address"
+          label="Residential Address"
+          type="text"
+        />
+            {/* <SelectField name="occupation" label="Occupation" options={[]} />
+        <InputField name="email" label="Email" type="text" />
+        <InputField name="phone" label="Phone Number" type="text" />
+        <InputField name="digitalAddress" label="Digital Address" type="text" />
+        <InputField name="postalAddress" label="Postal Address" type="text" />
+        <InputField
+          name="residential Address"
+          label="Residential Address"
+          type="text"
+        />
+            <SelectField name="occupation" label="Occupation" options={[]} />
+        <InputField name="email" label="Email" type="text" />
+        <InputField name="phone" label="Phone Number" type="text" />
+        <InputField name="digitalAddress" label="Digital Address" type="text" />
+        <InputField name="postalAddress" label="Postal Address" type="text" />
+        <InputField
+          name="residential Address"
+          label="Residential Address"
+          type="text"
+        />
+            <SelectField name="occupation" label="Occupation" options={[]} />
+        <InputField name="email" label="Email" type="text" />
+        <InputField name="phone" label="Phone Number" type="text" />
+        <InputField name="digitalAddress" label="Digital Address" type="text" />
+        <InputField name="postalAddress" label="Postal Address" type="text" />
+        <InputField
+          name="residential Address"
+          label="Residential Address"
+          type="text"
+        />
+            <SelectField name="occupation" label="Occupation" options={[]} />
+        <InputField name="email" label="Email" type="text" />
+        <InputField name="phone" label="Phone Number" type="text" />
+        <InputField name="digitalAddress" label="Digital Address" type="text" />
+        <InputField name="postalAddress" label="Postal Address" type="text" />
+        <InputField
+          name="residential Address"
+          label="Residential Address"
+          type="text"
+        />
+            <SelectField name="occupation" label="Occupation" options={[]} />
+        <InputField name="email" label="Email" type="text" />
+        <InputField name="phone" label="Phone Number" type="text" />
+        <InputField name="digitalAddress" label="Digital Address" type="text" />
+        <InputField name="postalAddress" label="Postal Address" type="text" />
+        <InputField
+          name="residential Address"
+          label="Residential Address"
+          type="text"
+        /> */}
+      </div>
     </Form>
   );
 };
