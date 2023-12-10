@@ -36,6 +36,7 @@ interface DataTableProps<TData, TValue> {
   showAddButton?: boolean;
   addButtonLabel?: string;
   addButtonFunction?: () => void;
+  searchPlaceholder?:string
 }
 
 export default function DataTable<TData, TValue>({
@@ -44,6 +45,7 @@ export default function DataTable<TData, TValue>({
   showAddButton = true,
   addButtonLabel = "New Record",
   addButtonFunction,
+  searchPlaceholder = 'Search...'
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -63,7 +65,7 @@ export default function DataTable<TData, TValue>({
       <div className="flex items-center justify-between mb-5">
         {/* <Input className=" w-3/12" placeholder="Search..." /> */}
         <div className="w-3/12">
-          <TableSearchbox />
+          <TableSearchbox placeholder={searchPlaceholder}/>
         </div>
         <div className="flex items-center gap-3">
           {showAddButton && (
