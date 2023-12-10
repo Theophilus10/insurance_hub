@@ -36,54 +36,64 @@ const editor = () => {
     <Form
       schema={schema}
       initialValues={initialValues}
-      className="flex flex-col gap-6 w-full h-full"
+      className="flex flex-col gap-5 w-full h-full"
     >
-      <div className="grid grid-cols-2 gap-4">
-        <InputField name="name" label="Name" type="text" />
+      <SelectField
+        name="customerType"
+        label="Institution Type"
+        placeholder="Select institution type"
+        options={[]}
+        required
+      />
+      <InputField
+        name="name"
+        label="Institution Name"
+        type="text"
+        required
+        placeholder="Enter institution name"
+      />
 
-        <SelectField
-          name="customerType"
-          label="Customer Type"
-          //
-          options={[]}
-        />
-        <SelectField
-          name="customerCategory"
-          label="Customer Category"
-          //
-          options={[]}
-        />
-        <SelectField
-          name="identificationType"
-          label="Identification Type"
-          //
-          options={[]}
-        />
-        <InputField
-          name="identificationCardNumber"
-          label="Identification Card Number"
-          type="text"
-        />
+      <InputField
+        name="identificationCardNumber"
+        label="Contact Person"
+        type="text"
+        placeholder="John Doe"
+      />
+      <InputField
+        name="identificationCardNumber"
+        label="Contact Person"
+        type="text"
+        placeholder="Managin Director"
+      />
+      <InputField
+        name="taxIdentificationNumber"
+        label="Office Location"
+        type="text"
+        placeholder="Enter office location"
+      />
+      <InputField
+        name="email"
+        label="Website"
+        type="text"
+        placeholder="www.domainname.com"
+      />
+      <InputField
+        name="phone"
+        label="Email"
+        type="text"
+        placeholder="johndoe@email.com"
+      />
+      <InputField
+        name="digitalAddress"
+        label="Contact Phone"
+        type="text"
+        placeholder="233501234567"
+        helpText={`Start with country code without ("+"). Example 233501234567 for Ghana(233)`}
+      />
 
-        <InputField
-          name="taxIdentificationNumber"
-          label="Tax Identification Number"
-          type="text"
-        />
-        <SelectField name="occupation" label="Occupation" options={[]} />
-        <InputField name="email" label="Email" type="text" />
-        <InputField name="phone" label="Phone Number" type="text" />
-        <InputField name="digitalAddress" label="Digital Address" type="text" />
-        <InputField name="postalAddress" label="Postal Address" type="text" />
-        <InputField
-          name="residential Address"
-          label="Residential Address"
-          type="text"
-        />
-      </div>
       <div className="ml-auto flex gap-4">
-        <Button label="Submit" variant="primary" />
-        <Button label="Reset" variant="outline" />
+        <Button label="Submit" variant="primary" type="submit" />
+        <Button label="Reset" variant="outline" type="reset" />
       </div>
     </Form>
   );

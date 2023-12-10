@@ -61,6 +61,7 @@ const InputField: React.FC<TextInputProps> = ({
         className={`p-2 rounded-[5px] text-black border ${borderClass} shadow-sm`}
         // onChange={(e) => field.onChange(e.target.value)}
       />
+      {helpText && <span className="text-sm text-gray-500">{helpText}</span>}
       {fieldState.error && (
         <label className="text-red-500 flex items-center gap-1 text-sm pt-1">
           <IconifyIcon icon="solar:danger-circle-bold-duotone" fontSize={15} />

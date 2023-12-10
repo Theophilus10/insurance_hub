@@ -4,55 +4,57 @@ import { Button } from "@app/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
-// This type is used to define the shape of our data.
-
-export type ICustomer = {
+export type IInstitution = {
   id: number;
-  ["customer_type"]: string;
-  ["full_name"]: string;
-  ["customer_category"]: string;
-  ["created_at"]: string;
-  occupation: string;
-  phone: string;
+  name: string;
+  institution_type: string;
+  contact_person: string;
+  contact_phone: string;
+  created_at: Date | string;
 };
 
-export const columns: ColumnDef<ICustomer>[] = [
+export const columns: ColumnDef<IInstitution>[] = [
   {
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
-    accessorKey: "full_name",
-    header: "Name",
-  },
-  {
-    accessorKey: "customer_type",
+    accessorKey: "name",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Customer Type
+          Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
   },
   {
-    accessorKey: "customer_category",
-    header: "Customer Category",
+    accessorKey: "institution_type",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Institution Type
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
   },
   {
-    accessorKey: "occupation",
-    header: "Occupation",
-  },
-  {
-    accessorKey: "phone",
-    header: "Contact Phone",
+    accessorKey: "contact_person",
+    header: "Contact Person",
   },
   {
     accessorKey: "created_at",
     header: "Created Date",
   },
+  // {
+  //   id: "actions",
+  //   header: "Actions",
+  //   cell: ({ row }) => (
+  //     <TableRowActions row={row} showAddBranches showViewBranches />
+  //   ),
+  // },
 ];
