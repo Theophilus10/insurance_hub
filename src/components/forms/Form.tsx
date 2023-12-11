@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnyZodObject } from "zod";
@@ -27,12 +27,15 @@ const Form: React.FC<FormProps> = ({
     resolver: zodResolver(schema),
   });
 
-  const { handleSubmit, formState, watch } = methods;
+  const { handleSubmit, formState, watch, reset } = methods;
 
   const onSubmitHandler = (data: FormValues) => {
     if (onSubmit) onSubmit(data);
   };
 
+  useEffect(() => {
+    reset(initialValues);
+  }, [initialValues]);
   const handleChange = () => {
     const values = watch();
     if (onChange) onChange(values, formState.isValid);
