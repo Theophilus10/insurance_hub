@@ -23,53 +23,26 @@ import PremiumPayable from "@app/app/views/underwriting/motor/PremiumPayable";
 import CustomerInfo from "@app/app/views/underwriting/motor/CustomerInfo";
 import VehicleInfo from "@app/app/views/underwriting/motor/VehicleInfo";
 import PolicyInfo from "@app/app/views/underwriting/motor/PolicyInfo";
+import Divider from "@app/components/ui/Divider";
 const TabsComponent = () => {
   return (
     <ScrollSection className="container mx-auto px-4 lg:px-8 py-6">
-      <Tabs defaultValue="insurance-company" className="w-full">
-        <TabsList className="flex sm:flex-row overflow-y-auto my-10 gap-1 lg:gap-4">
-          <TabsTrigger
-            value="insurance-company"
-            className="cursor-pointer text-[10px] md:text-sm lg:text-base"
-          >
-            Insurance Company
-          </TabsTrigger>
-          <TabsTrigger
-            value="customer-info"
-            className="cursor-pointer text-[10px] md:text-sm lg:text-base"
-          >
-            Customer Information
-          </TabsTrigger>
-          <TabsTrigger
-            value="vehicle-info"
-            className="cursor-pointer text-[10px] md:text-sm lg:text-base"
-          >
-            Vehicle Information
-          </TabsTrigger>
-          <TabsTrigger
-            value="policy-info"
-            className="cursor-pointer text-[10px]  md:text-sm lg:text-base"
-          >
-            Policy Information
-          </TabsTrigger>
-        </TabsList>
+      <Card className="w-full mx-auto">
+        <CardHeader>
+          <CardTitle className="text-lg md:text-xl py-5">
+            Underwriting Motor Insurance
+          </CardTitle>
+          <Divider />
+          <CardDescription className="text-sm md:text-base">
+            Make changes to your account here.
+          </CardDescription>
+          <CardContent>
+            <CompanyInformation />
+          </CardContent>
+        </CardHeader>
+      </Card>
 
-        <TabsContent value="insurance-company" className="py-4">
-          <Card className="max-w-md mx-auto md:max-w-lg lg:max-w-xl">
-            <CardHeader>
-              <CardTitle className="text-lg md:text-xl">
-                Insurance Company
-              </CardTitle>
-              <CardDescription className="text-sm md:text-base">
-                Make changes to your account here.
-              </CardDescription>
-              <CardContent>
-                <CompanyInformation />
-              </CardContent>
-            </CardHeader>
-          </Card>
-        </TabsContent>
-        <TabsContent value="customer-info" className="py-4">
+      {/* <TabsContent value="customer-info" className="py-4">
           <Card className="max-w-md mx-auto md:max-w-lg lg:max-w-xl">
             <CardHeader>
               <CardTitle className="text-lg md:text-xl">Policy To:</CardTitle>
@@ -114,7 +87,7 @@ const TabsComponent = () => {
       <div className="md:flex gap-[20px]">
         <PremiumComputation />
         <PremiumPayable />
-      </div>
+      </div> */}
     </ScrollSection>
   );
 };

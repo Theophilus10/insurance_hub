@@ -25,9 +25,9 @@ const CustomerInfo = () => {
         value="yes"
         disabled={true}
       />
-      <InputField label="Last Name" name="last_name" disabled={true} />
+      {/* <InputField label="Last Name" name="last_name" disabled={true} />
       <InputField label="Other Name" name="other_name" disabled={true} />
-      <InputField label="Phone" name="phone" disabled={true} />
+      <InputField label="Phone" name="phone" disabled={true} /> */}
     </Form>
   );
 };
