@@ -8,7 +8,7 @@ import { ArrowUpDown } from "lucide-react";
 
 export type ICustomer = {
   id: number;
-  country: string;
+  bank: string;
   code: string;
   created_at: string;
 };
@@ -19,11 +19,11 @@ export const columns: ColumnDef<ICustomer>[] = [
     header: "ID",
   },
   {
-    accessorKey: "country",
-    header: "Country",
+    accessorKey: "bank",
+    header: "Bank",
   },
   {
     accessorKey: "code",
-    header: "Country Code",
+    header: "Bank Code",
   },
 ];

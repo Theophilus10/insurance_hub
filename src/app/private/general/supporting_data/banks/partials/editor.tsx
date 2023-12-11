@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 import * as z from "zod";
 
 const initialValues = {
-  country: "",
+  bank: "",
   code: "",
 };
 const schema = z.object({
@@ -34,8 +34,8 @@ const Editor = ({ prevalues }:any) => {
       className="flex flex-col gap-6 w-full h-full px-2"
     >
       <div className="grid grid-cols-2 gap-4">
-        <InputField name="country" label="Country Name" type="text" />
-        <InputField name="code" label="Country Code" type="text" />
+        <InputField name="bank" label="Bank Name" type="text" />
+        <InputField name="code" label="Bank Code" type="text" />
       </div>
       <div className="ml-auto flex gap-4">
         <Button label="Submit" variant="primary" />
