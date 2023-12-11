@@ -1,5 +1,5 @@
 "use client";
-import Table from "@app/components/ui/Table";
+import Table from "@app/components/ui/oldtable";
 import React, { useEffect } from "react";
 import Editor from "./partials/editor";
 import useLayoutContext from "@app/context/useLayoutContext";

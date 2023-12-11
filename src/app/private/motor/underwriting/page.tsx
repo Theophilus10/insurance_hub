@@ -71,6 +71,7 @@ const TabsComponent = () => {
         </TabsContent>
         <TabsContent value='customer-info' className='py-4'>
           <Card className='max-w-md mx-auto md:max-w-lg lg:max-w-xl'>
+
             <CardHeader>
               <CardTitle className='text-lg md:text-xl'>Policy To:</CardTitle>
               <CardDescription className='text-sm md:text-base'>
@@ -114,7 +115,7 @@ const TabsComponent = () => {
       <div className='md:flex gap-[20px]'>
         <PremiumComputation />
         <PremiumPayable />
-      </div>
+      </div> */}
     </ScrollSection>
   );
 };

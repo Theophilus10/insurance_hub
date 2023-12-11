@@ -36,7 +36,7 @@ const editor = () => {
     <Form
       schema={schema}
       initialValues={initialValues}
-      className="flex flex-col gap-4 w-full h-full px-2"
+      className="flex flex-col gap-6 w-full h-full px-2"
     >
       <div className="grid grid-cols-2 gap-4">
         <InputField name="name" label="Name" type="text" />
@@ -68,46 +68,6 @@ const editor = () => {
         <InputField
           name="taxIdentificationNumber"
           label="Tax Identification Number"
-          type="text"
-        />
-        <SelectField name="occupation" label="Occupation" options={[]} />
-        <InputField name="email" label="Email" type="text" />
-        <InputField name="phone" label="Phone Number" type="text" />
-        <InputField name="digitalAddress" label="Digital Address" type="text" />
-        <InputField name="postalAddress" label="Postal Address" type="text" />
-        <InputField
-          name="residential Address"
-          label="Residential Address"
-          type="text"
-        />
-        <SelectField name="occupation" label="Occupation" options={[]} />
-        <InputField name="email" label="Email" type="text" />
-        <InputField name="phone" label="Phone Number" type="text" />
-        <InputField name="digitalAddress" label="Digital Address" type="text" />
-        <InputField name="postalAddress" label="Postal Address" type="text" />
-        <InputField
-          name="residential Address"
-          label="Residential Address"
-          type="text"
-        />
-        <SelectField name="occupation" label="Occupation" options={[]} />
-        <InputField name="email" label="Email" type="text" />
-        <InputField name="phone" label="Phone Number" type="text" />
-        <InputField name="digitalAddress" label="Digital Address" type="text" />
-        <InputField name="postalAddress" label="Postal Address" type="text" />
-        <InputField
-          name="residential Address"
-          label="Residential Address"
-          type="text"
-        />
-        <SelectField name="occupation" label="Occupation" options={[]} />
-        <InputField name="email" label="Email" type="text" />
-        <InputField name="phone" label="Phone Number" type="text" />
-        <InputField name="digitalAddress" label="Digital Address" type="text" />
-        <InputField name="postalAddress" label="Postal Address" type="text" />
-        <InputField
-          name="residential Address"
-          label="Residential Address"
           type="text"
         />
         <SelectField name="occupation" label="Occupation" options={[]} />
