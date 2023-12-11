@@ -6,7 +6,7 @@ import React from "react";
 import * as z from "zod";
 
 const initialValues = {
-  name: "Theo",
+  name: "",
 };
 const schema = z.object({
   name: z.string().min(1, "Name is required").min(3, "Name is too short"),

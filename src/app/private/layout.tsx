@@ -94,7 +94,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               >
                 {pageDetails.title}
               </div> */}
-              <div className=' w-full h-full flex-grow overflow-auto px-6 py-3 box-border  '>
+              <div className=' w-full h-full flex-grow overflow-auto px-6 py-3  '>
                 {children}
               </div>
             </section>
