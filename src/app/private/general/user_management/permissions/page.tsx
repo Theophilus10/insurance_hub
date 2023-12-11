@@ -21,17 +21,21 @@ const page = () => {
       <DataTable
         data={data}
         columns={columns}
-        addButtonLabel="New Customer Type"
+        addButtonLabel="New Permission"
         addButtonFunction={toggleModal}
       />
       <Modal
         open={openModal}
-        size="md"
-        title="New Customer Type"
+        size="sm"
+        title="New Permission"
         closeModal={toggleModal}
       >
         <Editor />
-        <IconifyIcon icon="  solar:round-double-alt-arrow-down-bold" fontSize={40} className="text-red-500"/>
+        <IconifyIcon
+          icon="  solar:round-double-alt-arrow-down-bold"
+          fontSize={40}
+          className="text-red-500"
+        />
       </Modal>
     </div>
   );
