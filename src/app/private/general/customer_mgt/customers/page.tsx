@@ -25,7 +25,7 @@ const page = () => {
       />
       <Modal
         open={openModal}
-        size="xl"
+        size="lg"
         title="New Customer"
         closeModal={toggleModal}
       >
