@@ -32,21 +32,6 @@ const InputField: React.FC<TextInputProps> = ({
     control,
   });
 
-  // const didFocus = fieldState.isDirty;
-
-  // useEffect(() => {
-  //   // console.log(name);
-  //   console.log(formState.errors);
-  //   console.log(name, fieldState.error);
-  //   console.log('formDirty', formState.isDirty);
-  // }, [fieldState]);
-
-  // const borderClass = fieldState.isTouched
-  //   ? fieldState.error
-  //     ? "border-red-500"
-  //     : "border-green-500"
-  //   : "border-gray-300";
-
   const borderClass = fieldState.error
     ? "border-red-500"
     : fieldState.isDirty && !fieldState.error
@@ -64,7 +49,7 @@ const InputField: React.FC<TextInputProps> = ({
         placeholder={placeholder}
         type={type}
         disabled={disabled}
-        value={value}
+        value={field.value || value}
         className={`p-2 rounded-[5px] text-black border ${borderClass} shadow-sm`}
         // onChange={(e) => field.onChange(e.target.value)}
       />

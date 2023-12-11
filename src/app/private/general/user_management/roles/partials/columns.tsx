@@ -6,13 +6,13 @@ import { ArrowUpDown } from "lucide-react";
 
 // This type is used to define the shape of our data.
 
-export type IPermission = {
+export type IRole = {
   id: number;
   name: string;
   created_at: string;
 };
 
-export const columns: ColumnDef<IPermission>[] = [
+export const columns: ColumnDef<IRole>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => {

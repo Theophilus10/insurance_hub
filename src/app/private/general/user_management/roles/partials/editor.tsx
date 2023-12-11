@@ -6,7 +6,7 @@ import React from "react";
 import * as z from "zod";
 
 const initialValues = {
-  name: "Theo",
+  name: "",
 };
 const schema = z.object({
   name: z.string().min(1, "Name is required").min(3, "Name is too short"),
@@ -21,9 +21,9 @@ const editor = () => {
     >
       <InputField
         name="name"
-        label="Permission Name"
+        label="Role Name"
         required
-        placeholder="Enter permission name"
+        placeholder="Enter role name"
       />
       <div className="ml-auto flex gap-4">
         <Button label="Submit" variant="primary" type="submit"/>
