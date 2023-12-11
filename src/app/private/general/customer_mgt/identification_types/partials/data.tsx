@@ -1,50 +1,17 @@
 import format from "date-fns/format";
+import { IIdentificationType } from "./columns";
 
-
-export const data = [
+export const data: IIdentificationType[] = [
   {
     id: 1,
-    full_name: "Evans office",
-    customer_type: "Individual",
-    customer_category: "Individual",
-    occupation: "Self Employed",
-    phone: "122345667",
-    created_at: format(new Date(), 'dd MMM yyy'),
+    code: "ID001",
+    name: "National ID",
+    created_at: format(new Date(), "dd MMM yyy"),
   },
   {
     id: 2,
-    full_name: "Evans office",
-    customer_type: "Individual",
-    customer_category: "Individual",
-    occupation: "Self Employed",
-    phone: "122345667",
-    created_at: format(new Date(), 'dd MMM yyy'),
-  },
-  {
-    id: 3,
-    full_name: "Evans office",
-    customer_type: "Individual",
-    customer_category: "Individual",
-    occupation: "Self Employed",
-    phone: "122345667",
-    created_at: format(new Date(), 'dd MMM yyy'),
-  },
-  {
-    id: 4,
-    full_name: "Evans office",
-    customer_type: "Individual",
-    customer_category: "Individual",
-    occupation: "Self Employed",
-    phone: "122345667",
-    created_at: format(new Date(), 'dd MMM yyy'),
-  },
-  {
-    id: 5,
-    full_name: "Evans office",
-    customer_type: "Individual",
-    customer_category: "Individual",
-    occupation: "Self Employed",
-    phone: "122345667",
-    created_at: format(new Date(), 'dd MMM yyy'),
+    code: "ID002",
+    name: "TIN",
+    created_at: format(new Date(), "dd MMM yyy"),
   },
 ];

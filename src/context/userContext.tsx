@@ -1,31 +1,35 @@
 import React from "react";
 
 export interface IUser {
-  fullName: string;
+  full_name: string;
   id: number;
-  firstName: string;
+  first_name: string;
   surname: string;
   email: string;
   institution: string;
-  institutionId: number;
+  institution_Id: number;
+  branch?: string;
+  branch_id?: number;
   role: string;
-  roleId: number;
+  role_Id: number;
   initials: string;
-  profileImage: string;
+  profileImage?: string;
+  created_at?: string;
+  contact_phone?: string;
 }
 
 const userContext = () => {
   const user: IUser = {
     id: 1,
     profileImage: "",
-    fullName: "Kwakye Mensah",
-    firstName: "Kwakye",
+    full_name: "Kwakye Mensah",
+    first_name: "Kwakye",
     surname: "Mensah",
     email: "kmensah@gmail.com",
     institution: "Activa International Insurance Company Limited",
     role: "Administrator",
-    roleId: 1,
-    institutionId: 1,
+    role_Id: 1,
+    institution_Id: 1,
     initials: "KM",
   };
   const loading = false;

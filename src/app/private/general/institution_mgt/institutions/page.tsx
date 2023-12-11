@@ -80,7 +80,7 @@ const page = () => {
       />
       <Modal
         open={openModal}
-        size="xl"
+        size="lg"
         title={edit ? "Update Institution" : "New Institution"}
         closeModal={toggleModal}
       >

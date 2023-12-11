@@ -36,7 +36,7 @@ const editor = () => {
     <Form
       schema={schema}
       initialValues={initialValues}
-      className="flex flex-col gap-5 w-full h-full"
+      className="flex flex-col gap-4"
     >
       <SelectField
         name="customerType"
@@ -52,37 +52,38 @@ const editor = () => {
         required
         placeholder="Enter institution name"
       />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <InputField
+          name="identificationCardNumber"
+          label="Contact Person"
+          type="text"
+          placeholder="John Doe"
+        />
+        <InputField
+          name="identificationCardNumber"
+          label="Position of Person"
+          type="text"
+          placeholder="Managing Director"
+        />
 
-      <InputField
-        name="identificationCardNumber"
-        label="Contact Person"
-        type="text"
-        placeholder="John Doe"
-      />
-      <InputField
-        name="identificationCardNumber"
-        label="Position of Person"
-        type="text"
-        placeholder="Managing Director"
-      />
+        <InputField
+          name="email"
+          label="Website"
+          type="text"
+          placeholder="www.domainname.com"
+        />
+        <InputField
+          name="phone"
+          label="Email"
+          type="text"
+          placeholder="johndoe@email.com"
+        />
+      </div>
       <InputField
         name="taxIdentificationNumber"
         label="Office Location"
         type="text"
         placeholder="Enter office location"
-      />
-
-      <InputField
-        name="email"
-        label="Website"
-        type="text"
-        placeholder="www.domainname.com"
-      />
-      <InputField
-        name="phone"
-        label="Email"
-        type="text"
-        placeholder="johndoe@email.com"
       />
       <InputField
         name="digitalAddress"
@@ -92,7 +93,7 @@ const editor = () => {
         helpText={`Start with country code without ("+"). Example 233501234567 for Ghana(233)`}
       />
 
-      <div className="ml-auto flex gap-4">
+      <div className="ml-auto flex gap-4 pt-2">
         <Button label="Submit" variant="primary" type="submit" />
         <Button label="Reset" variant="outline" type="reset" />
       </div>

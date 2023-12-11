@@ -64,7 +64,7 @@ const page = () => {
       />
       <Modal
         open={openModal}
-        size="xl"
+        size="lg"
         title={edit ? "Update Branch" : "New Branch"}
         closeModal={toggleModal}
       >

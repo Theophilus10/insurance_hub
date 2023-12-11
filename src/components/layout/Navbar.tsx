@@ -47,7 +47,7 @@ const Navbar: React.FC<INavbar> = ({
               <DropdownMenuContent>
                 <div className="px-4 py-2 space-y-2">
                   <div className="block text-sm font-bold truncate">
-                    {user.fullName}
+                    {user.full_name}
                   </div>
                   <div className="block truncate text-sm space-x-2">
                     <span className="font-light text-gray-500">Role:</span>
@@ -94,7 +94,7 @@ const AvatarButton = ({ user }: { user: IUser }) => {
       </Avatar>
       <div className="hidden sm:block text-left text-xs sm:pr-2">
         <div className="w-20 truncate">
-          <span className="font-semibold">{user.firstName}</span>
+          <span className="font-semibold">{user.first_name}</span>
         </div>
         <div
           className={`text-gray-500 truncate w-20 ${!user.role && "hidden"}`}
