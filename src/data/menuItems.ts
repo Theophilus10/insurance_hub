@@ -57,6 +57,37 @@ export const fireMenuItems: IMenuItem[] = [
   },
 ];
 
+export const motorMenuItems: IMenuItem[] = [
+  {
+    title: "Policies",
+    icon: "la:edit-solid",
+    items: [
+      {
+        title: "New",
+        path: "/private/motor/underwriting",
+      },
+    ],
+  },
+  {
+    title: "Reporting",
+    icon: "carbon:report",
+    items: [
+      {
+        title: "Pending Policies",
+        path: "/private/marine/reporting/pending_policies",
+      },
+      {
+        title: "Approved Policies",
+        path: "/private/marine/reporting/approved_policies",
+      },
+      {
+        title: "Cancelled Policies",
+        path: "/private/marine/reporting/cancelled_policies",
+      },
+    ],
+  },
+];
+
 // export const marineMenuItems = [
 //   {
 //     title: "Basics",

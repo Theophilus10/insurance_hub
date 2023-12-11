@@ -10,6 +10,8 @@ interface TextInputProps {
   type?: "text" | "number" | "search" | "tel" | "email" | "password";
   placeholder?: string;
   helpText?: string;
+  disabled?: boolean;
+  value?: string;
 }
 
 const InputField: React.FC<TextInputProps> = ({
@@ -19,6 +21,9 @@ const InputField: React.FC<TextInputProps> = ({
   helpText,
   type = "text",
   placeholder,
+  disabled = false,
+  value,
+
   ...props
 }) => {
   const { control } = useFormContext();
@@ -58,6 +63,8 @@ const InputField: React.FC<TextInputProps> = ({
         {...field}
         placeholder={placeholder}
         type={type}
+        disabled={disabled}
+        value={value}
         className={`p-2 rounded-[5px] text-black border ${borderClass} shadow-sm`}
         // onChange={(e) => field.onChange(e.target.value)}
       />
