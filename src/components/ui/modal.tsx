@@ -42,7 +42,7 @@ const Modal: React.FC<IModal> = ({
     <Dialog open={open}>
       {/* <DialogTrigger>Open</DialogTrigger> */}
       <DialogContent
-        className={`${widthKind[size]} flex flex-col h-full`}
+        className={`${widthKind[size]} flex flex-col max-h-[90vh]`}
       >
         <DialogHeader>
           <div className="flex items-center justify-between">

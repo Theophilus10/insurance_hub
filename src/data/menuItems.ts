@@ -61,12 +61,7 @@ export const motorMenuItems: IMenuItem[] = [
   {
     title: "Policies",
     icon: "la:edit-solid",
-    items: [
-      {
-        title: "New",
-        path: "/private/motor/underwriting",
-      },
-    ],
+    path: "/private/motor/underwriting",
   },
   {
     title: "Reporting",
@@ -74,15 +69,15 @@ export const motorMenuItems: IMenuItem[] = [
     items: [
       {
         title: "Pending Policies",
-        path: "/private/marine/reporting/pending_policies",
+        path: "/private/motor/reporting/pending_policies",
       },
       {
         title: "Approved Policies",
-        path: "/private/marine/reporting/approved_policies",
+        path: "/private/motor/reporting/approved_policies",
       },
       {
         title: "Cancelled Policies",
-        path: "/private/marine/reporting/cancelled_policies",
+        path: "/private/motor/reporting/cancelled_policies",
       },
     ],
   },
