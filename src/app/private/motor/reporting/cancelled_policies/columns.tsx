@@ -2,18 +2,24 @@
 
 import { Button } from '@app/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, Eye, ThumbsUp } from 'lucide-react';
+import { ArrowUpDown, Eye } from 'lucide-react';
 import { Checkbox } from '@app/components/ui/checkbox';
-import Link from 'next/link';
 
 // This type is used to define the shape of our data.
 
 export type Policies = {
   policyNumber: string;
   customerName: string;
-  customerEmail: string;
-  openCoverNumber: string;
-  createdAt: string;
+  coverType: string;
+  schedule: string;
+  make: string;
+  company: string;
+  inception: string;
+  expiry: string;
+  sumInsured: number;
+  premium: number;
+  status: string;
+  vehicleRegistration: string;
 };
 
 export const columns: ColumnDef<Policies>[] = [
@@ -66,39 +72,45 @@ export const columns: ColumnDef<Policies>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => {
-      return (
-        <div className='flex items-center gap-2'>
-          <div className='bg-[#D6D1F7] text-[#2406F5] rounded-full w-8 h-8 flex items-center justify-center'>
-            <p>{row.original.customerName.split('')[0]}</p>
-          </div>
-          <div>
-            <p>{row.original.customerName}</p>
-            <p className='text-sm text-gray-500 '>
-              {row.original.customerEmail}
-            </p>
-          </div>
-        </div>
-      );
-    },
   },
   {
-    accessorKey: 'openCoverNumber',
-    header: 'Open Cover Number',
+    accessorKey: 'coverType',
+    header: 'Cover Type',
   },
   {
-    accessorKey: 'createdAt',
-    header: 'Created Date',
+    accessorKey: 'schedule',
+    header: 'Schedule',
+  },
+  {
+    accessorKey: 'make',
+    header: 'Make',
+  },
+  {
+    accessorKey: 'vehicleRegistration',
+    header: 'Vehicle Registration ',
+  },
+  {
+    accessorKey: 'inception',
+    header: 'Inception',
+  },
+  {
+    accessorKey: 'expiry',
+    header: 'Expiry',
+  },
+  {
+    accessorKey: 'sumInsured',
+    header: 'Sum Insured',
+  },
+  {
+    accessorKey: 'status',
+    header: 'Status',
   },
   {
     id: 'actions',
     cell: ({ row }) => {
       return (
-        <div className='flex items-center gap-3 text-gray-500'>
-          <Link href='/private/marine/underwriting/single_transit_policies/preview/12'>
-            <Eye />
-          </Link>
-          <ThumbsUp />
+        <div className='flex items-center gap-3 text-gray-400'>
+          <Eye />
         </div>
       );
     },
