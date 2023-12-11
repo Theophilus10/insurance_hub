@@ -1,4 +1,9 @@
-import { fireMenuItems, marineMenuItems } from "@app/data/menuItems";
+import {
+  fireMenuItems,
+  marineMenuItems,
+  motorMenuItems,
+} from "@app/data/menuItems";
+
 import {
   loadFromLocalStorage,
   saveToLocalStorage,
@@ -29,6 +34,9 @@ const useAppMenuContext = () => {
         break;
       case "Fire":
         setMenuItems(fireMenuItems);
+        break;
+      case "Motor":
+        setMenuItems(motorMenuItems);
         break;
 
       default:
