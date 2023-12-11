@@ -17,7 +17,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '../ui/table';
+} from '../ui/ui-table';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
