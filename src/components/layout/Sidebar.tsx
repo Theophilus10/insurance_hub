@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import SideBarNav from "./sideBarNav";
 import { IMenuItem } from "@app/types/appTypes";
 import IconifyIcon from "../icon";
@@ -61,8 +61,16 @@ const NestedItems: React.FC<{
   const [isExpanded, setExpanded] = useState(false);
   const [subMenuItem, setSubMenuItem] = useState(-1);
   const pathName = usePathname();
-
+  const header = pathName.split("/")[3];
   const isActive = (path: string) => pathName === path;
+
+  const showSideBorder = checkName(header, item.title);
+
+  useEffect(() => {
+    if (showSideBorder) {
+      toggleSubMenu(index);
+    }
+  }, []);
 
   // const toggleExpand = () => {
   //   setExpanded(!isExpanded);
@@ -84,7 +92,7 @@ const NestedItems: React.FC<{
   } else {
     return (
       <li
-        className={`flex flex-col gap-2 
+        className={`flex flex-col gap-2
         ${subMenuItem === index ? "isActiveMenuList open" : "closed "}
       `}
       >
@@ -98,7 +106,7 @@ const NestedItems: React.FC<{
             <span>{item.title}</span>
           </div>
           <IconifyIcon
-            icon={isExpanded ? "ep:arrow-up" : "ep:arrow-down"}
+            icon={subMenuItem === index ? "ep:arrow-up" : "ep:arrow-down"}
             fontSize={16}
           />
         </button>
@@ -115,3 +123,20 @@ const NestedItems: React.FC<{
 };
 
 export default Sidebar;
+
+const checkName = (pathName: string, title: string) => {
+  if (pathName) {
+    const transformedString = pathName
+      .replace(/_/g, " ")
+      .replace(/(^|\s)\S/g, (match) => match.toUpperCase());
+
+    const finalResult = transformedString + ".";
+    // console.log(finalResult, title);
+
+    return title.includes(".")
+      ? finalResult === title
+      : transformedString === title;
+  } else {
+    return false;
+  }
+};

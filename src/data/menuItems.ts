@@ -432,30 +432,42 @@ export const generalMenuItems: IMenuItem[] = [
     items: [
       {
         title: "Ratings",
-        path: "/private/general/general/ratings",
+        path: "/private/general/supporting_data/ratings",
       },
-      { title: "Interests", path: "/private/general/general/interests" },
-      { title: "Cover Types", path: "/private/general/general/cover_types" },
+      {
+        title: "Interests",
+        path: "/private/general/supporting_data/interests",
+      },
+      {
+        title: "Cover Types",
+        path: "/private/general/supporting_data/cover_types",
+      },
       {
         title: "Policy Extensions",
-        path: "/private/general/general/policy_extensions",
+        path: "/private/general/supporting_data/policy_extensions",
       },
-      { title: "Ports", path: "/private/general/general/ports" },
+      { title: "Ports", path: "/private/general/supporting_data/ports" },
       {
         title: "Shipping Types",
-        path: "/private/general/general/shipping_types",
+        path: "/private/general/supporting_data/shipping_types",
       },
-      { title: "Carriers", path: "/private/general/general/carriers" },
-      { title: "Countries", path: "/private/general/general/countries" },
+      { title: "Carriers", path: "/private/general/supporting_data/carriers" },
+      {
+        title: "Countries",
+        path: "/private/general/supporting_data/countries",
+      },
       {
         title: "Exchange Rates",
-        path: "/private/general/general/exchange_rates",
+        path: "/private/general/supporting_data/exchange_rates",
       },
-      { title: "Currencies", path: "/private/general/general/currencies" },
-      { title: "Banks", path: "/private/general/general/banks" },
+      {
+        title: "Currencies",
+        path: "/private/general/supporting_data/currencies",
+      },
+      { title: "Banks", path: "/private/general/supporting_data/banks" },
       {
         title: "Financial Interest",
-        path: "/private/general/general/financial_interest",
+        path: "/private/general/supporting_data/financial_interest",
       },
     ],
   },

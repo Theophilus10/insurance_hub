@@ -79,11 +79,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           {leadingIcon && <span className="mr-2">{leadingIcon}</span>}
           {label}
           {busy ? (
-            <IconifyIcon
-              icon="svg-spinners:180-ring-with-bg"
-              className="text-blue-600"
-              fontSize={15}
-            />
+            <IconifyIcon icon="svg-spinners:180-ring-with-bg" fontSize={15} />
           ) : trailingIcon ? (
             <span className="ml-2">{trailingIcon}</span>
           ) : null}

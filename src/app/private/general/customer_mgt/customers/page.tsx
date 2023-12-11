@@ -1,24 +1,37 @@
 "use client";
-import Table from "@app/components/ui/Table";
-import React, { useEffect } from "react";
+
+import React, { useState } from "react";
 import Editor from "./partials/editor";
-import useLayoutContext from "@app/context/useLayoutContext";
-import ScrollSection from "@app/components/ui/scrollSection";
+import Modal from "@app/components/ui/modal";
+import DataTable from "@app/components/datatable/datatable";
+import { data } from "./partials/data";
+import { columns } from "./partials/columns";
 
 const page = () => {
-  const { setPageDetails } = useLayoutContext();
-  useEffect(() => {
-    setPageDetails({ title: "Customers List", showTitle: true });
-  }, []);
+  const [openModal, setOpenModal] = useState(false);
+  const toggleModal = () => {
+    setOpenModal(!openModal);
+  };
   return (
-    <ScrollSection className="bg-white p-4  h-full w-full shadow-sm border">
-      <Table
-        Editor={Editor}
+    <div className="flex flex-col w-full h-full gap-4 pt-2">
+      <div className={` text-gray-500 font-medium text-[22px]`}>
+        Customers List
+      </div>
+      <DataTable
+        data={data}
+        columns={columns}
         addButtonLabel="New Customer"
-        addNewRecordLabel="New Customer"
-        updateRecordLabel="Update Customer"
+        addButtonFunction={toggleModal}
       />
-    </ScrollSection>
+      <Modal
+        open={openModal}
+        size="xl"
+        title="New Customer"
+        closeModal={toggleModal}
+      >
+        <Editor />
+      </Modal>
+    </div>
   );
 };
 
