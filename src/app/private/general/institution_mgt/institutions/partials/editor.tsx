@@ -36,7 +36,7 @@ const editor = () => {
     <Form
       schema={schema}
       initialValues={initialValues}
-      className="flex flex-col gap-4"
+      className="flex flex-col gap-4 px-2"
     >
       <SelectField
         name="customerType"
