@@ -1,0 +1,55 @@
+import { Button } from "@app/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
+
+// This type is used to define the shape of our data.
+export type ICustomer = {
+  id: number;
+  ["endorsement_number"]: string;
+  ["date"]: string;
+  ["vehicle_registration"]: string;
+  insured: string;
+  ["creator"]: string;
+  ["authorizer"]: string;
+};
+
+export const columns: ColumnDef<ICustomer>[] = [
+  {
+    accessorKey: "id",
+    header: "ID",
+  },
+  {
+    accessorKey: "date",
+    header: "Date",
+  },
+  {
+    accessorKey: "endorsement_number", // Corrected accessor key
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          NCD Number
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+  },
+  {
+    accessorKey: "vehicle_registration",
+    header: "Vehicle Registration",
+  },
+  {
+    accessorKey: "insured",
+    header: "Insured",
+  },
+  {
+    accessorKey: "creator",
+    header: "Creator",
+  },
+  {
+    accessorKey: "authorizer",
+    header: "Authorizer",
+  },
+];
