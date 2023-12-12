@@ -6,12 +6,13 @@ import { DatePickerWithRange } from '../dateRange/dateRangePicker';
 
 interface DateHeaderProps {
   onDateChange?: () => void;
+  title?: string;
 }
-const DateHeader = ({ onDateChange }: DateHeaderProps) => {
+const DateHeader = ({ onDateChange, title }: DateHeaderProps) => {
   return (
     <Card className='w-full p-5'>
       <CardTitle className='font-light text-gray-600'>
-        Pending Single Transit Policy Proposals
+        {title || 'Test'}
       </CardTitle>
       <div className='mt-8 space-y-2'>
         <label>Policy Date Range</label>

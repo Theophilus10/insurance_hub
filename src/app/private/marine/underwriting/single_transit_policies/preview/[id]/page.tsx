@@ -4,10 +4,109 @@ import React from 'react';
 import { Card } from '@app/components/ui/card';
 import { ListTodo } from 'lucide-react';
 
+const policyItems = [
+  {
+    item: 'Construction Materials: Cement, PVC, Pipes, Brassware, Iron, Asbestos, etc.',
+    description: 'yes',
+    rate: 2.27,
+    packageType: 'NON-CONTAINERIZED',
+    cost: 'TRY 1.00',
+  },
+  {
+    item: 'Construction Materials: Cement, PVC, Pipes, Brassware, Iron, Asbestos, etc.',
+    description: 'yes',
+    rate: 2.27,
+    packageType: 'NON-CONTAINERIZED',
+    cost: 'TRY 1.00',
+  },
+  {
+    item: 'Construction Materials: Cement, PVC, Pipes, Brassware, Iron, Asbestos, etc.',
+    description: 'yes',
+    rate: 2.27,
+    packageType: 'NON-CONTAINERIZED',
+    cost: 'TRY 1.00',
+  },
+  {
+    item: 'Construction Materials: Cement, PVC, Pipes, Brassware, Iron, Asbestos, etc.',
+    description: 'yes',
+    rate: 2.27,
+    packageType: 'NON-CONTAINERIZED',
+    cost: 'TRY 1.00',
+  },
+  {
+    item: 'Construction Materials: Cement, PVC, Pipes, Brassware, Iron, Asbestos, etc.',
+    description: 'yes',
+    rate: 2.27,
+    packageType: 'NON-CONTAINERIZED',
+    cost: 'TRY 1.00',
+  },
+];
+
+const policyTranshipments = [
+  {
+    from: 'Nicaragua',
+    to: 'Malaysia',
+    rate: 0.13,
+    description: 'yes',
+  },
+  {
+    from: 'Nicaragua',
+    to: 'Malaysia',
+    rate: 0.13,
+    description: 'yes',
+  },
+  {
+    from: 'Nicaragua',
+    to: 'Malaysia',
+    rate: 0.13,
+    description: 'yes',
+  },
+  {
+    from: 'Nicaragua',
+    to: 'Malaysia',
+    rate: 0.13,
+    description: 'yes',
+  },
+  {
+    from: 'Nicaragua',
+    to: 'Malaysia',
+    rate: 0.13,
+    description: 'yes',
+  },
+];
+
+const policyExtension = [
+  {
+    extension: 'Nicaragua',
+    rate: 1,
+    description: 'none',
+  },
+  {
+    extension: 'Nicaragua',
+    rate: 1,
+    description: 'none',
+  },
+  {
+    extension: 'Nicaragua',
+    rate: 1,
+    description: 'none',
+  },
+  {
+    extension: 'Nicaragua',
+    rate: 1,
+    description: 'none',
+  },
+  {
+    extension: 'Nicaragua',
+    rate: 1,
+    description: 'none',
+  },
+];
+
 const Page = () => {
   return (
     <Card className='w-full pb-5 text-[#5D5A68] text-[0.938rem]'>
-      <button className='bg-[#CEC7FD] w-full rounded-md shadow-md text-[#391DF6] text-base cursor-pointer font-light py-2 '>
+      <button className='bg-blue-200 w-full rounded-md shadow-md text-blue-800 font-semibold text-base cursor-pointer font-light py-2 '>
         Print
       </button>
 
@@ -47,20 +146,24 @@ const Page = () => {
       <div className=' flex gap-10 md:gap-36 flex-wrap items-start border-b-[1px] p-8'>
         <div>
           <p className='mb-5'>Currency: CHINESE-YUAN | Rate: GH₵1.56</p>
-          <p>Commercial Invoice: Ghana</p>
-          <p>Letter Of Credit: Cal Bank</p>
-          <p>Vessel/Flight Name: yes</p>
-          <p>Vessel Flag: yes</p>
-          <p>Country of Destination: Germany</p>
-          <p>Port of Destination: Germany</p>
+          <div className='space-y-2'>
+            <p>Commercial Invoice: Ghana</p>
+            <p>Letter Of Credit: Cal Bank</p>
+            <p>Vessel/Flight Name: yes</p>
+            <p>Vessel Flag: yes</p>
+            <p>Country of Destination: Germany</p>
+            <p>Port of Destination: Germany</p>
+          </div>
         </div>
         <div>
           <p className='mb-5'>Shipping Type: Sea</p>
-          <p>Bill of Laden Number: yes </p>
-          <p>Carrier: Yang Ming Marine Transport Corporation</p>
-          <p>Vessel/Flight Number: yes</p>
-          <p>Country of Importation/Exportation: Malaysia</p>
-          <p>Port of Loading: Germany</p>
+          <div className='space-y-2'>
+            <p>Bill of Laden Number: yes </p>
+            <p>Carrier: Yang Ming Marine Transport Corporation</p>
+            <p>Vessel/Flight Number: yes</p>
+            <p>Country of Importation/Exportation: Malaysia</p>
+            <p>Port of Loading: Germany</p>
+          </div>
         </div>
       </div>
       <div className='border-b-[1px] px-12 pb-2'>
@@ -74,16 +177,18 @@ const Page = () => {
             <p>COST</p>
           </div>
           {/* Component to map through policy items  */}
-          <div className='grid grid-cols-10 gap-2 py-2 border-b-[1px] '>
-            <p className='col-span-5'>
-              Construction Materials: Cement, PVC, Pipes, Brassware, Iron,
-              Asbestos, etc.
-            </p>
-            <p>yes</p>
-            <p>2.27</p>
-            <p className='col-span-2'>NON-CONTAINERIZED</p>
-            <p>TRY 1.00</p>
-          </div>
+          {policyItems?.map(item => (
+            <div
+              className='grid grid-cols-10 gap-2 py-2 border-b-[1px] '
+              key={item.item}
+            >
+              <p className='col-span-5'>{item.item}</p>
+              <p>{item.description}</p>
+              <p>{item.rate}</p>
+              <p className='col-span-2'>{item.packageType}</p>
+              <p>{item.cost}</p>
+            </div>
+          ))}
         </div>
         <div className='  py-8  space-y-3 '>
           <p>TRANSHIPMENTS</p>
@@ -94,12 +199,17 @@ const Page = () => {
             <p>DESCRIPTION</p>
           </div>
           {/* Component to map through transhipments  */}
-          <div className='grid grid-cols-4 gap-2 py-2  '>
-            <p>Nicaragua</p>
-            <p>Malaysia</p>
-            <p>0.13</p>
-            <p>yes</p>
-          </div>
+          {policyTranshipments?.map(item => (
+            <div
+              className='grid grid-cols-4 gap-2 py-2  border-b-[1px] '
+              key={item.description}
+            >
+              <p>{item.from}</p>
+              <p>{item.to}</p>
+              <p>{item.rate}</p>
+              <p>{item.description}</p>
+            </div>
+          ))}
         </div>
         <div className='  py-8  space-y-3 '>
           <p>TRANSIT</p>
@@ -131,7 +241,7 @@ const Page = () => {
         </div>
         <p>Policy Excess: null</p>
       </div>
-      <div className='flex items-end w-full justify-end p-5 border-b-[1px]'>
+      <div className='flex items-end w-full justify-end p-5 '>
         <div className='w-80 shadow-md rounded p-5 bg-[#F7F7F7]'>
           <div className='flex items-center gap-2 pb-2'>
             <ListTodo />
