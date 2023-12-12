@@ -61,7 +61,30 @@ export const motorMenuItems: IMenuItem[] = [
   {
     title: "Policies",
     icon: "la:edit-solid",
-    path: "/private/motor/underwriting",
+    items: [
+      {
+        title: "New",
+        path: "/private/motor/policies",
+      },
+      {
+        title: "All NCD",
+        path: "/private/motor/policies/ncd",
+      },
+    ],
+  },
+  {
+    title: "Endorsement",
+    icon: "la:edit-solid",
+    items: [
+      {
+        title: "New",
+        path: "/private/motor/policies/endorsement/new",
+      },
+      {
+        title: "All Endorsement",
+        path: "/private/motor/policies/endorsement",
+      },
+    ],
   },
   {
     title: "Reporting",
