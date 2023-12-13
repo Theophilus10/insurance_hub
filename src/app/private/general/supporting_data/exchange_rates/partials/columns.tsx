@@ -6,20 +6,24 @@ import { ArrowUpDown } from "lucide-react";
 
 // This type is used to define the shape of our data.
 
-export type ICustomer = {
+export type IExchangeRate = {
   id: number;
-  code: string;
   currency: string;
+  rate: number;
   created_at: string;
 };
 
-export const columns: ColumnDef<ICustomer>[] = [
-  {
-    accessorKey: "code",
-    header: "Code",
-  },
+export const columns: ColumnDef<IExchangeRate>[] = [
   {
     accessorKey: "currency",
     header: "Currency",
+  },
+  {
+    accessorKey: "rate",
+    header: "Rate",
+  },
+  {
+    accessorKey: "created_at",
+    header: "Date Added",
   },
 ];

@@ -21,8 +21,14 @@ const schema = z.object({
   // dob: z.string().min(1, "Date of Birth is "),
 });
 
-const Editor = ({ prevalues }:any) => {
+const selectableCurrencies = [
+  { label: "Dollar", value: "dollar" },
+  { label: "Pound Sterling", value: "pound sterling" },
+  { label: "Japanese Yen", value: "Japanese Yen" },
+  { label: "Chinese Yuan", value: "Chinese Yuan" },
+];
 
+const Editor = ({ prevalues }: any) => {
   // useEffect(()=>{
   //   if (prevalues)
   // })
@@ -30,12 +36,16 @@ const Editor = ({ prevalues }:any) => {
   return (
     <Form
       schema={schema}
-      initialValues={prevalues ||  initialValues}
+      initialValues={prevalues || initialValues}
       className="flex flex-col gap-6 w-full h-full px-2"
     >
       <div className="grid grid-cols-2 gap-4">
-        <InputField name="currency" label="Currency Name" type="text" />
-        <InputField name="code" label="Currency Code" type="text" />
+        <SelectField
+          name="currency"
+          label="Select Currency"
+          options={selectableCurrencies}
+        />
+        <InputField name="code" label="Exchange Rate" type="number" />
       </div>
       <div className="ml-auto flex gap-4">
         <Button label="Submit" variant="primary" />
