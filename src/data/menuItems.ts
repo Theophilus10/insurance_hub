@@ -63,7 +63,7 @@ export const motorMenuItems: IMenuItem[] = [
     icon: "la:edit-solid",
     items: [
       {
-        title: "New",
+        title: "Underwrite",
         path: "/private/motor/policies",
       },
       {
@@ -77,15 +77,16 @@ export const motorMenuItems: IMenuItem[] = [
     icon: "la:edit-solid",
     items: [
       {
-        title: "New",
+        title: "Add Endorsement",
         path: "/private/motor/policies/endorsement/new",
       },
       {
-        title: "All Endorsement",
+        title: "All Endorsements",
         path: "/private/motor/policies/endorsement",
       },
     ],
   },
+
   {
     title: "Reporting",
     icon: "carbon:report",
@@ -101,6 +102,20 @@ export const motorMenuItems: IMenuItem[] = [
       {
         title: "Cancelled Policies",
         path: "/private/motor/reporting/cancelled_policies",
+      },
+    ],
+  },
+  {
+    title: "Tarrifs",
+    icon: "la:edit-solid",
+    items: [
+      {
+        title: "Add Tarrif",
+        path: "/private/motor/tarrifs/add",
+      },
+      {
+        title: "All Tarrifs",
+        path: "/private/motor/tarrifs/list",
       },
     ],
   },

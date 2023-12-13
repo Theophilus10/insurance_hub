@@ -11,12 +11,19 @@ import {
   CardTitle,
 } from "@app/components/ui/card";
 import Divider from "@app/components/ui/Divider";
-import IconButton from "@app/components/ui/IconButton";
+
 import DataTable from "@app/components/datatable/datatable";
 import { columns } from "./column";
 import { data } from "./data";
-import Link from "next/link";
+
+import { useRouter } from "next/navigation";
+import { Search } from "lucide-react";
 const Page = () => {
+  const router = useRouter();
+
+  const handleAddEndorsement = () => {
+    router.push("/private/motor/policies/endorsement/new");
+  };
   return (
     <Card>
       <CardHeader>
@@ -37,14 +44,20 @@ const Page = () => {
             </div>
 
             <div className="flex py-5 gap-10 ">
-              <IconButton icon="mdi:search" color="primary" />
-              <Link href="/private/motor/policies/endorsement/new">
-                <Button>New Endorsement</Button>
-              </Link>
+              <Button
+                label="Search"
+                leadingIcon={<Search />}
+                className="font-bold text-lg"
+              />
             </div>
           </Form>
           <Divider className="border-black-900 h-1" />
-          <DataTable columns={columns} data={data} />
+          <DataTable
+            columns={columns}
+            data={data}
+            addButtonLabel="Add Endorsement"
+            addButtonFunction={handleAddEndorsement}
+          />
         </CardContent>
       </CardHeader>
     </Card>

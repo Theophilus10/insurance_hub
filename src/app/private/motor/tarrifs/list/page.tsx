@@ -1,7 +1,10 @@
 "use client";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Form from "@app/components/forms/Form";
 import InputField from "@app/components/forms/InputField";
 import { Button } from "@app/components/ui/button";
+import { ArrowBigLeftDash, Search } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -11,29 +14,28 @@ import {
   CardTitle,
 } from "@app/components/ui/card";
 import Divider from "@app/components/ui/Divider";
-
+import IconButton from "@app/components/ui/IconButton";
 import DataTable from "@app/components/datatable/datatable";
-import { columns } from "./table";
+import { columns } from "./column";
 import { data } from "./data";
-
-import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
+import Link from "next/link";
 const Page = () => {
   const router = useRouter();
 
-  const handleAddNcd = () => {
-    router.push("/private/motor/policies/ncd/new");
+  const handleAddTarrif = () => {
+    router.push("/private/motor/tarrifs/add");
   };
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="py-5">All NCD Confirmations</CardTitle>
+        <CardTitle className="py-5">All Tariffs</CardTitle>
         <Divider />
         <CardContent className="py-5">
           <Form>
             <div className="py-3">
               <InputField
-                label="Find by NCD# or Vehicle Reg# or Customer name"
+                label="Find by Tariff Number"
                 type="search"
                 name="searching"
               />
@@ -55,8 +57,8 @@ const Page = () => {
           <DataTable
             columns={columns}
             data={data}
-            addButtonLabel="Add NCD"
-            addButtonFunction={handleAddNcd}
+            addButtonLabel="Add Tarrif"
+            addButtonFunction={handleAddTarrif}
           />
         </CardContent>
       </CardHeader>
