@@ -169,9 +169,7 @@ const TabsComponent = () => {
                 <Button>Add New Customer</Button>
               </div>
               <Divider className="border-b-4 border-black-500" />
-              <CardTitle className="text-lg md:text-xl">
-                Customer Info
-              </CardTitle>
+              <CardTitle className="text-lg md:text-xl">Policy Info</CardTitle>
               <div className="grid grid-cols-1 sm:grid-cols-2  gap-8 py-4">
                 <div className="flex-1">
                   <SelectField
