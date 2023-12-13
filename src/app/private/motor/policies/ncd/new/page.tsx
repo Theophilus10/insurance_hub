@@ -15,7 +15,6 @@ import {
 } from "@app/components/ui/card";
 import SelectField from "@app/components/forms/SelectField";
 import { Button } from "@app/components/ui/button";
-import { useEffect } from "react";
 
 const newNoClaim = () => {
   const router = useRouter();
@@ -27,7 +26,7 @@ const newNoClaim = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="py-5">New NCD Confirmation</CardTitle>
+        <CardTitle className="py-5">Add NCD Confirmation</CardTitle>
         <Divider />
         <CardContent>
           <Form>
