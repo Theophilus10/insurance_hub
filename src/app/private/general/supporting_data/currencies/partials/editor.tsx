@@ -35,9 +35,7 @@ const Editor = ({ prevalues }:any) => {
     >
       <div className="grid grid-cols-2 gap-4">
         <InputField name="currency" label="Currency Name" type="text" />
-        <InputField name="code" label="Country Code" type="text" />
-        <InputField name="symbol" label="Currency Symbol" type="text" />
-        <InputField name="exchangeRate" label="Exchange Rate" type="number" />
+        <InputField name="code" label="Currency Code" type="text" />
       </div>
       <div className="ml-auto flex gap-4">
         <Button label="Submit" variant="primary" />

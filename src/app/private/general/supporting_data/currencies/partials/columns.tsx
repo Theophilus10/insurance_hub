@@ -10,8 +10,6 @@ export type ICustomer = {
   id: number;
   code: string;
   currency: string;
-  symbol: string;
-  exchangeRate: number;
   created_at: string;
 };
 
@@ -23,13 +21,5 @@ export const columns: ColumnDef<ICustomer>[] = [
   {
     accessorKey: "currency",
     header: "Currency",
-  },
-  {
-    accessorKey: "symbol",
-    header: "Symbol",
-  },
-  {
-    accessorKey: "exchangeRate",
-    header: "Exchange Rate",
   },
 ];
