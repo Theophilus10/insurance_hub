@@ -22,14 +22,14 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuTrigger, 
-} from "../ui/dropdown-menu";
-import { DataTablePagination } from "./pagination";
-import { useState } from "react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import TableSearchbox from "../ui/tableSearchbox";
-import TableRowActions, { ITableRowActionList } from "./tableRowActions";
+  DropdownMenuTrigger,
+} from '../ui/dropdown-menu';
+import { DataTablePagination } from './pagination';
+import { useState } from 'react';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import TableSearchbox from '../ui/tableSearchbox';
+import TableRowActions, { ITableRowActionList } from './tableRowActions';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -42,6 +42,7 @@ interface DataTableProps<TData, TValue> {
   tableRowActionList?: ITableRowActionList[];
   allowCustomRowActionList?: boolean;
   showActions?: boolean;
+  showHeader?: boolean;
 }
 
 export default function DataTable<TData, TValue>({
@@ -50,11 +51,12 @@ export default function DataTable<TData, TValue>({
   showAddButton = true,
   addButtonLabel = 'New Record',
   addButtonFunction,
-  searchPlaceholder = "Search...",
+  searchPlaceholder = 'Search...',
   onRowAction,
   tableRowActionList = [],
   allowCustomRowActionList = false,
   showActions = false,
+  showHeader = true,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -71,50 +73,51 @@ export default function DataTable<TData, TValue>({
 
   return (
     <div className='rounded-md border p-4 bg-white'>
-      <div className='flex items-center justify-between mb-5'>
-
-        <div className="w-3/12">
-          <TableSearchbox placeholder={searchPlaceholder} />
-        </div>
-        <div className='flex items-center gap-3'>
-          {showAddButton && (
-            <Button
-              label={addButtonLabel}
-              variant='primary'
-              onClick={() => addButtonFunction && addButtonFunction()}
-            />
-          )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+      {showHeader && (
+        <div className='flex items-center justify-between mb-5'>
+          <div className='w-3/12'>
+            <TableSearchbox placeholder={searchPlaceholder} />
+          </div>
+          <div className='flex items-center gap-3'>
+            {showAddButton && (
               <Button
-                variant='outline'
-                className='ml-auto border-teal-300 bg-teal-50'
-              >
-                Columns
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              {table
-                .getAllColumns()
-                .filter(column => column.getCanHide())
-                .map(column => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={column.id}
-                      className='capitalize cursor-pointer'
-                      checked={column.getIsVisible()}
-                      onCheckedChange={value =>
-                        column.toggleVisibility(!!value)
-                      }
-                    >
-                      {column.id}
-                    </DropdownMenuCheckboxItem>
-                  );
-                })}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                label={addButtonLabel}
+                variant='primary'
+                onClick={() => addButtonFunction && addButtonFunction()}
+              />
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant='outline'
+                  className='ml-auto border-teal-300 bg-teal-50'
+                >
+                  Columns
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end'>
+                {table
+                  .getAllColumns()
+                  .filter(column => column.getCanHide())
+                  .map(column => {
+                    return (
+                      <DropdownMenuCheckboxItem
+                        key={column.id}
+                        className='capitalize cursor-pointer'
+                        checked={column.getIsVisible()}
+                        onCheckedChange={value =>
+                          column.toggleVisibility(!!value)
+                        }
+                      >
+                        {column.id}
+                      </DropdownMenuCheckboxItem>
+                    );
+                  })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
-      </div>
+      )}
       <Table className='mb-5'>
         <TableHeader className='bg-gray-100'>
           {table.getHeaderGroups().map(headerGroup => (
@@ -152,7 +155,7 @@ export default function DataTable<TData, TValue>({
                     <TableRowActions
                       actionList={tableRowActionList}
                       allowCustomRowActionList={allowCustomRowActionList}
-                      onRowAction={(action) =>
+                      onRowAction={action =>
                         onRowAction && onRowAction(action, row.original!)
                       }
                     />
