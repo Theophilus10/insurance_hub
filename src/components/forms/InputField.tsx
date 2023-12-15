@@ -31,7 +31,7 @@ const InputField: React.FC<TextInputProps> = ({
   type = "text",
   placeholder,
   disabled = false,
-  value,
+  value = '',
   className,
 
   ...props
@@ -60,7 +60,7 @@ const InputField: React.FC<TextInputProps> = ({
         type={type}
         disabled={disabled}
         value={field.value || value}
-        className={`p-2 rounded-[5px] text-black border ${borderClass} shadow-sm ${className}`}
+        className={`h-[38px] px-2 rounded-[5px] text-black border ${borderClass} shadow-sm ${className}`}
         // onChange={(e) => field.onChange(e.target.value)}
       />
       {helpText && <span className="text-sm text-gray-500">{helpText}</span>}

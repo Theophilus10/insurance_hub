@@ -35,7 +35,7 @@ const Sidebar: React.FC<ISideBar> = ({
         <ul className="flex flex-col gap-4">
           {basicRouteItems &&
             basicRouteItems.map((x, index) => (
-              <NestedItems item={x} key={index} index={index} />
+              <NestedItems item={x} key={index} index={index} showBorder />
             ))}
         </ul>
       </li>
@@ -46,7 +46,7 @@ const Sidebar: React.FC<ISideBar> = ({
         <ul className="flex flex-col gap-4">
           {generalRouteItems &&
             generalRouteItems.map((x, index) => (
-              <NestedItems item={x} key={index} index={index} />
+              <NestedItems item={x} key={index} index={index} showBorder />
             ))}
         </ul>
       </li>
@@ -57,7 +57,8 @@ const Sidebar: React.FC<ISideBar> = ({
 const NestedItems: React.FC<{
   item: IMenuItem;
   index: number;
-}> = ({ item, index }) => {
+  showBorder: boolean;
+}> = ({ item, index, showBorder = false }) => {
   const [isExpanded, setExpanded] = useState(false);
   const [subMenuItem, setSubMenuItem] = useState(-1);
   const pathName = usePathname();
@@ -82,18 +83,27 @@ const NestedItems: React.FC<{
   if (!item.items) {
     return (
       <li
-        className={`px-4 ml-[1px] ${
+        className={`px-4 ml-[1px]} ${
           isActive(item.path!) ? "text-blue-600" : "hover:text-blue-600"
         }`}
       >
-        <SideBarNav title={item.title} path={item.path!} icon={item.icon} />
+        <SideBarNav
+          addPadding={!showBorder}
+          title={item.title}
+          path={item.path!}
+          icon={item.icon}
+        />
       </li>
     );
   } else {
     return (
       <li
         className={`flex flex-col gap-2
-        ${subMenuItem === index ? "isActiveMenuList open" : "closed "}
+        ${
+          subMenuItem === index && showBorder
+            ? "isActiveMenuList open"
+            : "closed "
+        }
       `}
       >
         <button
@@ -111,9 +121,14 @@ const NestedItems: React.FC<{
           />
         </button>
         {subMenuItem === index && (
-          <ul className="flex flex-col gap-2">
+          <ul className={`flex flex-col gap-2 ${!showBorder && "pl-5"}`}>
             {item.items.map((child, index) => (
-              <NestedItems key={index} item={child} index={index} />
+              <NestedItems
+                key={index}
+                item={child}
+                index={index}
+                showBorder={false}
+              />
             ))}
           </ul>
         )}

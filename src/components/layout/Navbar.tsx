@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import IconButton from "../ui/IconButton";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import IconifyIcon from "../icon";
@@ -10,22 +10,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { IUser } from "@app/context/userContext";
+// import { IUser } from "@app/context/userContext";
 import Link from "next/link";
+import { User } from "next-auth";
+import { getInitials } from "@app/lib/utils";
 
 interface INavbar {
   toggleSidebar?: () => void;
   hideSidebar: boolean;
-  user: IUser;
+  user?: User;
   triggerSignOut: () => void;
 }
 
 const Navbar: React.FC<INavbar> = ({
   toggleSidebar,
   hideSidebar,
-  user,
+  user = {} as User,
   triggerSignOut,
 }) => {
+  useEffect(() => {
+    console.log(user);
+  }, [user]);
   return (
     <nav className="py-1.5 flex items-center gap-4 ">
       {/* <IconButton
@@ -35,7 +40,7 @@ const Navbar: React.FC<INavbar> = ({
       /> */}
       <div className="flex-grow flex items-center gap-2">
         <IconifyIcon icon="icon-park-outline:building-one" />
-        <p className="">{user.institution}</p>
+        <p className="">{user?.branch?.institution?.name}</p>
       </div>
       <div className="flex flex-grow sm:hidden" />
       <div className="flex items-center gap-4">
@@ -45,22 +50,36 @@ const Navbar: React.FC<INavbar> = ({
             <DropdownMenuTrigger className="focus:outline-none">
               <AvatarButton user={user} />
               <DropdownMenuContent>
-                <div className="px-4 py-2 space-y-2">
+                <div className="px-4 py-2 space-y-2 max-w-[300px]">
                   <div className="block text-sm font-bold truncate">
-                    {user.full_name}
+                    {`${user?.first_name} ${user?.last_name}`}
                   </div>
                   <div className="block truncate text-sm space-x-2">
                     <span className="font-light text-gray-500">Role:</span>
-                    <span className="font-bold">{user.role}</span>
+                    <span className="font-bold">{user?.role?.name!}</span>
                   </div>
                   <div className="block truncate text-sm space-x-1">
                     <span className="font-light text-gray-500">Email:</span>
-                    <span className="font-bold">{user.email}</span>
+                    <span className="font-bold">{user?.email}</span>
+                  </div>
+                  <div className="block truncate text-sm space-x-1">
+                    <span className="font-light text-gray-500">
+                      Institution:
+                    </span>
+                    <span className="font-bold">
+                      {user?.branch.institution.name}
+                    </span>
+                  </div>
+                  <div className="block truncate text-sm space-x-1">
+                    <span className="font-light text-gray-500">Branch:</span>
+                    <span className="font-bold">{user?.branch.name}</span>
                   </div>
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer">
-                  <Link href="/private/profile" className="w-full">Profile</Link>
+                  <Link href="/private/profile" className="w-full">
+                    Profile
+                  </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
@@ -80,26 +99,28 @@ const Navbar: React.FC<INavbar> = ({
 
 export default Navbar;
 
-const AvatarButton = ({ user }: { user: IUser }) => {
+const AvatarButton = ({ user }: { user: User }) => {
   return (
     <div className="!p-0 sm:!p-1 h-10  max-w-[150px] flex items-center rounded-[5px] hover:bg-gray-100  active:outline-none active:border-none">
       <Avatar className="sm:mr-2 w-9 h-9 bg-sky-300 text-sm object-cover">
         <AvatarImage
-          src={user.profileImage}
+          src={""}
           className="rounded-full w-full object-cover h-full"
         />
         <AvatarFallback className="w-full bg-sky-300">
-          {user.initials}
+          {`${getInitials(user?.first_name)}${getInitials(user?.last_name)}`}
         </AvatarFallback>
       </Avatar>
       <div className="hidden sm:block text-left text-xs sm:pr-2">
         <div className="w-20 truncate">
-          <span className="font-semibold">{user.first_name}</span>
+          <span className="font-semibold">{user?.first_name}</span>
         </div>
         <div
-          className={`text-gray-500 truncate w-20 ${!user.role && "hidden"}`}
+          className={`text-gray-500 truncate w-20 ${
+            !user?.role.name && "hidden"
+          }`}
         >
-          <span>{user.role}</span>
+          <span>{user?.role?.name}</span>
         </div>
         {/* <p className={`text-gray-500 truncate w-20 flex ${!user.email}`}>
           {user.email}

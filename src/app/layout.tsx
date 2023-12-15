@@ -5,6 +5,7 @@ import "./styles.css";
 import { cn } from "@app/lib/utils";
 import "iconify-icon";
 import Nprogressprovider from "@app/providers/Nprogress";
+import NextAuthProvider from "@app/providers/NextAuthProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +24,9 @@ export default function RootLayout({
       <body
         className={cn("w-screen h-screen overflow-hidden", inter.className)}
       >
-        <Nprogressprovider>{children}</Nprogressprovider>
+        <Nprogressprovider>
+          <NextAuthProvider >{children}</NextAuthProvider>
+        </Nprogressprovider>
       </body>
     </html>
   );

@@ -39,3 +39,12 @@ export const convertParam = (
 ) => ({
   target: { value, name, selectedDates },
 });
+
+export function getInitials(val?: string) {
+	if (!val) return '';
+	return val
+		.split(' ')
+		.filter((x) => x.length > 1)
+		.map((x) => x[0])
+		.join('');
+}

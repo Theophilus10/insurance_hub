@@ -7,6 +7,7 @@ interface ISideBarNav {
   path: string;
   icon?: string;
   iconSize?: number;
+  addPadding?: boolean;
 }
 
 const SideBarNav: React.FC<ISideBarNav> = ({
@@ -14,11 +15,14 @@ const SideBarNav: React.FC<ISideBarNav> = ({
   path,
   icon,
   iconSize = 16,
+  addPadding = false,
 }) => {
   return (
     <Link
       href={path ?? ""}
-      className={`space-x-3 flex items-center w-full h-full`}
+      className={`space-x-3 flex items-center w-full h-full ${
+        addPadding && "pl-3"
+      }`}
     >
       <IconifyIcon icon={icon!} fontSize={iconSize} />
       {/* <div className={icon! && "hidden"} /> */}
