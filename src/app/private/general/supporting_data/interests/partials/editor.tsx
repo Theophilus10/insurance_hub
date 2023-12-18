@@ -32,8 +32,9 @@ const Editor = ({ prevalues }: any) => {
       className="flex flex-col gap-6 w-full h-full px-2"
     >
       <div className="grid gap-4">
-        <InputField name="name" label="Name" type="text" />
         <InputField name="code" label="Code" type="text" />
+        <InputField name="interest" label="Interest" type="text" />
+        <InputField name="description" label="Description" type="text" />
       </div>
       <div className="ml-auto flex gap-4">
         <Button label="Submit" variant="primary" />
