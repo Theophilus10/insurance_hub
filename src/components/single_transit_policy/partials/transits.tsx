@@ -3,21 +3,19 @@
 import React, { useState } from 'react';
 import { FormItem, FormLabel } from '@app/components/ui/form';
 import { Input } from '@app/components/ui/input';
-import { Textarea } from '@app/components/ui/textarea';
 import Select from 'react-select';
 import { Button } from '@app/components/ui/button';
 import DataTable from '@app/components/datatable/datatable';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
 
-export type TranshipmentType = {
+export type TransitType = {
   originCountry: string;
   destinationCountry: string;
   rate: number;
-  description: string;
 };
 
-const columns: ColumnDef<TranshipmentType>[] = [
+const columns: ColumnDef<TransitType>[] = [
   {
     accessorKey: 'originCountry',
     header: ({ column }) => {
@@ -27,7 +25,7 @@ const columns: ColumnDef<TranshipmentType>[] = [
           className='text-lg p-0'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Origin Country
+          From
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
@@ -42,7 +40,7 @@ const columns: ColumnDef<TranshipmentType>[] = [
           className='text-lg p-0'
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         >
-          Destination Country
+          To
           <ArrowUpDown className='ml-2 h-4 w-4' />
         </Button>
       );
@@ -63,45 +61,21 @@ const columns: ColumnDef<TranshipmentType>[] = [
       );
     },
   },
-  {
-    accessorKey: 'description',
-    header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          className='text-lg  p-0'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Description
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      );
-    },
-    cell: ({ row }) => {
-      return (
-        <p className='max-w-[50ch] truncate'>{row.original.description}</p>
-      );
-    },
-  },
 ];
 
-interface TranshipmentProps {
-  transhipments: TranshipmentType[];
-  addTranshipments: (transhipment: TranshipmentType) => void;
+interface TransitProps {
+  transits: TransitType[];
+  addTransit: (transit: TransitType) => void;
 }
 
-const Transhipment = ({
-  transhipments,
-  addTranshipments,
-}: TranshipmentProps) => {
-  const [transhipment, setTranshipment] = useState({
+const Transits = ({ transits, addTransit }: TransitProps) => {
+  const [transit, setTransit] = useState({
     originCountry: '',
     destinationCountry: '',
     rate: 0,
     description: '',
   });
 
-  const deleteTranshipment = (index: number) => {};
   return (
     <div className='p-3 2xl:px-10 box-border'>
       <div>
@@ -111,7 +85,7 @@ const Transhipment = ({
             <Select
               onChange={e => {
                 if (e) {
-                  setTranshipment(prev => {
+                  setTransit(prev => {
                     return { ...prev, originCountry: e.value };
                   });
                 }
@@ -131,7 +105,7 @@ const Transhipment = ({
               ]}
               onChange={e => {
                 if (e) {
-                  setTranshipment(prev => {
+                  setTransit(prev => {
                     return { ...prev, destinationCountry: e.value };
                   });
                 }
@@ -143,21 +117,9 @@ const Transhipment = ({
             <Input
               type='number'
               onChange={e => {
-                setTranshipment(prev => {
+                setTransit(prev => {
                   return { ...prev, rate: +e.target.value };
                 });
-              }}
-            />
-          </FormItem>
-          <FormItem className='lg:col-span-5'>
-            <FormLabel>Transhipment Description:</FormLabel>
-            <Textarea
-              onChange={e => {
-                if (e) {
-                  setTranshipment(prev => {
-                    return { ...prev, description: e.target.value };
-                  });
-                }
               }}
             />
           </FormItem>
@@ -167,16 +129,16 @@ const Transhipment = ({
             variant='primary'
             className='my-10 font-semibold'
             type='button'
-            onClick={() => addTranshipments(transhipment)}
+            onClick={() => addTransit(transit)}
           >
-            Add Transhipment
+            Add Transit
           </Button>
         </div>
       </div>
       <div className='py-8'>
         <DataTable
           columns={columns}
-          data={transhipments}
+          data={transits}
           showHeader={false}
           showActions
         />
@@ -185,4 +147,4 @@ const Transhipment = ({
   );
 };
 
-export default Transhipment;
+export default Transits;

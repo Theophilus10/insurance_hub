@@ -40,7 +40,6 @@ import InterestItems, {
 import PolicyExtenxions, {
   PolicyExtenxionsType,
 } from '@app/components/single_transit_policy/partials/policy_extensions';
-import PolicyExcess from '@app/components/single_transit_policy/partials/policy_excess';
 
 const insuranceCompanies = [
   { value: 'Hollard', label: 'Hollard' },
@@ -204,7 +203,7 @@ const Page = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='border-b-[5px]'>
-              <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8   '>
+              <div className='p-5 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8   '>
                 <SelectFormField
                   form={form}
                   name='insuranceCompany'
@@ -218,7 +217,7 @@ const Page = () => {
                   options={companyBranches}
                 />
               </div>
-              <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
+              <div className='p-5 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
                 <SelectFormField
                   form={form}
                   name='distributionChannel'
@@ -247,7 +246,7 @@ const Page = () => {
                   showWatchValue={false}
                 />
               </div>
-              <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
+              <div className='p-5 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
                 <FormItem>
                   <FormLabel> Policy To:</FormLabel>
                   <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
@@ -311,7 +310,7 @@ const Page = () => {
               </div>
             </div>
             <div className='border-b-[5px]'>
-              <div className='p-10 border-b-[1px] md:grid space-y-4 md:space-y-0  md:grid-cols-2 md:gap-8'>
+              <div className='p-5 border-b-[1px] md:grid space-y-4 md:space-y-0  md:grid-cols-2 md:gap-8'>
                 <FormField
                   control={form.control}
                   name='inceptionDate'
@@ -444,7 +443,7 @@ const Page = () => {
                 />
               </div>
             </div>
-            <div className='border-b-[1px] p-10'>
+            <div className='border-b-[1px] p-5'>
               <div className='lg:flex items-center hidden  gap-1  '>
                 {tabsList.map(tab => (
                   <button
@@ -509,9 +508,6 @@ const Page = () => {
                   addPolicyExtension={() => console.log('policy extension')}
                   policyExtensions={[]}
                 />
-              )}
-              {selectedTab.toLowerCase() === 'policy excess' && (
-                <PolicyExcess />
               )}
             </div>
           </form>

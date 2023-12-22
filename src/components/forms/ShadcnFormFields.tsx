@@ -11,21 +11,26 @@ import {
 } from '@app/components/ui/form';
 import Select from 'react-select';
 import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 
 interface SelectFormFieldProps {
   form: any;
   name: string;
   options: { value: any; label: string }[];
-  label: string;
+  label?: string;
   showWatchValue?: boolean;
+  className?: string;
+  labelStyle?: string;
 }
 
 interface InputFormFieldProps {
   form: any;
   name: string;
-  label: string;
+  label?: string;
   showWatchValue?: boolean;
   type?: string;
+  className?: string;
+  labelStyle?: string;
 }
 
 export const SelectFormField = ({
@@ -34,14 +39,16 @@ export const SelectFormField = ({
   options,
   label,
   showWatchValue = true,
+  className,
+  labelStyle,
 }: SelectFormFieldProps) => {
   return (
     <FormField
       control={form.control}
       name={name}
       render={({ field: { name, onBlur, onChange, ref, disabled } }) => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
+        <FormItem className={className}>
+          <FormLabel className={labelStyle}>{label}</FormLabel>
           <FormControl>
             <Select
               options={options}
@@ -70,14 +77,16 @@ export const InputFormField = ({
   label,
   showWatchValue = false,
   type = 'text',
+  className,
+  labelStyle,
 }: InputFormFieldProps) => {
   return (
     <FormField
       control={form.control}
       name={name}
       render={({ field }) => (
-        <FormItem>
-          <FormLabel>{label}</FormLabel>
+        <FormItem className={className}>
+          <FormLabel className={labelStyle}>{label}</FormLabel>
           <FormControl>
             <Input {...field} type={type} />
           </FormControl>
@@ -86,6 +95,31 @@ export const InputFormField = ({
               {form.watch(name)}
             </FormDescription>
           )}
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
+};
+
+export const TextareaFormField = ({
+  form,
+  name,
+  label,
+  showWatchValue = false,
+  className,
+  labelStyle,
+}: InputFormFieldProps) => {
+  return (
+    <FormField
+      control={form.control}
+      name={name}
+      render={({ field }) => (
+        <FormItem className={className}>
+          <FormLabel className={labelStyle}>{label}</FormLabel>
+          <FormControl>
+            <Textarea {...field} />
+          </FormControl>
           <FormMessage />
         </FormItem>
       )}
