@@ -1,20 +1,9 @@
 "use client";
 
 import { Button } from "@app/components/ui/button";
+import { ICustomer } from "@app/server/services";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-
-// This type is used to define the shape of our data.
-
-export type ICustomer = {
-  id: number;
-  ["customer_type"]: string;
-  ["full_name"]: string;
-  ["customer_category"]: string;
-  ["created_at"]: string;
-  occupation: string;
-  phone: string;
-};
 
 export const columns: ColumnDef<ICustomer>[] = [
   {
@@ -22,11 +11,11 @@ export const columns: ColumnDef<ICustomer>[] = [
     header: "ID",
   },
   {
-    accessorKey: "full_name",
+    accessorKey: "name",
     header: "Name",
   },
   {
-    accessorKey: "customer_type",
+    accessorKey: "customer_type.name",
     header: ({ column }) => {
       return (
         <Button
@@ -40,11 +29,11 @@ export const columns: ColumnDef<ICustomer>[] = [
     },
   },
   {
-    accessorKey: "customer_category",
+    accessorKey: "customer_category.name",
     header: "Customer Category",
   },
   {
-    accessorKey: "occupation",
+    accessorKey: "occupation.name",
     header: "Occupation",
   },
   {

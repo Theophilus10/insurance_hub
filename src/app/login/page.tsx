@@ -6,10 +6,12 @@ import { z } from "zod";
 import InputField from "@app/components/forms/InputField";
 import { Button } from "@app/components/ui/button";
 import { useState } from "react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import BG from "@app/assets/images/bg.jpg";
 import logoUrl from "@app/assets/images/logo.png";
 import Image from "next/image";
+import IconifyIcon from "@app/components/icon";
+import IconButton from "@app/components/ui/IconButton";
 
 const initialValues = {
   username: "",
@@ -25,8 +27,8 @@ const schema = z.object({
 });
 
 export default function LoginPage() {
-  // const providers = getProviders();
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(false);
   const router = useRouter();
   const onSubmit = async (values: any) => {
     try {
@@ -34,14 +36,15 @@ export default function LoginPage() {
       const res = await signIn("credentials", {
         username: values.username,
         password: values.password,
-        redirect: false,
+        redirect: true,
       });
-
       if (res?.error) {
-        console.log(res?.error);
+        setError(true);
+        console.log("sigin-in error:", res?.error);
         return;
       }
-      router.replace("/private/dashboard");
+      setError(false);
+      // router.replace("/private/dashboard");
     } catch (err) {
       console.log(err);
     } finally {
@@ -73,6 +76,27 @@ export default function LoginPage() {
                   </p>
                 </div>
               </div>
+              {error && (
+                <div className="rounded-md mt-4 border shadow  bg-red-50 text-red-500 text-base border-red-400">
+                  <div className="flex justify-between items-center pl-4 pr-2">
+                    <div className="flex items-center gap-3">
+                      <IconifyIcon
+                        icon="solar:danger-circle-bold-duotone"
+                        fontSize={18}
+                      />
+                      <span className="text-sm">Invalid Credentials</span>
+                    </div>
+                    <div>
+                      <IconButton
+                        size={20}
+                        icon="ic:round-close"
+                        onClick={() => setError(false)}
+                        color="ghost"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
               <Form
                 initialValues={initialValues}
                 schema={schema}
@@ -103,14 +127,15 @@ export default function LoginPage() {
           </div>
         </div>
         <div className="relative hidden w-0 flex-1 lg:block ">
-          <div className=" absolute inset-0 ">
+          <div className="absolute inset-0">
             <Image
-              className=" h-full w-full object-cover rounded-sm opacity-60"
+              className="h-full w-full object-cover rounded-sm"
               src={BG}
               alt=""
               loading="lazy"
             />
           </div>
+          <div className="absolute inset-0 bg-black opacity-40"></div>
         </div>
       </div>
     </div>

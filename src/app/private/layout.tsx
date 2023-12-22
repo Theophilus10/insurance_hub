@@ -13,7 +13,8 @@ import { useRouter } from "next/navigation";
 import AlertModal from "@app/components/alerts/alertModal";
 import { generalMenuItems } from "@app/data/menuItems";
 import { signOut } from "next-auth/react";
-import Sidebar from "@app/components/layout/sideBar";
+import Sidebar from "@app/components/layout/sidePanel";
+import ScrollSection from "@app/components/ui/scrollSection";
 
 export const LayoutContext = createContext<any>({});
 
@@ -28,8 +29,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     title: "",
     showTitle: false,
   });
-  const { menuItems, setMenuItems, appList, activeMenu, setActiveAppMenu } =
-    useAppMenuContext();
+  const {
+    menuItems,
+    setMenuItems,
+    appList,
+    activeMenu,
+    setActiveAppMenu,
+    settingsItems,
+  } = useAppMenuContext();
   const { user } = userContext();
 
   const triggerSignOut = () => {
@@ -65,19 +72,20 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               </span>
             </a>
             <Divider className="mt-2 bg-gray-200 mx-4" />
-            {/* <div className="pt-3">
+            <div className="pt-3">
               <AppServices
                 appList={appList}
                 setActiveMenu={setActiveAppMenu}
                 activeMenu={activeMenu}
               />
-            </div> */}
-            <div className="mt-5 h-full overflow-y-auto flex-grow">
+            </div>
+            <ScrollSection className="mt-5 h-full overflow-y-auto flex-grow">
               <Sidebar
                 generalRouteItems={generalMenuItems}
                 basicRouteItems={menuItems}
+                settingsRouteItems={settingsItems}
               />
-            </div>
+            </ScrollSection>
           </aside>
           <section id="content" className="w-full h-full">
             <Navbar
@@ -105,7 +113,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           onCancel={() => setShowAlert(false)}
           onContinue={async () => {
             await signOut();
-            router.replace("/");
+            router.replace("/login");
           }}
           message="Are you sure you want to logout?"
           title="Logout"
