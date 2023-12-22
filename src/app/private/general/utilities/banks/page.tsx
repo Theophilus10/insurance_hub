@@ -9,10 +9,10 @@ import { columns } from "./partials/columns";
 
 const Page = () => {
   const [openModal, setOpenModal] = useState(false);
-  const [editorLabel, setEditorLabel] = useState("Add Policy Extension");
+  const [editorLabel, setEditorLabel] = useState("Add Country");
   const [preValues,setPreValues] = useState({})
   const toggleModal = () => {
-    setEditorLabel("Add Policy Extension");
+    setEditorLabel("Add Country");
     setPreValues({})
     setOpenModal(!openModal);
   };
@@ -20,7 +20,7 @@ const Page = () => {
   const onRowAction = (action: string, row: Record<string, any>) => {
     switch (action) {
       case "edit":
-        setEditorLabel("Update Policy Extension");
+        setEditorLabel("Update Bank");
         setOpenModal(true);
         setPreValues(row)
         break;
@@ -36,12 +36,12 @@ const Page = () => {
   return (
     <div className="flex flex-col w-full h-full gap-4 pt-2">
       <div className={` text-gray-500 font-medium text-[22px]`}>
-        Policy Extension List
+        List of Banks
       </div>
       <DataTable
         data={data}
         columns={columns}
-        addButtonLabel="Add Policy Extension"
+        addButtonLabel="Add Bank"
         addButtonFunction={toggleModal}
         showActions
         onRowAction={onRowAction}

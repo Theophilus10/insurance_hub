@@ -357,7 +357,7 @@ export const generalMenuItems: IMenuItem[] = [
         title: "Currencies",
         path: "/private/general/utilities/currencies",
       },
-      // { title: "Banks", path: "/private/general/utilities/banks" },
+      { title: "Banks", path: "/private/general/utilities/banks" },
       {
         title: "Financial Interest",
         path: "/private/general/utilities/financial_interest",
