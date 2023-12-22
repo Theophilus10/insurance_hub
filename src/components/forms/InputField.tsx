@@ -7,11 +7,20 @@ interface TextInputProps {
   label: string;
   name: string;
   required?: boolean;
-  type?: "text" | "number" | "search" | "tel" | "email" | "password";
+  type?:
+    | "text"
+    | "number"
+    | "search"
+    | "tel"
+    | "email"
+    | "password"
+    | "date"
+    | "file";
   placeholder?: string;
   helpText?: string;
   disabled?: boolean;
-  value?: string;
+  value?: any;
+  className?: string;
 }
 
 const InputField: React.FC<TextInputProps> = ({
@@ -22,7 +31,8 @@ const InputField: React.FC<TextInputProps> = ({
   type = "text",
   placeholder,
   disabled = false,
-  value,
+  value = '',
+  className,
 
   ...props
 }) => {
@@ -50,7 +60,7 @@ const InputField: React.FC<TextInputProps> = ({
         type={type}
         disabled={disabled}
         value={field.value || value}
-        className={`p-2 rounded-[5px] text-black border ${borderClass} shadow-sm`}
+        className={`h-[38px] px-2 rounded-[5px] text-black border ${borderClass} shadow-sm ${className}`}
         // onChange={(e) => field.onChange(e.target.value)}
       />
       {helpText && <span className="text-sm text-gray-500">{helpText}</span>}

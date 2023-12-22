@@ -1,55 +1,30 @@
 "use client";
 
 import { Button } from "@app/components/ui/button";
+import { ICustomerCategory } from "@app/server/services";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
 
 // This type is used to define the shape of our data.
 
-export type ICustomer = {
-  id: number;
-  ["customer_type"]: string;
-  ["full_name"]: string;
-  ["customer_category"]: string;
-  ["created_at"]: string;
-  occupation: string;
-  phone: string;
-};
-
-export const columns: ColumnDef<ICustomer>[] = [
+export const columns: ColumnDef<ICustomerCategory>[] = [
   {
-    accessorKey: "id",
-    header: "ID",
+    accessorKey: "code",
+    header: "Code",
   },
   {
-    accessorKey: "full_name",
-    header: "Name",
-  },
-  {
-    accessorKey: "customer_type",
+    accessorKey: "name",
     header: ({ column }) => {
       return (
         <Button
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Customer Type
+          Name
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
-  },
-  {
-    accessorKey: "customer_category",
-    header: "Customer Category",
-  },
-  {
-    accessorKey: "occupation",
-    header: "Occupation",
-  },
-  {
-    accessorKey: "phone",
-    header: "Contact Phone",
   },
   {
     accessorKey: "created_at",

@@ -1,19 +1,21 @@
 import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import userContext from "@app/context/userContext";
+import FullPageLoader from "./fullPageLoader";
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
-  const { user, loading } = userContext();
+  const { user, status } = userContext();
   useEffect(() => {
-    if (!user && !loading) {
+    // console.log("user", user, status, loading);
+    if (status === "unauthenticated") {
       router.replace("/");
     }
-  }, [user, loading]);
+  }, [status]);
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  // if (status === "loading") {
+  //   return <FullPageLoader />;
+  // }
 
   return user ? children : null;
 };

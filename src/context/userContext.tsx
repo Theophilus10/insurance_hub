@@ -1,35 +1,16 @@
-import React from "react";
+"use client";
+import { User } from "next-auth";
+// import Api from "@app/app/api/axios/useAxios";
+import { useSession } from "next-auth/react";
+// import React, { useEffect } from "react";
 
-export interface IUser {
-  fullName: string;
-  id: number;
-  firstName: string;
-  surname: string;
-  email: string;
-  institution: string;
-  institutionId: number;
-  role: string;
-  roleId: number;
-  initials: string;
-  profileImage: string;
-}
+const useUser = () => {
+  const { data: session, status } = useSession();
+  const user = session?.user.user as User;
 
-const userContext = () => {
-  const user: IUser = {
-    id: 1,
-    profileImage: "",
-    fullName: "Kwakye Mensah",
-    firstName: "Kwakye",
-    surname: "Mensah",
-    email: "kmensah@gmail.com",
-    institution: "Activa International Insurance Company Limited",
-    role: "Administrator",
-    roleId: 1,
-    institutionId: 1,
-    initials: "KM",
-  };
-  const loading = false;
-  return { user, loading };
+  // console.log('user here',user)
+
+  return { user, status };
 };
 
-export default userContext;
+export default useUser;

@@ -4,6 +4,7 @@ import { Button } from '@app/components/ui/button';
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown, Eye } from 'lucide-react';
 import { Checkbox } from '@app/components/ui/checkbox';
+import Link from 'next/link';
 
 // This type is used to define the shape of our data.
 
@@ -96,7 +97,9 @@ export const columns: ColumnDef<Policies>[] = [
 
       return (
         <div className='flex items-center gap-3 text-gray-400'>
-          <Eye />
+          <Link href='/private/fire/policies/preview/12'>
+            <Eye />
+          </Link>
         </div>
       );
     },

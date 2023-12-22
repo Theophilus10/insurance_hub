@@ -3,15 +3,7 @@
 import { Button } from "@app/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-
-export type IInstitution = {
-  id: number;
-  name: string;
-  institution_type: string;
-  contact_person: string;
-  contact_phone: string;
-  created_at: Date | string;
-};
+import { IInstitution } from "@app/server/services";
 
 export const columns: ColumnDef<IInstitution>[] = [
   {
@@ -29,7 +21,7 @@ export const columns: ColumnDef<IInstitution>[] = [
     },
   },
   {
-    accessorKey: "institution_type",
+    accessorKey: "institution_type.name",
     header: ({ column }) => {
       return (
         <Button
