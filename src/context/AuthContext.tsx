@@ -1,4 +1,4 @@
-import Api from "@app/app/api/axios/useAxios";
+import Api from "@app/server/useAxios";
 import { User } from "@app/types/severTypes";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";

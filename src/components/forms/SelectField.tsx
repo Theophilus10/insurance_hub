@@ -20,6 +20,7 @@ interface SelectInputProps {
   helpText?: string;
   readonly?: boolean;
   isMulti?: boolean;
+  onChange?: (e: any) => void;
 }
 
 const SelectField: React.FC<SelectInputProps> = ({
@@ -29,6 +30,7 @@ const SelectField: React.FC<SelectInputProps> = ({
   options,
   readonly,
   isMulti,
+  onChange,
   ...props
 }) => {
   const { control, formState } = useFormContext();
@@ -80,7 +82,7 @@ const SelectField: React.FC<SelectInputProps> = ({
             ? options.filter((obj) => field.value.includes(obj.value))
             : options.find((x) => x.value === field.value)
         }
-        onChange={(e: any) =>
+        onChange={(e: any) => {
           Array.isArray(e)
             ? field.onChange(
                 convertParam(
@@ -91,8 +93,10 @@ const SelectField: React.FC<SelectInputProps> = ({
               )
             : e === null
             ? field.onChange(convertParam(e, null, name))
-            : field.onChange(convertParam(e.value, null, name))
-        }
+            : field.onChange(convertParam(e.value, null, name));
+
+          onChange && onChange(e);
+        }}
         // onChange={(e) => console.log(e)}
         {...props}
       />

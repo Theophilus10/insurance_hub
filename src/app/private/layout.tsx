@@ -4,16 +4,18 @@ import React, { createContext, useState } from 'react';
 import LogoUrl from '@app/assets/images/logo.png';
 import Image from 'next/image';
 // import Sidebar from "@app/components/layout/sideNav";
-import Navbar from '@app/components/layout/Navbar';
-import Divider from '@app/components/ui/Divider';
-import IconifyIcon from '@app/components/icon';
-import useAppMenuContext from '@app/context/useAppMenuContext';
-import userContext from '@app/context/userContext';
-import { useRouter } from 'next/navigation';
-import AlertModal from '@app/components/alerts/alertModal';
-import { generalMenuItems } from '@app/data/menuItems';
-import { signOut } from 'next-auth/react';
-import Sidebar from '@app/components/layout/Sidebar';
+
+import Navbar from "@app/components/layout/Navbar";
+import Divider from "@app/components/ui/Divider";
+import IconifyIcon from "@app/components/icon";
+import useAppMenuContext from "@app/context/useAppMenuContext";
+import userContext from "@app/context/userContext";
+import { useRouter } from "next/navigation";
+import AlertModal from "@app/components/alerts/alertModal";
+import { generalMenuItems } from "@app/data/menuItems";
+import { signOut } from "next-auth/react";
+import Sidebar from "@app/components/layout/sidePanel";
+import ScrollSection from "@app/components/ui/scrollSection";
 
 export const LayoutContext = createContext<any>({});
 
@@ -28,8 +30,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     title: '',
     showTitle: false,
   });
-  const { menuItems, setMenuItems, appList, activeMenu, setActiveAppMenu } =
-    useAppMenuContext();
+  const {
+    menuItems,
+    setMenuItems,
+    appList,
+    activeMenu,
+    setActiveAppMenu,
+    settingsItems,
+  } = useAppMenuContext();
   const { user } = userContext();
 
   const triggerSignOut = () => {
@@ -64,20 +72,23 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                 INSURANCE HUB
               </span>
             </a>
-            <Divider className='mt-2 bg-gray-200 mx-4' />
-            {/* <div className="pt-3">
+
+            <Divider className="mt-2 bg-gray-200 mx-4" />
+            <div className="pt-3">
               <AppServices
                 appList={appList}
                 setActiveMenu={setActiveAppMenu}
                 activeMenu={activeMenu}
               />
-            </div> */}
-            <div className='mt-5 h-full overflow-y-auto flex-grow'>
+
+
+            <ScrollSection className="mt-5 h-full overflow-y-auto flex-grow">
               <Sidebar
                 generalRouteItems={generalMenuItems}
                 basicRouteItems={menuItems}
+                settingsRouteItems={settingsItems}
               />
-            </div>
+            </ScrollSection>
           </aside>
           <section id='content' className='w-full h-full'>
             <Navbar
@@ -105,7 +116,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           onCancel={() => setShowAlert(false)}
           onContinue={async () => {
             await signOut();
-            router.replace('/');
+            router.replace("/login");
           }}
           message='Are you sure you want to logout?'
           title='Logout'

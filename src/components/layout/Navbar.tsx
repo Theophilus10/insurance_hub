@@ -28,9 +28,9 @@ const Navbar: React.FC<INavbar> = ({
   user = {} as User,
   triggerSignOut,
 }) => {
-  useEffect(() => {
-    console.log(user);
-  }, [user]);
+  // useEffect(() => {
+  //   console.log(user);
+  // }, [user]);
   return (
     <nav className="py-1.5 flex items-center gap-4 ">
       {/* <IconButton
@@ -77,13 +77,13 @@ const Navbar: React.FC<INavbar> = ({
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="cursor-pointer">
-                  <Link href="/private/profile" className="w-full">
+                  <Link href="/private/profile" className="w-full px-2">
                     Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="cursor-pointer"
+                  className="cursor-pointer px-4"
                   onClick={triggerSignOut}
                 >
                   Sign Out

@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useEffect } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -54,6 +54,7 @@ const Form: React.FC<FormProps> = ({
         className={className}
         onSubmit={handleSubmit(onSubmitHandler)}
         onChange={handleChange}
+        onReset={reset}
       >
         {Array.isArray(childArray) ? (
           childArray.map((child, index) => (

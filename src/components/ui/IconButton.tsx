@@ -13,6 +13,7 @@ const kind = {
   ghost: " hover:bg-gray-100",
   default: " hover:bg-gray-100",
   warning: "bg-yellow-300  hover:bg-yellow-400",
+  // errrr: 'bg-red'
 };
 
 const IconButton: React.FC<IIconButton> = ({
