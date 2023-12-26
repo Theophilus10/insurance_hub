@@ -18,10 +18,14 @@ export default function NextAuthProvider({
 const SessionComponent = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const { status } = useSession();
+
   useLayoutEffect(() => {
-    // console.log(window.history.back())
-    if (status === "authenticated") {
-      // window.history.back();
+    const location = window.location.href;
+
+    if (
+      (status === "authenticated" && location.endsWith("/")) ||
+      location.endsWith("/private")
+    ) {
       router.replace("/private/dashboard");
     } else if (status === "unauthenticated") {
       router.replace("/login");
