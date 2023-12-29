@@ -226,11 +226,11 @@ export const motorMenuItems: IMenuItem[] = [
     icon: "iconoir:dashboard-dots",
   },
   {
-    title: "Policies",
+    title: "Underwriting",
     icon: "la:edit-solid",
     items: [
       {
-        title: "Underwrite",
+        title: "Policies",
         path: "/private/motor/policies",
       },
       {
@@ -273,21 +273,45 @@ export const motorMenuItems: IMenuItem[] = [
     ],
   },
   {
-    title: "Tarrifs",
+    title: "Claims",
     icon: "la:edit-solid",
     items: [
       {
-        title: "Add Tarrif",
-        path: "/private/motor/tarrifs/add",
+        title: "Pending",
+        path: "/private/motor/claim/reporting/pending",
       },
       {
-        title: "All Tarrifs",
-        path: "/private/motor/tarrifs/list",
+        title: "Approved",
+        path: "/private/motor/claim/register",
+      },
+      {
+        title: "Rejected",
+        path: "/private/motor/claim/register",
       },
     ],
   },
 ];
 
+export const motorSettings: IMenuItem[] = [
+  {
+    title: "Motor",
+    icon: "iconamoon:settings-thin",
+    items: [
+      {
+        title: "Tarrifs",
+        path: "/private/motor/settings/tarrifs/list",
+      },
+      {
+        title: "Motor Cover Types",
+        path: "/private/motor/settings/cover_type",
+      },
+      {
+        title: "Endorsement Types",
+        path: "/private/motor/settings/endorsement_type",
+      },
+    ],
+  },
+];
 export const generalMenuItems: IMenuItem[] = [
   {
     title: "Customer Mgt.",

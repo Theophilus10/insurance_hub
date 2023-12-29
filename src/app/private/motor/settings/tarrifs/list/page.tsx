@@ -23,7 +23,7 @@ const Page = () => {
   const router = useRouter();
 
   const handleAddTarrif = () => {
-    router.push("/private/motor/tarrifs/add");
+    router.push("/private/motor/settings/tarrifs/add");
   };
 
   return (
