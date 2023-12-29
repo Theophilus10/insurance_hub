@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import Form from "@app/components/forms/Form";
 import InputField from "@app/components/forms/InputField";
 import Divider from "@app/components/ui/Divider";
-import { ArrowBigLeftDash, Send } from "lucide-react";
+import { ArrowBigLeftDash, Send, Search } from "lucide-react";
 
 import {
   Card,
@@ -115,6 +115,13 @@ const registerClaim = () => {
                   />
                 </div>
               </div>
+              {/* <div className="flex py-5 gap-10 ">
+                <Button
+                  label="Search"
+                  leadingIcon={<Search />}
+                  className="font-bold text-lg"
+                />
+              </div> */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 py-3">
                 <InputField
                   label="Report Date"

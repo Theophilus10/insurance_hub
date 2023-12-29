@@ -4,6 +4,7 @@ import {
   marineMenuItems,
   marineSettings,
   motorMenuItems,
+  motorSettings,
 } from "@app/data/menuItems";
 
 import {
@@ -19,7 +20,7 @@ const appList: { name: string; icon: string }[] = [
   { name: "Marine", icon: "carbon:marine-warning" },
   { name: "Fire", icon: "game-icons:fire-bowl" },
   { name: "Motor", icon: "gis:car" },
-  { name: "Live", icon: "material-symbols-light:ecg-heart-sharp" },
+  { name: "Life", icon: "material-symbols-light:ecg-heart-sharp" },
 ];
 // const x = { title: "", menus: [{ title: "", path: "" }] };
 
@@ -43,7 +44,7 @@ const useAppMenuContext = () => {
         break;
       case "Motor":
         setMenuItems(motorMenuItems);
-        setSettingsItems([]);
+        setSettingsItems(motorSettings);
 
         break;
 
