@@ -53,7 +53,11 @@ export function axiosError(response: any): IFailureResult {
     const errorMessage =
       (response.data && response.data.message) ||
       (response.statusText && response.statusText) ||
-      "Unknown error";
+      (response.data &&
+        response.detail &&
+        response.detail.map((x: any) => x.msg).join(" , ")) ||
+      response.message;
+    ("Unknown error");
 
     return { success: false, message: errorMessage };
   }

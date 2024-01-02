@@ -31,6 +31,7 @@ import { Button } from "../ui/button";
 import TableSearchbox from "../ui/tableSearchbox";
 import TableRowActions, { ITableRowActionList } from "./tableRowActions";
 import TableLoader from "./tableLoader";
+import IconifyIcon from "../icon";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -97,8 +98,9 @@ export default function DataTable<TData, TValue>({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="outline"
-                  className="ml-auto border-teal-300 bg-teal-50"
+                  className="ml-auto border-teal-300 bg-teal-50 flex items-center gap-2"
                 >
+                  <IconifyIcon icon="ph:columns" fontSize={18}/>
                   Columns
                 </Button>
               </DropdownMenuTrigger>

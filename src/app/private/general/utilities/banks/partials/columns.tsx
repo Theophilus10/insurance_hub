@@ -1,25 +1,15 @@
 "use client";
 
-import { Button } from "@app/components/ui/button";
+import { IBank } from "@app/server/services";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
 
-// This type is used to define the shape of our data.
-
-export type ICustomer = {
-  id: number;
-  bank: string;
-  code: string;
-  created_at: string;
-};
-
-export const columns: ColumnDef<ICustomer>[] = [
+export const columns: ColumnDef<IBank>[] = [
   {
     accessorKey: "id",
     header: "ID",
   },
   {
-    accessorKey: "bank",
+    accessorKey: "name",
     header: "Bank",
   },
   {
