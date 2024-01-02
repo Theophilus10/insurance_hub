@@ -25,7 +25,7 @@ export const columns: ColumnDef<ICustomer>[] = [
     header: "Name",
   },
   {
-    accessorKey: "shippingType",
+    accessorKey: "shipping_type.name",
     header: "Shipping Type",
   },
 ];
