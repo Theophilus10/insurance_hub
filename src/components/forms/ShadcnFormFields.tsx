@@ -21,6 +21,9 @@ interface SelectFormFieldProps {
   showWatchValue?: boolean;
   className?: string;
   labelStyle?: string;
+  isLoading?: boolean;
+  disabled?: boolean;
+  placeholder?: string;
 }
 
 interface InputFormFieldProps {
@@ -31,6 +34,8 @@ interface InputFormFieldProps {
   type?: string;
   className?: string;
   labelStyle?: string;
+  disabled?: boolean;
+  placeholder?: string;
 }
 
 export const SelectFormField = ({
@@ -38,15 +43,18 @@ export const SelectFormField = ({
   name,
   options,
   label,
-  showWatchValue = true,
+  showWatchValue = false,
   className,
   labelStyle,
+  isLoading,
+  disabled = false,
+  placeholder,
 }: SelectFormFieldProps) => {
   return (
     <FormField
       control={form.control}
       name={name}
-      render={({ field: { name, onBlur, onChange, ref, disabled } }) => (
+      render={({ field: { name, onBlur, onChange, ref } }) => (
         <FormItem className={className}>
           <FormLabel className={labelStyle}>{label}</FormLabel>
           <FormControl>
@@ -57,6 +65,8 @@ export const SelectFormField = ({
               onBlur={onBlur}
               ref={ref}
               onChange={e => onChange(e && e.value)}
+              isLoading={isLoading}
+              placeholder={placeholder}
             />
           </FormControl>
           {showWatchValue && (
@@ -79,6 +89,8 @@ export const InputFormField = ({
   type = 'text',
   className,
   labelStyle,
+  disabled = false,
+  placeholder,
 }: InputFormFieldProps) => {
   return (
     <FormField
@@ -88,7 +100,12 @@ export const InputFormField = ({
         <FormItem className={className}>
           <FormLabel className={labelStyle}>{label}</FormLabel>
           <FormControl>
-            <Input {...field} type={type} />
+            <Input
+              {...field}
+              type={type}
+              disabled={disabled}
+              placeholder={placeholder}
+            />
           </FormControl>
           {showWatchValue && (
             <FormDescription className='pl-5'>
@@ -106,9 +123,10 @@ export const TextareaFormField = ({
   form,
   name,
   label,
-  showWatchValue = false,
   className,
   labelStyle,
+  disabled = false,
+  placeholder,
 }: InputFormFieldProps) => {
   return (
     <FormField
@@ -118,7 +136,11 @@ export const TextareaFormField = ({
         <FormItem className={className}>
           <FormLabel className={labelStyle}>{label}</FormLabel>
           <FormControl>
-            <Textarea {...field} />
+            <Textarea
+              {...field}
+              disabled={disabled}
+              placeholder={placeholder}
+            />
           </FormControl>
           <FormMessage />
         </FormItem>
