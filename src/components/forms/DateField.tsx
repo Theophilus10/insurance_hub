@@ -25,9 +25,9 @@ interface DateInputProps {
 }
 
 const DateInput: React.FC<DateInputProps> = ({
-  label,
-  required,
-  placeholder,
+  label = "",
+  required = false,
+  placeholder = "",
   name,
   enableTime = false,
   noCalendar = false,
@@ -66,11 +66,10 @@ const DateInput: React.FC<DateInputProps> = ({
     maxDate,
     inline,
     element: fullPickerId,
-  
   };
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5 relative">
       <label className="text-gray-800 font-light">
         {label}
         {required && <span className="text-red-500 pl-1">*</span>}
@@ -81,6 +80,7 @@ const DateInput: React.FC<DateInputProps> = ({
         value={field.value}
         options={flatpickrOptions}
         onChange={(selectedDates: Date[], event: any) =>
+          event.stopPropagation() &&
           field.onChange(convertParam(event, selectedDates, name))
         }
         // onChange={(e: Date[]) => console.log(e)}

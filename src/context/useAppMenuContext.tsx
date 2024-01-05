@@ -47,6 +47,11 @@ const useAppMenuContext = () => {
         setSettingsItems(motorSettings);
 
         break;
+      case "Life":
+        setMenuItems([]);
+        setSettingsItems([]);
+
+        break;
 
       default:
         setMenuItems([]);

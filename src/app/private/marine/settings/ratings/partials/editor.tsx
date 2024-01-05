@@ -13,8 +13,8 @@ import * as z from "zod";
 const initialValues = {
   cover_type_id: 0,
   interest_id: 0,
-  containerized_rate: 0,
-  non_containerized_rate: 0,
+  containerized_rate: "",
+  non_containerized_rate: "",
   exclusions: "",
   remarks: "",
   start_date: "",
@@ -47,17 +47,26 @@ const schema = z.object({
     .refine((value) => value !== 0, {
       message: "Interest is required",
     }),
-  containerized_rate: z.number({
-    invalid_type_error: "Containerized Rate is required",
-    required_error: "Containerized Rate is required",
-  }),
-  non_containerized_rate: z.number({
-    invalid_type_error: "Non-Containerized Rate is required",
-    required_error: "Non-Containerized Rate is required",
-  }),
-  // .refine((value) => value !== 0, {
-  //   message: "Non-Containerized Rate is required",
-  // }),
+  containerized_rate: z
+    .string()
+    .min(1, "Containerized Rate is required")
+    .refine((value) => parseFloat(value) !== 0, {
+      message: "Containerized Rate is required",
+    })
+    .refine((value) => !isNaN(parseFloat(value)), {
+      message: "Containerized Rate must be a valid number",
+    })
+    .transform((value) => parseFloat(value)),
+  non_containerized_rate: z
+    .string()
+    .min(1, "Non-Containerized Rate is required")
+    .refine((value) => parseFloat(value) !== 0, {
+      message: "Non-Containerized Rate is required",
+    })
+    .refine((value) => !isNaN(parseFloat(value)), {
+      message: "Non-Containerized Rate must be a valid number",
+    })
+    .transform((value) => parseFloat(value)),
   exclusions: z
     .string()
     .min(1, "Exclusion is required")
@@ -86,8 +95,8 @@ const Editor: React.FC<EditorProps> = ({
       setFormData({
         cover_type_id: data.cover_type.id,
         interest_id: data.interest.id,
-        containerized_rate: data.containerized_rate,
-        non_containerized_rate: data.non_containerized_rate,
+        containerized_rate: data.containerized_rate.toString(),
+        non_containerized_rate: data.non_containerized_rate.toString(),
         exclusions: data.exclusions,
         remarks: data.remarks,
         start_date: data.start_date,
@@ -132,7 +141,7 @@ const Editor: React.FC<EditorProps> = ({
       onChange={handleChange}
       className="flex flex-col gap-6 w-full h-full px-2"
     >
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 relative">
         <SelectField
           name="cover_type_id"
           required
@@ -145,23 +154,39 @@ const Editor: React.FC<EditorProps> = ({
           required
           options={interests}
         />
-        <InputField
-          name="containerized_rate"
-          label="Containerized Rate"
-          type="number"
-          required
-        />
-        <InputField
-          name="non_containerized_rate"
-          label="Non-Containerized Rate"
-          type="number"
-          required
-        />
-        <TextAreaField name="exclusions" label="Exclusions" required />
-        <TextAreaField name="remarks" label="Remarks" required />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <DateInput name="start_date" label="Start Date" required />
-          <DateInput name="end_date" label="End Date" required />
+          <InputField
+            name="containerized_rate"
+            label="Containerized Rate"
+            type="number"
+            required
+          />
+          <InputField
+            name="non_containerized_rate"
+            label="Non-Containerized Rate"
+            type="number"
+            required
+          />
+        </div>
+        <TextAreaField name="exclusions" label="Exclusions" required rows={3} />
+        <TextAreaField name="remarks" label="Remarks" required rows={3} />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+          {/* <DateInput name="start_date" label="Start Date" required />
+          <DateInput name="end_date" label="End Date" required /> */}
+          <InputField
+            name="start_date"
+            label="Start Date"
+            required
+            type="date"
+            placeholder="Date..."
+          />
+          <InputField
+            name="end_date"
+            label="End Date"
+            required
+            type="date"
+            placeholder="Date..."
+          />
         </div>
       </div>
       <div className="ml-auto flex gap-4">

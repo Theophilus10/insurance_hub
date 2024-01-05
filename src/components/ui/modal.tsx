@@ -2,10 +2,10 @@ import React from "react";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
+  // DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  // DialogTrigger,
 } from "./dialog";
 import { ContentSize } from "@app/types/appTypes";
 import IconButton from "./IconButton";
@@ -42,7 +42,7 @@ const Modal: React.FC<IModal> = ({
     <Dialog open={open}>
       {/* <DialogTrigger>Open</DialogTrigger> */}
       <DialogContent
-        className={`${widthKind[size]} flex flex-col max-h-[90vh]`}
+        className={`${widthKind[size]} flex flex-col max-h-[96vh]`}
       >
         <DialogHeader>
           <div className="flex items-center justify-between">

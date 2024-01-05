@@ -5,19 +5,19 @@ import { ColumnDef } from "@tanstack/react-table";
 
 export const columns: ColumnDef<IRating>[] = [
   {
-    accessorKey: "coverType",
+    accessorKey: "cover_type.name",
     header: "Cover Type",
   },
   {
-    accessorKey: "interest",
+    accessorKey: "interest.name",
     header: "Interest",
   },
   {
-    accessorKey: "containerized",
+    accessorKey: "containerized_rate",
     header: "Containerized(%)",
   },
   {
-    accessorKey: "nonContainerized",
+    accessorKey: "non_containerized_rate",
     header: "Non-Containerized(%)",
   },
   {

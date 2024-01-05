@@ -53,7 +53,7 @@ const TextAreaField: React.FC<TextInputProps> = ({
         placeholder={placeholder}
         disabled={disabled}
         value={field.value || value}
-        className={`p-2 rounded-[5px] text-black border ${borderClass} shadow-sm ${className}`}
+        className={`p-2 rounded-[5px] text-black border ${borderClass} shadow-sm ${className} resize-none`}
       />
       {helpText && <span className="text-sm text-gray-500">{helpText}</span>}
       {fieldState.error && (
