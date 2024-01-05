@@ -1,9 +1,9 @@
-import useSWR from "swr";
-import { fetcher } from "../../../shared";
-import { format } from "date-fns";
-import API from "@app/server/useAxios";
-import { axiosError, callResult, queryResult } from "@app/server/shared";
-import { IInstitutionType } from "./instituiton-types";
+import useSWR from 'swr';
+import { fetcher } from '../../../shared';
+import { format } from 'date-fns';
+import API from '@app/server/useAxios';
+import { axiosError, callResult, queryResult } from '@app/server/shared';
+import { IInstitutionType } from './instituiton-types';
 
 export interface InstitutionDTO {
   institution_type_id: number;
@@ -38,7 +38,7 @@ export interface IInstitution {
 }
 export const read_institutions = () => {
   const { data, error, isLoading, mutate } = useSWR(
-    "/institutions/all",
+    '/institutions/all',
     fetcher
   );
 
@@ -46,7 +46,7 @@ export const read_institutions = () => {
     items: data
       ? data.map((x: IInstitution) => ({
           ...x,
-          created_at: format(new Date(x.created_at), "dd MMMM yyy"),
+          created_at: format(new Date(x.created_at), 'dd MMMM yyy'),
         }))
       : [],
     isLoading,
@@ -58,7 +58,7 @@ export const read_institutions = () => {
 
 export const create_institution = async (data: InstitutionDTO) => {
   try {
-    const res = await API.post("/institutions/", data);
+    const res = await API.post('/institutions/', data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {
