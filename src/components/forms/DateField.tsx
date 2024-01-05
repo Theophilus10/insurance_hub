@@ -1,7 +1,6 @@
 import React from "react";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/light.css";
-import { Icon } from "@iconify/react";
 import { nanoid } from "nanoid";
 import { convertParam } from "@app/lib/utils";
 import { useController, useFormContext } from "react-hook-form";
@@ -67,6 +66,7 @@ const DateInput: React.FC<DateInputProps> = ({
     maxDate,
     inline,
     element: fullPickerId,
+  
   };
 
   return (

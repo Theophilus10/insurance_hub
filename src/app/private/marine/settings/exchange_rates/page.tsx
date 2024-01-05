@@ -1,36 +1,84 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Editor from "./partials/editor";
 import Modal from "@app/components/ui/modal";
 import DataTable from "@app/components/datatable/datatable";
-import { data } from "./partials/data";
 import { columns } from "./partials/columns";
+import {
+  ICurrency,
+  IExchangeRate,
+  delete_exchange_rate,
+  read_currencies,
+  read_exchange_rates,
+} from "@app/server/services";
+import { showError, showSuccess } from "@app/lib/utils";
+import AlertModal from "@app/components/alerts/alertModal";
 
 const Page = () => {
   const [openModal, setOpenModal] = useState(false);
-  const [editorLabel, setEditorLabel] = useState("Add New Exchange Rate");
-  const [preValues,setPreValues] = useState({})
+  const [data, setData] = useState<IExchangeRate | null>(null);
+  const [edit, setEdit] = useState({
+    recordId: 0,
+    open: false,
+  });
+  const [alert, setAlert] = useState({ recordId: 0, open: false });
+  const [busy, setBusy] = useState(false);
   const toggleModal = () => {
-    setEditorLabel("Add New Exchange Rate");
-    setPreValues({})
     setOpenModal(!openModal);
+    setEdit({ recordId: 0, open: false });
+    if (data) {
+      setData(null);
+    }
   };
-
+  const { items, isError, isLoading, mutate } = read_exchange_rates();
+  const currencies = read_currencies();
+  useEffect(() => {
+    if (isError) {
+      showError(isError?.message || isError || "Failed to load data");
+    }
+  }, [isError]);
   const onRowAction = (action: string, row: Record<string, any>) => {
     switch (action) {
       case "edit":
-        setEditorLabel("Update Exchange Rate");
-        setOpenModal(true);
-        setPreValues(row)
+        toggleModal();
+        const d = row as IExchangeRate;
+        setData(d);
+        setEdit({ recordId: row.id, open: true });
         break;
       case "delete":
-        alert("delete");
-
+        setAlert({ open: true, recordId: row.id });
         break;
-
       default:
         break;
+    }
+  };
+
+  const closeAlert = () => {
+    setAlert({ recordId: 0, open: false });
+  };
+
+  const isDone = () => {
+    mutate();
+    toggleModal();
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      setBusy(true);
+      const res = await delete_exchange_rate(id);
+      if (res.success) {
+        showSuccess("Successfully deleted record");
+        mutate();
+        closeAlert();
+      } else {
+        showError(res.message || "Failed to delete record");
+      }
+    } catch (err: any) {
+      console.log(err);
+      showError(err?.message || err);
+    } finally {
+      setBusy(false);
     }
   };
   return (
@@ -39,7 +87,9 @@ const Page = () => {
         List of Exchange Rates
       </div>
       <DataTable
-        data={data}
+        data={items ?? []}
+        isLoading={isLoading}
+        tableLoaderHeaderSize={5}
         columns={columns}
         addButtonLabel="New Exchange Rate"
         addButtonFunction={toggleModal}
@@ -49,11 +99,30 @@ const Page = () => {
       <Modal
         open={openModal}
         size="md"
-        title={editorLabel}
+        title={edit.open ? "Update Exchange Rate" : "New Exchange Rate"}
         closeModal={toggleModal}
       >
-        <Editor prevalues={preValues}/>
+        <Editor
+          isDone={isDone}
+          id={edit.recordId}
+          edit={edit.open}
+          data={data!}
+          currencies={
+            currencies
+              ? currencies.items.map((x: ICurrency) => ({
+                  value: x.id,
+                  label: `${x.code} - ${x.name}`,
+                }))
+              : []
+          }
+        />
       </Modal>
+      <AlertModal
+        open={alert.open}
+        onCancel={closeAlert}
+        onContinue={() => handleDelete(alert.recordId)}
+        busy={busy}
+      />
     </div>
   );
 };
