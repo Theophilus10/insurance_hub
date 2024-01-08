@@ -129,16 +129,16 @@ const Editor: React.FC<EditorProps> = ({
     }
   };
 
-  function handleChange(values: any) {
-    console.log(values);
-  }
+  // function handleChange(values: any) {
+  //   console.log(values);
+  // }
 
   return (
     <Form
       schema={schema}
       initialValues={formData}
       onSubmit={handleSubmit}
-      onChange={handleChange}
+      // onChange={handleChange}
       className="flex flex-col gap-6 w-full h-full px-2"
     >
       <div className="flex flex-col gap-4 relative">
