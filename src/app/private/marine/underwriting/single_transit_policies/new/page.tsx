@@ -3,19 +3,26 @@
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '@app/components/ui/form';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@app/components/ui/select';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { Card, CardTitle, CardContent } from '@app/components/ui/card';
 import { ListTodo } from 'lucide-react';
 import { Input } from '@app/components/ui/input';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@app/components/ui/button';
 import {
   InputFormField,
@@ -24,6 +31,16 @@ import {
 import Transhipment, {
   TranshipmentType,
 } from '@app/components/single_transit_policy/partials/transhipment';
+import Transits, {
+  TransitType,
+} from '@app/components/single_transit_policy/partials/transits';
+import InterestItems, {
+  InterestType,
+} from '@app/components/single_transit_policy/partials/interests_items';
+import PolicyExtenxions, {
+  PolicyExtenxionsType,
+} from '@app/components/single_transit_policy/partials/policy_extensions';
+import PolicyExcess from '@app/components/single_transit_policy/partials/policy_excess';
 
 const insuranceCompanies = [
   { value: 'Hollard', label: 'Hollard' },
@@ -113,6 +130,13 @@ const formSchema = z.object({
       description: z.string(),
     })
   ),
+  transits: z.array(
+    z.object({
+      originCountry: z.string(),
+      destinationCountry: z.string(),
+      rate: z.number(),
+    })
+  ),
 });
 
 const findCustomer = (fullName: string, id: string) => {
@@ -143,6 +167,7 @@ const Page = () => {
       inceptionDate: '',
       intermediaryType: '',
       transhipment: [],
+      transits: [],
     },
   });
 
@@ -179,7 +204,7 @@ const Page = () => {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className='border-b-[5px]'>
-              <div className='p-5 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-4   '>
+              <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8   '>
                 <SelectFormField
                   form={form}
                   name='insuranceCompany'
@@ -193,7 +218,7 @@ const Page = () => {
                   options={companyBranches}
                 />
               </div>
-              <div className='p-5 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-4 '>
+              <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
                 <SelectFormField
                   form={form}
                   name='distributionChannel'
@@ -222,10 +247,10 @@ const Page = () => {
                   showWatchValue={false}
                 />
               </div>
-              <div className='p-5 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-4 '>
+              <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
                 <FormItem>
                   <FormLabel> Policy To:</FormLabel>
-                  <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+                  <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
                     <Input
                       placeholder='Full Name'
                       {...form.register('customerDetails.fullName')}
@@ -286,7 +311,7 @@ const Page = () => {
               </div>
             </div>
             <div className='border-b-[5px]'>
-              <div className='p-5 border-b-[1px] md:grid space-y-4 md:space-y-0  md:grid-cols-2 md:gap-4'>
+              <div className='p-10 border-b-[1px] md:grid space-y-4 md:space-y-0  md:grid-cols-2 md:gap-8'>
                 <FormField
                   control={form.control}
                   name='inceptionDate'
@@ -419,8 +444,8 @@ const Page = () => {
                 />
               </div>
             </div>
-            <div className='border-b-[1px] p-5'>
-              <div className='flex items-center  gap-1  '>
+            <div className='border-b-[1px] p-10'>
+              <div className='lg:flex items-center hidden  gap-1  '>
                 {tabsList.map(tab => (
                   <button
                     type='button'
@@ -435,15 +460,59 @@ const Page = () => {
                   </button>
                 ))}
               </div>
-              <Transhipment
-                transhipments={form.watch('transhipment')}
-                addTranshipments={(trans: TranshipmentType) =>
-                  form.setValue('transhipment', [
-                    trans,
-                    ...form.watch('transhipment'),
-                  ])
-                }
-              />
+              <Select onValueChange={e => setSelectedTab(e)}>
+                <SelectTrigger className='w-[180px] lg:hidden'>
+                  <SelectValue placeholder='Select a tab' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {tabsList.map(tab => (
+                      <SelectItem key={tab} value={tab}>
+                        {tab}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              {selectedTab.toLowerCase() === 'transhipment' && (
+                <Transhipment
+                  transhipments={form.watch('transhipment')}
+                  addTranshipments={(trans: TranshipmentType) =>
+                    form.setValue('transhipment', [
+                      trans,
+                      ...form.watch('transhipment'),
+                    ])
+                  }
+                />
+              )}
+              {selectedTab.toLowerCase() === 'transit' && (
+                <Transits
+                  transits={form.watch('transits')}
+                  addTransit={(transit: TransitType) =>
+                    form.setValue('transits', [
+                      transit,
+                      ...form.watch('transits'),
+                    ])
+                  }
+                />
+              )}
+              {selectedTab.toLowerCase() === 'interests / items' && (
+                <InterestItems
+                  addInterests={(interest: InterestType) =>
+                    console.log('interests')
+                  }
+                  interests={[]}
+                />
+              )}
+              {selectedTab.toLowerCase() === 'policy extension' && (
+                <PolicyExtenxions
+                  addPolicyExtension={() => console.log('policy extension')}
+                  policyExtensions={[]}
+                />
+              )}
+              {selectedTab.toLowerCase() === 'policy excess' && (
+                <PolicyExcess />
+              )}
             </div>
           </form>
           <div className='flex justify-end mx-12 my-5'>

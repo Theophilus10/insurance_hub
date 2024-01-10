@@ -1,6 +1,5 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { NextApiRequest, NextApiResponse } from "next";
 
 async function login(username: string, password: string) {
   try {
@@ -8,13 +7,16 @@ async function login(username: string, password: string) {
     formData.append("username", username);
     formData.append("password", password);
 
-    const response = await fetch(`${process.env.NEXTAUTH_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: formData.toString(),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formData.toString(),
+      }
+    );
 
     const data = await response.json();
     // console.log("data", data);
@@ -73,11 +75,16 @@ export const options: NextAuthOptions = {
       }
       return session;
     },
-    // async redirect(url: string, baseUrl: string) {
-    //   return url.startsWith(baseUrl + "/login") ? "/private/dasboard" : url;
+    // async redirect(url, baseUrl) {
+    //   return url.startsWith(baseUrl) ? url : baseUrl;
     // },
-    // async redirect(url: string, baseUrl: string) {
-    //   return url.startsWith(baseUrl + "/login") ? "/private" : url;
-    // },
+    async redirect({ url, baseUrl }) {
+      // console.log({ url, baseUrl });
+      // const session = await getSession();
+      // return session && (url === "/" || url === "/login")
+      //   ? "/private/dashboard"
+      //   : "/login";
+      return "/private/dashboard";
+    },
   },
 };

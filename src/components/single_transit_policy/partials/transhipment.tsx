@@ -104,9 +104,9 @@ const Transhipment = ({
   const deleteTranshipment = (index: number) => {};
   return (
     <div className='p-3 2xl:px-10 box-border'>
-      <div className='border-b-[1px] '>
-        <div className='grid grid-cols-5 gap-10  '>
-          <FormItem className='col-span-2'>
+      <div>
+        <div className='grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10  '>
+          <FormItem className='lg:col-span-2'>
             <FormLabel>From:</FormLabel>
             <Select
               onChange={e => {
@@ -122,7 +122,7 @@ const Transhipment = ({
               ]}
             />
           </FormItem>
-          <FormItem className='col-span-2'>
+          <FormItem className='lg:col-span-2'>
             <FormLabel>To:</FormLabel>
             <Select
               options={[
@@ -149,7 +149,7 @@ const Transhipment = ({
               }}
             />
           </FormItem>
-          <FormItem className='col-span-5'>
+          <FormItem className='lg:col-span-5'>
             <FormLabel>Transhipment Description:</FormLabel>
             <Textarea
               onChange={e => {
