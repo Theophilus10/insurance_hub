@@ -1,115 +1,72 @@
 "use client";
 import Form from "@app/components/forms/Form";
 import InputField from "@app/components/forms/InputField";
+import TextAreaField from "@app/components/forms/TextAreaField";
 import SelectField from "@app/components/forms/SelectField";
 import { Button } from "@app/components/ui/button";
-import { showError, showSuccess } from "@app/lib/utils";
-import { ICarrier, create_carrier, update_carrier } from "@app/server/services";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import * as z from "zod";
 
 const initialValues = {
-  name: "",
   code: "",
-  shipping_type_id: 0,
+  description: "",
+  minAmount: "",
+  maxAmount: "",
+  fireRate: "",
+  collapseRate: "",
+  publicLiabilityRate: "",
+  startDate: "",
+  endDate: "",
 };
-
-interface EditorProps {
-  id?: number;
-  isDone: () => void;
-  edit?: boolean;
-  data?: ICarrier;
-  shippingTypes: any[];
-}
-
 const schema = z.object({
-  name: z.string().min(1, "Name is required").min(3, "Enter a valid name"),
-  code: z.string().min(1, "Code is required"),
-  shipping_type_id: z
-    .number({
-      invalid_type_error: "Shipping type is required",
-      required_error: "Shipping type is required",
-    })
-    .refine((value) => value !== 0, {
-      message: "Shipping type is required",
-    }),
+  // name: z
+  //   .string()
+  //   .min(1, "Name is ")
+  //   .min(3, "Enter a valid name")
+  //   .max(7, "Name too long"),
+  // email: z.string().min(1, "Email is ").email(),
+  // gender: z.string().min(1, "Gender is "),
+  // dob: z.string().min(1, "Date of Birth is "),
 });
 
-const Editor: React.FC<EditorProps> = ({
-  id = 0,
-  isDone,
-  edit = false,
-  data,
-  shippingTypes = [],
-}) => {
-  const [busy, setBusy] = useState(false);
-  const [formData, setFormData] = useState(initialValues);
-
-  useEffect(() => {
-    if (data) {
-      setFormData({
-        name: data.name,
-        code: data.code,
-        shipping_type_id: data.shipping_type.id,
-      });
-    } else {
-      setFormData(initialValues);
-    }
-  }, [data]);
-
-  const handleSubmit = async (values: Record<string, any>) => {
-    try {
-      setBusy(true);
-      const res = edit
-        ? await update_carrier(id, {
-            name: values.name,
-            code: values.code,
-            shipping_type_id: values.shipping_type_id,
-          })
-        : await create_carrier({
-            name: values.name,
-            code: values.code,
-            shipping_type_id: values.shipping_type_id,
-          });
-
-      if (res.success) {
-        showSuccess(
-          edit
-            ? "Successfully updated cover type"
-            : "Successfully created a cover type"
-        );
-        isDone();
-      } else {
-        showError(res.message || "Failed to perform command");
-      }
-    } catch (err: any) {
-      console.log("here", err);
-      showError(err?.message || err);
-    } finally {
-      setBusy(false);
-    }
-  };
+const Editor = ({ prevalues }: any) => {
+  // useEffect(()=>{
+  //   if (prevalues)
+  // })
 
   return (
     <Form
       schema={schema}
-      initialValues={formData}
-      onSubmit={handleSubmit}
+      initialValues={prevalues || initialValues}
       className="flex flex-col gap-6 w-full h-full px-2"
     >
-      <div className="grid gap-6">
-        <SelectField
-          name="shipping_type_id"
-          label="Select Shipping Type"
-          options={shippingTypes}
-          required
-        />
-        <InputField name="code" label="Code" type="text" required />
-        <InputField name="name" label="Name" type="text" required />
+      <div className="grid grid-cols-2 gap-4">
+        <span className="col-span-2">
+          <TextAreaField
+            name="description"
+            label="Description"
+            rows={2}
+            className=""
+          />
+        </span>
+        <InputField name="minAmount" label="Minimum Amount" type="number" />
+        <InputField name="maxAmount" label="maximum Amount" type="number" />
+        <span className="col-span-2">
+          <InputField
+            name="fireRate"
+            label="Fire Rate"
+            type="number"
+            className=""
+          />
+        </span>
+        <InputField name="publicLiabilityRate" label="Public Liability Rate" type="number" />
+        <InputField name="collapseRate" label="Collapse Rate" type="number" />
+        <InputField name="startDate" label="Start Date" type="date" />
+        <InputField name="endDate" label="End Date" type="date" />
       </div>
       <div className="ml-auto flex gap-4">
-        <Button label="Submit" variant="primary" type="submit" busy={busy} />
-        <Button label="Reset" variant="outline" type="reset" />
+        <Button label="Submit" variant="primary" />
+        <Button label="Reset" variant="outline" />
       </div>
     </Form>
   );
