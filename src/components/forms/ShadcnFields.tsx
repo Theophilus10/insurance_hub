@@ -1,6 +1,6 @@
 'use client';
 
-import { FormItem, FormLabel } from '@app/components/ui/form';
+import { FormItem, FormLabel, FormMessage } from '@app/components/ui/form';
 import Select from 'react-select';
 import { Input } from '../ui/input';
 import { Textarea } from '../ui/textarea';
@@ -11,6 +11,8 @@ interface SelectFieldProps {
   onChange: (value: any) => void;
   className?: string;
   placeholder?: string;
+  value?: any;
+  isLoading?: boolean;
 }
 
 export const SelectField = ({
@@ -19,10 +21,18 @@ export const SelectField = ({
   onChange,
   className,
   placeholder,
+  value,
+  isLoading,
 }: SelectFieldProps) => (
   <FormItem className={className}>
     <FormLabel>{label}</FormLabel>
-    <Select options={options} onChange={onChange} placeholder={placeholder} />
+    <Select
+      options={options}
+      onChange={onChange}
+      placeholder={placeholder}
+      value={value}
+      isLoading={isLoading}
+    />
   </FormItem>
 );
 
@@ -32,6 +42,7 @@ interface InputFieldProps {
   type?: string;
   className?: string;
   placeholder?: string;
+  value?: any;
 }
 
 export const InputField = ({
@@ -40,10 +51,16 @@ export const InputField = ({
   type,
   className,
   placeholder,
+  value,
 }: InputFieldProps) => (
   <FormItem className={className}>
     <FormLabel>{label}</FormLabel>
-    <Input type={type} onChange={onChange} placeholder={placeholder} />
+    <Input
+      type={type}
+      onChange={onChange}
+      placeholder={placeholder}
+      value={value}
+    />
   </FormItem>
 );
 
@@ -52,9 +69,10 @@ export const TextAreaField = ({
   onChange,
   className,
   placeholder,
+  value,
 }: InputFieldProps) => (
   <FormItem className={className}>
     <FormLabel>{label}</FormLabel>
-    <Textarea onChange={onChange} placeholder={placeholder} />
+    <Textarea onChange={onChange} placeholder={placeholder} value={value} />
   </FormItem>
 );
