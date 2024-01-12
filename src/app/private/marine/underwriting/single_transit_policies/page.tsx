@@ -57,6 +57,22 @@ import {
   IInstitution,
 } from '@app/server/services';
 
+const addToTable = (value: any, watchValue: string, form: any) =>
+  form.setValue(watchValue, [value, ...form.watch(watchValue)]);
+
+const updateTableValue = (value: any, watchValue: string, form: any) => {
+  const withoutValue = form
+    .watch(watchValue)
+    .filter((t: any) => t.id !== value.id);
+
+  form.setValue(watchValue, [value, ...withoutValue]);
+};
+
+const deleteTableValue = (id: string, watchValue: any, form: any) => {
+  const filteredValues = form.watch(watchValue).filter((t: any) => t.id !== id);
+  form.setValue(watchValue, filteredValues);
+};
+
 const distributionChannel = [
   { value: 'indirect', label: 'INDIRECT' },
   { value: 'direct', label: 'DIRECT' },
@@ -128,7 +144,6 @@ const defaultValues = {
   distributionChannel: '',
   intermediaryName: 0,
   intermediaryType: 0,
-  intermediatyName: 0,
   intermediaryBranchOffice: 0,
   customerDetails: {
     fullName: '',
@@ -144,7 +159,7 @@ const defaultValues = {
   exchangeRate: '',
   commercialInvoice: '',
   billOfLadenNumber: '',
-  letterOfCredit: '',
+  letterOfCredit: 0,
   vesselOrFlightName: '',
   voyageOrFlightNumber: '',
   vesselFlag: '',
@@ -156,6 +171,7 @@ const defaultValues = {
   estimatedArrivalDate: '',
   transhipment: [],
   transits: [],
+  interests: [],
 };
 
 const formSchema = z.object({
@@ -196,21 +212,9 @@ const formSchema = z.object({
   portOfDestination: z.number().min(1, { message: 'Select a port' }),
   sailingDate: z.string().min(1, { message: 'Enter a date' }),
   estimatedArrivalDate: z.string().min(1, { message: 'Enter a date' }),
-  transhipment: z.array(
-    z.object({
-      originCountry: z.string(),
-      destinationCountry: z.string(),
-      rate: z.number(),
-      description: z.string(),
-    })
-  ),
-  transits: z.array(
-    z.object({
-      originCountry: z.string(),
-      destinationCountry: z.string(),
-      rate: z.number(),
-    })
-  ),
+  transhipment: z.array(),
+  transits: z.array(),
+  interests: z.array(),
 });
 
 const findCustomer = (fullName: string, id: string) => {
@@ -241,7 +245,6 @@ const Page = () => {
     defaultValues,
   });
 
-  console.log(form.formState.errors);
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
   }
@@ -608,11 +611,14 @@ const Page = () => {
               {selectedTab.toLowerCase() === 'transhipment' && (
                 <Transhipment
                   transhipments={form.watch('transhipment')}
-                  addTranshipments={(trans: TranshipmentType) =>
-                    form.setValue('transhipment', [
-                      trans,
-                      ...form.watch('transhipment'),
-                    ])
+                  addTranshipments={(transhipment: TranshipmentType) =>
+                    addToTable(transhipment, 'transhipment', form)
+                  }
+                  updateTranshipment={(transhipment: TranshipmentType) =>
+                    updateTableValue(transhipment, 'transhipment', form)
+                  }
+                  deleteTranshipment={(id: string) =>
+                    deleteTableValue(id, 'transhipment', form)
                   }
                 />
               )}
@@ -620,19 +626,28 @@ const Page = () => {
                 <Transits
                   transits={form.watch('transits')}
                   addTransit={(transit: TransitType) =>
-                    form.setValue('transits', [
-                      transit,
-                      ...form.watch('transits'),
-                    ])
+                    addToTable(transit, 'transits', form)
+                  }
+                  updateTransit={(transit: TransitType) =>
+                    updateTableValue(transit, 'transits', form)
+                  }
+                  deleteTransit={(id: string) =>
+                    deleteTableValue(id, 'transits', form)
                   }
                 />
               )}
               {selectedTab.toLowerCase() === 'interests / items' && (
                 <InterestItems
-                  addInterests={(interest: InterestType) =>
-                    console.log('interests')
+                  addInterests={(interests: InterestType) =>
+                    addToTable(interests, 'interests', form)
                   }
-                  interests={[]}
+                  interests={form.watch('interests')}
+                  deleteInterest={(id: string) =>
+                    deleteTableValue(id, 'interests', form)
+                  }
+                  updateInterets={(interest: InterestType) =>
+                    updateTableValue(interest, 'interests', form)
+                  }
                 />
               )}
               {selectedTab.toLowerCase() === 'policy extension' && (
