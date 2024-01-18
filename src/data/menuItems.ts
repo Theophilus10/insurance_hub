@@ -273,6 +273,16 @@ export const motorMenuItems: IMenuItem[] = [
     ],
   },
   {
+    title: "Stickers",
+    icon: "la:edit-solid",
+    items: [
+      {
+        title: "All Prices",
+        path: "/private/motor/sticker/all_prices",
+      },
+    ],
+  },
+  {
     title: "Claims",
     icon: "la:edit-solid",
     items: [

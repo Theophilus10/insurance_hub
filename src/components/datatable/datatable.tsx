@@ -54,7 +54,7 @@ export default function DataTable<TData, TValue>({
   columns,
   data,
   showAddButton = true,
-  addButtonLabel = "New Record",
+  addButtonLabel = "",
   addButtonFunction,
   searchPlaceholder = "Search...",
   onRowAction,

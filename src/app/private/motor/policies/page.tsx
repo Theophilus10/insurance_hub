@@ -23,6 +23,9 @@ import { useForm } from "react-hook-form";
 import Discounts, {
   DiscountType,
 } from "@app/components/motor/partials/discount";
+import Modal from "@app/components/ui/modal";
+import FleetUpload from "../fleet_upload/page";
+
 const options = [
   { value: "Glico General Insurance Company Limited", label: "Glico" },
   { value: "Ghana Union Assurance", label: "GUA" },
@@ -117,6 +120,8 @@ const tabsList = [
 ];
 const TabsComponent = () => {
   const [selectedTab, setSelectedTab] = useState("Loadings");
+  const [isChecked, setChecked] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -141,6 +146,14 @@ const TabsComponent = () => {
       discount: [],
     },
   });
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
 
   function onSubmit(values: z.infer<typeof schema>) {
     console.log(values);
@@ -328,6 +341,34 @@ const TabsComponent = () => {
                 <CardTitle className="text-lg md:text-xl font-extrabold py-3">
                   Policy Info
                 </CardTitle>
+                <div className="space-x-7">
+                  <div className="flex space-x-5">
+                    <p>Fleet</p>
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={() => setChecked(!isChecked)}
+                    />
+                    <div
+                      style={{ visibility: isChecked ? "visible" : "hidden" }}
+                    >
+                      <Button type="button" onClick={openModal}>
+                        Upload Fleet
+                      </Button>
+                    </div>
+                  </div>
+
+                  <Modal
+                    open={isModalOpen}
+                    size="xl"
+                    title="Fleet Upload"
+                    closeModal={closeModal}
+                  >
+                    <p>
+                      <FleetUpload closeModal={closeModal} />
+                    </p>
+                  </Modal>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2  gap-8 py-4">
                   <div className="flex-1">
                     <SelectField
