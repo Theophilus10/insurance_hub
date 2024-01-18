@@ -1,0 +1,48 @@
+export const data = [
+  {
+    id: 1,
+    vehicle_registration: "ABC123",
+    make_model: "Toyota Camry",
+    inception_date: "2022-01-01",
+    expiry_date: "2023-01-01",
+    sum_insured: "$20,000",
+    created_at: "2022-01-01T12:34:56",
+  },
+  {
+    id: 2,
+    vehicle_registration: "XYZ789",
+    make_model: "Honda Accord",
+    inception_date: "2022-02-01",
+    expiry_date: "2023-02-01",
+    sum_insured: "$18,000",
+    created_at: "2022-02-01T08:45:30",
+  },
+  {
+    id: 3,
+    vehicle_registration: "DEF456",
+    make_model: "Ford Mustang",
+    inception_date: "2022-03-01",
+    expiry_date: "2023-03-01",
+    sum_insured: "$25,000",
+    created_at: "2022-03-01T15:20:45",
+  },
+  {
+    id: 4,
+    vehicle_registration: "GHI789",
+    make_model: "Chevrolet Cruze",
+    inception_date: "2022-04-01",
+    expiry_date: "2023-04-01",
+    sum_insured: "$22,000",
+    created_at: "2022-04-01T10:10:10",
+  },
+  {
+    id: 5,
+    vehicle_registration: "JKL012",
+    make_model: "Nissan Altima",
+    inception_date: "2022-05-01",
+    expiry_date: "2023-05-01",
+    sum_insured: "$19,500",
+    created_at: "2022-05-01T18:30:15",
+  },
+  // Add more sample data as needed
+];

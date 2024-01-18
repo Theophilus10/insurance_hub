@@ -190,7 +190,8 @@ const registerClaim = () => {
                 className="font-bold text-lg"
               />
               <Button
-                className="bg-blue-500 font-bold  ml-4 text-lg"
+                variant="primary"
+                className="font-bold  ml-4 text-lg"
                 label="Back"
                 onClick={handleGoBack}
                 leadingIcon={<ArrowBigLeftDash />}

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { ChangeEvent } from "react";
 import { useController, useFormContext } from "react-hook-form";
 import IconifyIcon from "../icon";
 
@@ -21,6 +21,7 @@ interface TextInputProps {
   disabled?: boolean;
   value?: any;
   className?: string;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 const InputField: React.FC<TextInputProps> = ({
@@ -31,7 +32,7 @@ const InputField: React.FC<TextInputProps> = ({
   type = "text",
   placeholder,
   disabled = false,
-  value = '',
+  value = "",
   className,
 
   ...props

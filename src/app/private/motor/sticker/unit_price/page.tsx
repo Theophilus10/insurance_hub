@@ -18,7 +18,7 @@ import { Button } from "@app/components/ui/button";
 import { useEffect } from "react";
 import { Textarea } from "@app/components/ui/textarea";
 
-const newEndorsement = () => {
+const newUnitPrice = () => {
   const router = useRouter();
 
   const handleGoBack = () => {
@@ -43,28 +43,34 @@ const newEndorsement = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="py-5">New Endorsement</CardTitle>
+        <CardTitle className="py-5">New Unit Price</CardTitle>
         <Divider />
         <CardContent>
           <Form>
-            <div className="py-3">
-              <InputField label="Date" name="date" value={today} />
-            </div>
-            <div className="py-3">
+            <div className="py-3 space-y-4">
               <InputField
-                label="Vehicle Registration Number"
-                name="vehicle_registration"
+                label="Unit Price Motor Vechicle"
+                name="unit_price_vechicle"
+              />
+              <InputField
+                label="Unit Price Motor Cycle"
+                name="unit_price_cycle"
               />
             </div>
 
-            <div className="py-3">
+            <div className="py-3 space-y-4">
+              <InputField label="Start Date" name="start_date" value={today} />
+              <InputField label="End Date" name="end_date" />
+            </div>
+
+            {/* <div className="py-3">
               <SelectField
                 label="Endorsement Type"
                 name="endorsement_type"
                 options={[]}
                 required
               />
-            </div>
+            </div> */}
             <div className="py-3">
               <Textarea label="Comment" name="comment" />
             </div>
@@ -90,4 +96,4 @@ const newEndorsement = () => {
   );
 };
 
-export default newEndorsement;
+export default newUnitPrice;
