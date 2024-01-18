@@ -56,6 +56,10 @@ import {
   IBranch,
   IInstitution,
 } from '@app/server/services';
+import DocumentUploads from '@app/components/single_transit_policy/partials/document_uploads';
+
+const stylesPolicySummaryItemStyles =
+  'flex items-center justify-between text-sm';
 
 const addToTable = (value: any, watchValue: string, form: any) =>
   form.setValue(watchValue, [value, ...form.watch(watchValue)]);
@@ -78,7 +82,7 @@ const distributionChannel = [
   { value: 'direct', label: 'DIRECT' },
 ];
 
-// 61.10.247.114
+// npmr
 // Hartwell Sygrove
 
 const customers = [
@@ -172,6 +176,7 @@ const defaultValues = {
   transhipment: [],
   transits: [],
   interests: [],
+  policyExtension: [],
 };
 
 const formSchema = z.object({
@@ -215,6 +220,7 @@ const formSchema = z.object({
   transhipment: z.array(),
   transits: z.array(),
   interests: z.array(),
+  policyExtension: z.array(),
 });
 
 const findCustomer = (fullName: string, id: string) => {
@@ -652,16 +658,55 @@ const Page = () => {
               )}
               {selectedTab.toLowerCase() === 'policy extension' && (
                 <PolicyExtenxions
-                  addPolicyExtension={() => console.log('policy extension')}
-                  policyExtensions={[]}
+                  addPolicyExtension={(policyExtenxion: PolicyExtenxionsType) =>
+                    addToTable(policyExtenxion, 'policyExtension', form)
+                  }
+                  policyExtensions={form.watch('policyExtension')}
+                  deletePolicyExtension={(id: string) =>
+                    deleteTableValue(id, 'policyExtension', form)
+                  }
+                  updatePolicyExtension={(
+                    policyExtension: PolicyExtenxionsType
+                  ) =>
+                    updateTableValue(policyExtension, 'policyExtension', form)
+                  }
                 />
               )}
               {selectedTab.toLowerCase() === 'policy excess' && (
                 <PolicyExcess />
               )}
+              {selectedTab.toLowerCase() === 'document uploads' && (
+                <DocumentUploads />
+              )}
+              <div className='ml-auto mr-0 block  p-5 w-[400px] shadow-md rounded-md '>
+                <h3>Policy Summary</h3>
+
+                <div className='space-y-4 py-1 my-3 border-b-2 border-t-2'>
+                  <p className={stylesPolicySummaryItemStyles}>
+                    <span>Sum Insured:</span> <span>GH₵0.00</span>
+                  </p>
+                  <p className={stylesPolicySummaryItemStyles}>
+                    <span>Basic Premium:</span> <span>GH₵0.00</span>
+                  </p>
+                  <p className={stylesPolicySummaryItemStyles}>
+                    <span>Loadings(%):</span> <span>0000%</span>
+                  </p>
+                  <p className={stylesPolicySummaryItemStyles}>
+                    <span>Total Loadings:</span> <span>GH₵10.00</span>
+                  </p>
+                  <p className={stylesPolicySummaryItemStyles}>
+                    <span>Maintenance fee:</span> <span>3000</span>
+                  </p>
+                </div>
+                <p className='flex items-center justify-between'>
+                  <span>Premium Payable:</span> <span>GH₵100.00</span>
+                </p>
+              </div>
             </div>
             <div className='flex justify-end mx-12 my-5'>
-              <Button type='submit'>Submit</Button>
+              <Button type='submit' variant='primary'>
+                Submit Proposal
+              </Button>
             </div>
           </form>
         </Form>

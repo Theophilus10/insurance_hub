@@ -13,6 +13,21 @@ import {
 } from '@app/components/forms/ShadcnFormFields';
 import { Button } from '@app/components/ui/button';
 import { Input } from '@app/components/ui/input';
+import { convertDataToSelectObject } from '@app/helpers/index';
+import {
+  read_countries,
+  read_institutions,
+  read_branches,
+  read_institution_types,
+  read_shipping_types,
+  read_banks,
+  read_ports,
+  read_carriers,
+  read_currencies,
+  IPort,
+  IBranch,
+  IInstitution,
+} from '@app/server/services';
 
 const insuranceCompanies = [
   { value: 'Hollard', label: 'Hollard' },
@@ -109,6 +124,10 @@ const findCustomer = (fullName: string, id: string) => {
 };
 
 const Page = () => {
+  const { items, isLoading } = read_institutions();
+  const { items: institutionTypes } = read_institution_types();
+  const { items: branchesItems, isLoading: branchesLoading } = read_branches();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -169,7 +188,7 @@ const Page = () => {
                     form={form}
                     name='insuranceCompany'
                     label='Insurance Company'
-                    options={insuranceCompanies}
+                    options={convertDataToSelectObject(items)}
                   />
                   <SelectFormField
                     form={form}
