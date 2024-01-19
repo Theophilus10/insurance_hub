@@ -9,10 +9,10 @@ import { columns } from "./partials/columns";
 
 const Page = () => {
   const [openModal, setOpenModal] = useState(false);
-  const [editorLabel, setEditorLabel] = useState("Add Peril Class");
+  const [editorLabel, setEditorLabel] = useState("Add Peril Rating");
   const [preValues,setPreValues] = useState({})
   const toggleModal = () => {
-    setEditorLabel("Add Peril Class");
+    setEditorLabel("Add Peril Rating");
     setPreValues({})
     setOpenModal(!openModal);
   };
@@ -20,7 +20,7 @@ const Page = () => {
   const onRowAction = (action: string, row: Record<string, any>) => {
     switch (action) {
       case "edit":
-        setEditorLabel("Update Peril Class");
+        setEditorLabel("Update Peril Rating");
         setOpenModal(true);
         setPreValues(row)
         break;
