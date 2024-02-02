@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import * as z from 'zod';
 import { Card, CardContent, CardTitle } from '@app/components/ui/card';
 import { ListTodo } from 'lucide-react';
@@ -15,29 +16,17 @@ import { Button } from '@app/components/ui/button';
 import { Input } from '@app/components/ui/input';
 import { convertDataToSelectObject } from '@app/helpers/index';
 import {
-  read_countries,
   read_institutions,
   read_branches,
   read_institution_types,
-  read_shipping_types,
-  read_banks,
-  read_ports,
-  read_carriers,
-  read_currencies,
-  IPort,
   IBranch,
   IInstitution,
 } from '@app/server/services';
 
-const insuranceCompanies = [
-  { value: 'Hollard', label: 'Hollard' },
-  { value: 'GLICO', label: 'GLICO' },
-  { value: 'Providence', label: 'Providence' },
-  { value: 'New One', label: 'New One' },
-  { value: 'Another One', label: 'Another One' },
-  { value: 'We the best Insurance', label: 'We the best Insurance' },
+const distributionChannel = [
+  { value: 'indirect', label: 'INDIRECT' },
+  { value: 'direct', label: 'DIRECT' },
 ];
-const companyBranches = [{ value: 'Kumasi', label: 'Kumasi' }];
 
 const customers = [
   {
@@ -83,35 +72,35 @@ const customers = [
 ];
 
 const formSchema = z.object({
-  insuranceCompany: z.string().min(1, { message: 'Select an institution' }),
-  branchOffice: z.string().min(1, { message: 'Select a branch' }),
+  insuranceCompany: z.number().min(1, { message: 'Select an institution' }),
+  branchOffice: z.number().min(1, { message: 'Select a branch' }),
   distributionChannel: z.string().min(1, { message: 'Select a channel' }),
-  intermediaryType: z.string().min(1, { message: 'Select a type' }),
-  intermediaryName: z.string().min(1, { message: 'Select a name' }),
-  branchOfficeAddress: z.string().min(1, { message: 'Select an address' }),
+  intermediaryType: z.number().min(1, { message: 'Select a type' }),
+  intermediaryName: z.number().min(1, { message: 'Select a name' }),
+  branchOfficeAddress: z.string(),
   customerDetails: z.object({
     fullName: z.string(),
     ghanaCardNumber: z.string(),
     phoneNumber: z.string(),
     address: z.string(),
-    email: z.string().email({ message: 'Invalid email address' }),
+    email: z.string(),
+    id: z.string(),
   }),
   inceptionDate: z.string().min(1, { message: 'Select a date' }),
-  transhipment: z.array(
-    z.object({
-      originCountry: z.string(),
-      destinationCountry: z.string(),
-      rate: z.number(),
-      description: z.string(),
-    })
-  ),
-  transits: z.array(
-    z.object({
-      originCountry: z.string(),
-      destinationCountry: z.string(),
-      rate: z.number(),
-    })
-  ),
+  expiryDate: z.string().min(1, { message: 'Select a date' }),
+  limitPerShippment: z.string(),
+  estimatedAnnualShipmentValue: z.string(),
+  policyDeclaration: z.string(),
+  contractingClause: z.string(),
+  cancellationClause: z.string(),
+  conveyance: z.string(),
+  voyages: z.string(),
+  conditions: z.string(),
+  policies: z.string(),
+  interest: z.string(),
+  basisOfValuation: z.string(),
+  rates: z.string(),
+  deductible: z.string(),
 });
 
 const findCustomer = (fullName: string, id: string) => {
@@ -124,6 +113,9 @@ const findCustomer = (fullName: string, id: string) => {
 };
 
 const Page = () => {
+  const [branches, setBranches] = useState([]);
+  const [intermediaryNames, setIntermediaryNames] = useState([]);
+  const [intermediaryBranches, setIntermediaryBranches] = useState([]);
   const { items, isLoading } = read_institutions();
   const { items: institutionTypes } = read_institution_types();
   const { items: branchesItems, isLoading: branchesLoading } = read_branches();
@@ -131,8 +123,8 @@ const Page = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      insuranceCompany: '',
-      branchOffice: '',
+      insuranceCompany: 0,
+      branchOffice: 0,
       branchOfficeAddress: '',
       customerDetails: {
         fullName: '',
@@ -140,15 +132,63 @@ const Page = () => {
         email: '',
         ghanaCardNumber: '',
         phoneNumber: '',
+        id: '',
       },
       distributionChannel: '',
-      intermediaryName: '',
+      intermediaryName: 0,
       inceptionDate: '',
-      intermediaryType: '',
-      transhipment: [],
-      transits: [],
+      intermediaryType: 0,
+      expiryDate: '',
+      limitPerShippment: '',
+      estimatedAnnualShipmentValue: '',
+      policyDeclaration: '',
+      contractingClause: '',
+      cancellationClause: '',
+      conveyance: '',
+      voyages: '',
+      conditions: '',
+      policies: '',
+      interest: '',
+      basisOfValuation: '',
+      rates: '',
+      deductible: '',
     },
   });
+  useEffect(() => {
+    if (branchesItems && !branchesLoading) {
+      const newBranches = branchesItems.filter(
+        (x: IBranch) => x.institution.id === form.watch('insuranceCompany')
+      );
+      setBranches(newBranches);
+    }
+  }, [form.watch('insuranceCompany')]);
+
+  useEffect(() => {
+    if (branchesItems && !branchesLoading) {
+      const newBranches = branchesItems.filter(
+        (x: IBranch) => x.institution.id === form.watch('intermediaryName')
+      );
+      setIntermediaryBranches(newBranches);
+    }
+  }, [form.watch('intermediaryName')]);
+
+  useEffect(() => {
+    if (items && !isLoading) {
+      const intermediaryNamesValues = items.filter(
+        (x: IInstitution) =>
+          x['institution_type']?.id === form.watch('intermediaryType')
+      );
+      setIntermediaryNames(intermediaryNamesValues);
+    }
+  }, [form.watch('intermediaryType')]);
+
+  useEffect(() => {
+    if (form.watch('distributionChannel') === 'direct') {
+      form.resetField('intermediaryType');
+      form.resetField('intermediaryName');
+      form.resetField('branchOfficeAddress');
+    }
+  }, [form.watch('distributionChannel')]);
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
@@ -172,12 +212,13 @@ const Page = () => {
       form.setValue('customerDetails.address', '');
     }
   };
+
   return (
     <div>
       <Card>
         <CardTitle className='flex  items-center gap-2 font-thin border-b-[1px] p-5'>
           <ListTodo />
-          Open Cover Policy
+          Fire Policy
         </CardTitle>
         <CardContent className='px-0'>
           <Form {...form}>
@@ -194,7 +235,7 @@ const Page = () => {
                     form={form}
                     name='branchOffice'
                     label='Branch Office'
-                    options={companyBranches}
+                    options={convertDataToSelectObject(branches)}
                   />
                 </div>
                 <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
@@ -202,27 +243,27 @@ const Page = () => {
                     form={form}
                     name='distributionChannel'
                     label='Distribution Channel'
-                    options={insuranceCompanies}
+                    options={distributionChannel}
                     showWatchValue={false}
                   />
                   <SelectFormField
                     form={form}
                     name='intermediaryType'
                     label='Intermediary Type:'
-                    options={insuranceCompanies}
+                    options={convertDataToSelectObject(institutionTypes)}
                     showWatchValue={false}
                   />
                   <SelectFormField
                     form={form}
                     name='intermediaryName'
                     label='Intermediary Name:'
-                    options={insuranceCompanies}
+                    options={convertDataToSelectObject(intermediaryNames)}
                   />
                   <SelectFormField
                     form={form}
-                    name='branchOffice'
+                    name='branchOfficeAddress'
                     label='Branch Office of Intermediary:'
-                    options={insuranceCompanies}
+                    options={convertDataToSelectObject(intermediaryBranches)}
                     showWatchValue={false}
                   />
                 </div>
@@ -306,84 +347,86 @@ const Page = () => {
                     form={form}
                     className='flex flex-col lg:flex-row items-start lg:items-center lg:w-[40%] '
                     labelStyle=' lg:w-[40%] 2xl:w-[30%] '
-                    name='inceptionDate'
+                    name='expiryDate'
                     label='Expiry Date:'
                     type='date'
                   />
                 </div>
                 <InputFormField
                   form={form}
-                  name='inceptionDate'
+                  name='limitPerShipment'
                   label='Limit Per Shipment/Bottom'
+                  type='number'
                 />
                 <InputFormField
                   form={form}
-                  name='inceptionDate'
+                  name='estimatedAnnualShipmentValue'
                   label='Estimated Annual Shipment Value'
+                  type='number'
                 />
                 <TextareaFormField
                   form={form}
-                  name='inceptionDate'
+                  name='policyDeclaration'
                   label='Policy Declaration'
                   className='lg:col-span-2'
                 />
                 <TextareaFormField
                   form={form}
-                  name='inceptionDate'
+                  name='contractingClause'
                   label='Contracting Clause'
                   className='lg:col-span-2'
                 />
                 <TextareaFormField
                   form={form}
-                  name='inceptionDate'
+                  name='cancellationClause'
                   label='Cancellation Clause'
                   className='lg:col-span-2'
                 />
                 <TextareaFormField
                   form={form}
-                  name='inceptionDate'
+                  name='conveyance'
                   label='Conveyance'
                   className='lg:col-span-2'
                 />
                 <TextareaFormField
                   form={form}
-                  name='inceptionDate'
+                  name='voyages'
                   label='Voyages'
                   className='lg:col-span-2'
                 />
                 <TextareaFormField
                   form={form}
-                  name='inceptionDate'
+                  name='conditions'
                   label='Conditions'
                   className='lg:col-span-2'
                 />
                 <TextareaFormField
                   form={form}
-                  name='inceptionDate'
+                  name='policies'
                   label='Policies'
                   className='lg:col-span-2'
                 />
                 <TextareaFormField
                   form={form}
-                  name='inceptionDate'
+                  name='interest'
                   label='Interest'
                   className='lg:col-span-2'
                 />
                 <TextareaFormField
                   form={form}
-                  name='inceptionDate'
+                  name='basisOfValuation'
                   label='Base Of Valuations'
                   className='lg:col-span-2'
                 />
                 <TextareaFormField
                   form={form}
-                  name='inceptionDate'
+                  name='rates'
                   label='Rates'
                   className='lg:col-span-2'
                 />
                 <TextareaFormField
                   form={form}
-                  name='inceptionDate'
+                  name='deductible'
                   label='Dedcuctible'
                   className='lg:col-span-2'
                 />

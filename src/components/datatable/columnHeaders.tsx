@@ -14,6 +14,7 @@ export const HeaderWithSorting = ({
 }: HeaderWithSortingProps) => (
   <Button
     variant='ghost'
+    type='button'
     className={className}
     onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
   >

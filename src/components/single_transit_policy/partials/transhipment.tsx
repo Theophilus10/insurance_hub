@@ -82,6 +82,7 @@ const Transhipment = ({
     rate: '',
     description: '',
   });
+  const [updating, setUpdating] = useState(false);
 
   const validateForm = () => {
     let errors = {
@@ -113,8 +114,6 @@ const Transhipment = ({
     // Return true if there are no validation errors, false otherwise
     return Object.values(errors).every(error => !error);
   };
-
-  const [updating, setUpdating] = useState(false);
 
   const onRowAction = (action: string, row: any) => {
     switch (action) {

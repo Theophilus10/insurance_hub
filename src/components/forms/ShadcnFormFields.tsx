@@ -67,6 +67,7 @@ export const SelectFormField = ({
               onChange={e => onChange(e && e.value)}
               isLoading={isLoading}
               placeholder={placeholder}
+              value={options.find(c => c.value === form.watch(name)) || null}
             />
           </FormControl>
           {showWatchValue && (

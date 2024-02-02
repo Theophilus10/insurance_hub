@@ -55,7 +55,9 @@ import {
   IPort,
   IBranch,
   IInstitution,
+  read_customer,
 } from '@app/server/services';
+import { createSingleTransitPolicy } from '@app/server/services/policies/marine/index';
 import DocumentUploads from '@app/components/single_transit_policy/partials/document_uploads';
 
 const stylesPolicySummaryItemStyles =
@@ -80,52 +82,6 @@ const deleteTableValue = (id: string, watchValue: any, form: any) => {
 const distributionChannel = [
   { value: 'indirect', label: 'INDIRECT' },
   { value: 'direct', label: 'DIRECT' },
-];
-
-// npmr
-// Hartwell Sygrove
-
-const customers = [
-  {
-    id: 1,
-    fullName: 'Hartwell Sygrove',
-    phoneNumber: '404-460-2527',
-    email: 'hsygrove0@psu.edu',
-    address: '13 Utah Lane',
-    ghanaCardNumber: '61.10.247.114',
-  },
-  {
-    id: 2,
-    fullName: 'Wendel Dunkerton',
-    phoneNumber: '209-839-9861',
-    email: 'wdunkerton1@answers.com',
-    address: '4 Briar Crest Pass',
-    ghanaCardNumber: '125.157.233.91',
-  },
-  {
-    id: 3,
-    fullName: 'Tommie Shillaber',
-    phoneNumber: '463-578-8069',
-    email: 'tshillaber2@stumbleupon.com',
-    address: '3460 Hollow Ridge Place',
-    ghanaCardNumber: '242.40.128.92',
-  },
-  {
-    id: 4,
-    fullName: 'Melissa Bednell',
-    phoneNumber: '336-667-7195',
-    email: 'mbednell3@bbb.org',
-    address: '150 Dawn Street',
-    ghanaCardNumber: '23.182.249.187',
-  },
-  {
-    id: 5,
-    fullName: 'Clifford Fawlks',
-    phoneNumber: '834-758-6419',
-    email: 'cfawlks4@ycombinator.com',
-    address: '9 Carpenter Terrace',
-    ghanaCardNumber: '93.86.215.166',
-  },
 ];
 
 const tabsList = [
@@ -153,8 +109,9 @@ const defaultValues = {
     fullName: '',
     address: '',
     email: '',
-    ghanaCardNumber: '',
+    ghanaCardNumber: 0,
     phoneNumber: '',
+    id: 0,
   },
   inceptionDate: '',
   noKnownLoss: '',
@@ -177,21 +134,23 @@ const defaultValues = {
   transits: [],
   interests: [],
   policyExtension: [],
+  policyExcess: '',
 };
 
 const formSchema = z.object({
   insuranceCompany: z.number().min(1, { message: 'Select an institution' }),
   branchOffice: z.number().min(1, { message: 'Select a branch' }),
   distributionChannel: z.string().min(1, { message: 'Select a channel' }),
-  intermediaryType: z.number().min(1, { message: 'Select a type' }),
-  intermediaryName: z.number().min(1, { message: 'Select a name' }),
-  intermediaryBranchOffice: z.number().min(1, { message: 'Select an address' }),
+  intermediaryType: z.number(),
+  intermediaryName: z.number(),
+  intermediaryBranchOffice: z.number(),
   customerDetails: z.object({
+    id: z.number().min(1, { message: 'Select a customer' }),
     fullName: z.string(),
-    ghanaCardNumber: z.string(),
+    ghanaCardNumber: z.number(),
     phoneNumber: z.string(),
     address: z.string(),
-    email: z.string().email({ message: 'Invalid email address' }),
+    email: z.string(),
   }),
   inceptionDate: z.string().min(1, { message: 'Select a date' }),
   noKnownLoss: z.string(),
@@ -217,25 +176,74 @@ const formSchema = z.object({
   portOfDestination: z.number().min(1, { message: 'Select a port' }),
   sailingDate: z.string().min(1, { message: 'Enter a date' }),
   estimatedArrivalDate: z.string().min(1, { message: 'Enter a date' }),
-  transhipment: z.array(),
-  transits: z.array(),
-  interests: z.array(),
-  policyExtension: z.array(),
+  transhipment: z
+    .array(
+      z.object({
+        id: z.string(),
+        originCountry: z.string(),
+        destinationCountry: z.string(),
+        rate: z.number(),
+        description: z.string(),
+      })
+    )
+    .min(1, { message: 'Add transhipments' }),
+  transits: z
+    .array(
+      z.object({
+        originCountry: z.string(),
+        destinationCountry: z.string(),
+        rate: z.number(),
+        id: z.string(),
+      })
+    )
+    .optional(),
+  interests: z
+    .array(
+      z.object({
+        coverType: z.number(),
+        interest: z.number(),
+        packageType: z.string(),
+        rate: z.number(),
+        itemCost: z.number(),
+        freightAmount: z.number(),
+        markupRate: z.number(),
+        dutyRate: z.number(),
+        sumInsured: z.number(),
+        markupAmount: z.number(),
+        dutyAmount: z.number(),
+        basicPremium: z.number(),
+        description: z.string(),
+        id: z.string(),
+      })
+    )
+    .min(1, { message: 'Add interest items' }),
+  policyExtension: z
+    .array(
+      z.object({
+        exchangeRate: z.number(),
+        extension: z.number(),
+        id: z.string(),
+      })
+    )
+    .min(1, { message: 'Add policy extension' }),
+  policyExcess: z.string(),
 });
 
-const findCustomer = (fullName: string, id: string) => {
+const findCustomer = async (fullName: string, id: number) => {
   const fullNameToLowerCase = fullName.toLowerCase();
-  return customers.find(
-    customer =>
-      customer.fullName.toLowerCase() === fullNameToLowerCase &&
-      customer.ghanaCardNumber === id
-  );
+  const customer = await read_customer(id);
+  if (!customer.success) return false;
+  if (customer?.data.name.toLowerCase() == fullNameToLowerCase)
+    return customer.data;
 };
+
 const Page = () => {
   const [selectedTab, setSelectedTab] = useState('transhipment');
   const [branches, setBranches] = useState([]);
   const [intermediaryNames, setIntermediaryNames] = useState([]);
   const [intermediaryBranches, setIntermediaryBranches] = useState([]);
+  const [customerError, setCustomerError] = useState('');
+  const [intermediaryErrors, setIntermediaryErrors] = useState({});
   const { items, isLoading } = read_institutions();
   const { items: institutionTypes } = read_institution_types();
   const { items: branchesItems, isLoading: branchesLoading } = read_branches();
@@ -251,9 +259,85 @@ const Page = () => {
     defaultValues,
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIntermediaryErrors({});
+    if (values.distributionChannel !== 'direct') {
+      if (values.intermediaryType === 0) {
+        setIntermediaryErrors(prev => {
+          return {
+            ...prev,
+            intermediaryType: 'Select an intermediary type',
+          };
+        });
+      }
+      if (values.intermediaryName === 0) {
+        setIntermediaryErrors(prev => {
+          return {
+            ...prev,
+            intermediaryName: 'Select an intermediary name',
+          };
+        });
+      }
+      if (values.intermediaryBranchOffice === 0) {
+        setIntermediaryErrors(prev => {
+          return {
+            ...prev,
+            intermediaryBranchOffice: 'Select an intermediary branch',
+          };
+        });
+      }
+    }
+    if (
+      values.distributionChannel !== 'direct' &&
+      (values.intermediaryType === 0 ||
+        values.intermediaryName === 0 ||
+        values.intermediaryBranchOffice === 0)
+    ) {
+      return intermediaryErrors;
+    }
+
+    const formData = {
+      ['vessel_flag']: values.vesselFlag,
+      ['flight_vessel_number']: values.vesselOrFlightNumber,
+      ['flight_vessel_name']: values.vesselOrFlightName,
+      ['bill_of_laden_number']: values.billOfLadenNumber,
+      ['commercial_invoice_number']: values.commercialInvoice,
+      ['no_known_loss']: values.noKnownLoss,
+      ['exchange_rate']: +values.exchangeRate,
+      ['customer_id']: values.customerDetails.id,
+      ['insurer_id']: values.customerDetails.id,
+      ['distribution_channel']: values.distributionChannel,
+      ['issue_date']: values.inceptionDate,
+      ['policy_excess']: '',
+      ['currency_id']: values.currency,
+      ['shipping_type_id']: values.shippingType,
+      ['carrier_id']: values.carrier,
+      ['country_of_origin_id']: values.countryOfImportation,
+      ['country_of_destination_id']: values.countryOfDestination,
+      ['port_of_loading_id']: values.portOfLoading,
+      ['port_of_destination_id']: values.portOfDestination,
+      ['sailing_date']: values.sailingDate,
+      ['estimated_arrival_date']: values.estimatedArrivalDate,
+      ['policy_extensions']: values.policyExtension,
+      interests: values.interests,
+      transhipments: values.transhipment,
+      transits: values.transits,
+      ['intermediary_id']: values.intermediaryName,
+      ['letter_of_credit_id']: values.letterOfCredit,
+      ['open_cover_policy_id']: '',
+    };
+
+    const singleTransitPolicies =
+      JSON.parse(localStorage.getItem('singleTransitPolicies')!) || [];
+    singleTransitPolicies.push(formData);
+    localStorage.setItem(
+      'singleTransitPolicies',
+      JSON.stringify(singleTransitPolicies)
+    );
+    form.reset();
+    // const response = await createSingleTransitPolicy(formData);
+    // console.log(response);
+  };
 
   useEffect(() => {
     if (branchesItems && !branchesLoading) {
@@ -275,11 +359,11 @@ const Page = () => {
 
   useEffect(() => {
     if (items && !isLoading) {
-      const intermediaryNames = items.filter(
+      const intermediaryNameValues = items.filter(
         (x: IInstitution) =>
           x['institution_type']?.id === form.watch('intermediaryType')
       );
-      setIntermediaryNames(intermediaryNames);
+      setIntermediaryNames(intermediaryNameValues);
     }
   }, [form.watch('intermediaryType')]);
 
@@ -291,25 +375,24 @@ const Page = () => {
     }
   }, [form.watch('distributionChannel')]);
 
-  const setCustomerValues = () => {
-    const customer = findCustomer(
+  const setCustomerValues = async () => {
+    const customer = await findCustomer(
       form.watch('customerDetails.fullName'),
       form.watch('customerDetails.ghanaCardNumber')
     );
+
     if (customer) {
-      form.setValue('customerDetails.fullName', customer.fullName);
-      form.setValue('customerDetails.phoneNumber', customer.phoneNumber);
-      form.setValue('customerDetails.address', customer.address);
-      form.setValue('customerDetails.email', customer.email);
-      form.setValue(
-        'customerDetails.ghanaCardNumber',
-        customer.ghanaCardNumber
-      );
+      form.setValue('customerDetails.id', customer?.id);
+      form.setValue('customerDetails.fullName', customer?.name);
+      form.setValue('customerDetails.phoneNumber', customer?.phone);
+      form.setValue('customerDetails.address', customer['postal_address']);
+      form.setValue('customerDetails.email', customer?.email);
+      form.setValue('customerDetails.ghanaCardNumber', customer?.id);
     } else {
-      form.setValue('customerDetails.address', '');
+      form.resetField('customerDetails');
+      setCustomerError('Customer not found');
     }
   };
-
   return (
     <Card>
       <CardTitle className='flex  items-center gap-2 font-thin border-b-[1px] p-5'>
@@ -435,11 +518,14 @@ const Page = () => {
                       </p>
                     </>
                   ) : (
-                    <p>
-                      {(form.formState.errors.customerDetails?.address
-                        ?.message &&
-                        'Select a Customer') ||
-                        'No Customer Found'}
+                    <p
+                      className={`${
+                        form.formState.errors.customerDetails?.id?.message ||
+                        (customerError && 'text-red-500')
+                      }`}
+                    >
+                      {form.formState.errors.customerDetails?.id?.message ||
+                        customerError}
                     </p>
                   )}
                 </div>
@@ -630,7 +716,7 @@ const Page = () => {
               )}
               {selectedTab.toLowerCase() === 'transit' && (
                 <Transits
-                  transits={form.watch('transits')}
+                  transits={form.watch('transits') || []}
                   addTransit={(transit: TransitType) =>
                     addToTable(transit, 'transits', form)
                   }
@@ -673,7 +759,12 @@ const Page = () => {
                 />
               )}
               {selectedTab.toLowerCase() === 'policy excess' && (
-                <PolicyExcess />
+                <PolicyExcess
+                  policyExcess={form.watch('policyExcess')}
+                  onChange={(value: string) =>
+                    form.setValue('policyExcess', value)
+                  }
+                />
               )}
               {selectedTab.toLowerCase() === 'document uploads' && (
                 <DocumentUploads />
