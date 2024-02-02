@@ -1,6 +1,7 @@
 'use client';
 
 import * as z from 'zod';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardTitle } from '@app/components/ui/card';
 import { ListTodo } from 'lucide-react';
 import { Form, FormItem, FormLabel } from '@app/components/ui/form';
@@ -9,7 +10,6 @@ import { useForm } from 'react-hook-form';
 import {
   InputFormField,
   SelectFormField,
-  TextareaFormField,
 } from '@app/components/forms/ShadcnFormFields';
 import {
   Select,
@@ -21,25 +21,52 @@ import {
 } from '@app/components/ui/select';
 import { Button } from '@app/components/ui/button';
 import { Input } from '@app/components/ui/input';
-import Transhipment, {
-  TranshipmentType,
-} from '@app/components/single_transit_policy/partials/transhipment';
-import Transits, {
-  TransitType,
-} from '@app/components/single_transit_policy/partials/transits';
-import InterestItems, {
-  InterestType,
-} from '@app/components/single_transit_policy/partials/interests_items';
-import PolicyExtenxions, {
-  PolicyExtenxionsType,
-} from '@app/components/single_transit_policy/partials/policy_extensions';
-import { useState } from 'react';
+import { convertDataToSelectObject } from '@app/helpers/index';
+import {
+  read_institutions,
+  read_branches,
+  read_institution_types,
+  read_currencies,
+  IBranch,
+  IInstitution,
+  read_customer,
+  read_banks,
+} from '@app/server/services';
+import {
+  BuildingItemDetailsType,
+  ExcessType,
+  PerilsType,
+} from '@app/types/policyTypes';
+import BuildingItemDetails from '@app/components/fire/BuildingItemDetails';
+import Perils from '@app/components/fire/Perils';
+import Excesses from '@app/components/fire/Excesses';
 
 const tabsList = [
   'Building/Item Details',
   'Perils',
   'Excesses',
   'Document uploads',
+];
+
+const addToTable = (value: any, watchValue: string, form: any) =>
+  form.setValue(watchValue, [value, ...form.watch(watchValue)]);
+
+const updateTableValue = (value: any, watchValue: string, form: any) => {
+  const withoutValue = form
+    .watch(watchValue)
+    .filter((t: any) => t.id !== value.id);
+
+  form.setValue(watchValue, [value, ...withoutValue]);
+};
+
+const deleteTableValue = (id: string, watchValue: any, form: any) => {
+  const filteredValues = form.watch(watchValue).filter((t: any) => t.id !== id);
+  form.setValue(watchValue, filteredValues);
+};
+
+const distributionChannel = [
+  { value: 'indirect', label: 'INDIRECT' },
+  { value: 'direct', label: 'DIRECT' },
 ];
 
 const insuranceCompanies = [
@@ -50,144 +77,214 @@ const insuranceCompanies = [
   { value: 'Another One', label: 'Another One' },
   { value: 'We the best Insurance', label: 'We the best Insurance' },
 ];
-const companyBranches = [{ value: 'Kumasi', label: 'Kumasi' }];
-
-const customers = [
-  {
-    id: 1,
-    fullName: 'Hartwell Sygrove',
-    phoneNumber: '404-460-2527',
-    email: 'hsygrove0@psu.edu',
-    address: '13 Utah Lane',
-    ghanaCardNumber: '61.10.247.114',
-  },
-  {
-    id: 2,
-    fullName: 'Wendel Dunkerton',
-    phoneNumber: '209-839-9861',
-    email: 'wdunkerton1@answers.com',
-    address: '4 Briar Crest Pass',
-    ghanaCardNumber: '125.157.233.91',
-  },
-  {
-    id: 3,
-    fullName: 'Tommie Shillaber',
-    phoneNumber: '463-578-8069',
-    email: 'tshillaber2@stumbleupon.com',
-    address: '3460 Hollow Ridge Place',
-    ghanaCardNumber: '242.40.128.92',
-  },
-  {
-    id: 4,
-    fullName: 'Melissa Bednell',
-    phoneNumber: '336-667-7195',
-    email: 'mbednell3@bbb.org',
-    address: '150 Dawn Street',
-    ghanaCardNumber: '23.182.249.187',
-  },
-  {
-    id: 5,
-    fullName: 'Clifford Fawlks',
-    phoneNumber: '834-758-6419',
-    email: 'cfawlks4@ycombinator.com',
-    address: '9 Carpenter Terrace',
-    ghanaCardNumber: '93.86.215.166',
-  },
-];
 
 const formSchema = z.object({
-  insuranceCompany: z.string().min(1, { message: 'Select an institution' }),
-  branchOffice: z.string().min(1, { message: 'Select a branch' }),
+  insuranceCompany: z.number().min(1, { message: 'Select an institution' }),
+  branchOffice: z.number().min(1, { message: 'Select a branch' }),
   distributionChannel: z.string().min(1, { message: 'Select a channel' }),
-  intermediaryType: z.string().min(1, { message: 'Select a type' }),
-  intermediaryName: z.string().min(1, { message: 'Select a name' }),
-  branchOfficeAddress: z.string().min(1, { message: 'Select an address' }),
+  intermediaryType: z.number(),
+  intermediaryName: z.number(),
+  intermediaryBranchOffice: z.number(),
   customerDetails: z.object({
+    id: z.number().min(1, { message: 'Select a customer' }),
     fullName: z.string(),
-    ghanaCardNumber: z.string(),
+    ghanaCardNumber: z.number(),
     phoneNumber: z.string(),
     address: z.string(),
-    email: z.string().email({ message: 'Invalid email address' }),
+    email: z.string(),
   }),
   inceptionDate: z.string().min(1, { message: 'Select a date' }),
-  transhipment: z.array(
-    z.object({
-      originCountry: z.string(),
-      destinationCountry: z.string(),
-      rate: z.number(),
-      description: z.string(),
-    })
-  ),
-  transits: z.array(
-    z.object({
-      originCountry: z.string(),
-      destinationCountry: z.string(),
-      rate: z.number(),
-    })
-  ),
+  expiryDate: z.string().min(1, { message: 'Select a date' }),
+  currency: z.number().min(1, { message: 'Select a currency' }),
+  exchangeRate: z.string().min(1, { message: 'Enter a valid rate' }),
+  riskClass: z.number().min(1, { message: 'Select a risk class' }),
+  insuredInterest: z.number().min(1, { message: 'Select insured interest' }),
+  letterOfCredit: z.number().min(1, { message: 'Select a bank' }),
+  propertyType: z.number().min(1, { message: 'Select a property type' }),
+  buildingItemsDetails: z
+    .array(
+      z.object({
+        id: z.string(),
+        itemDescription: z.string(),
+        value: z.number(),
+        region: z.string(),
+        collapseRate: z.number(),
+        fireRate: z.number(),
+        publicLiabilityRate: z.number(),
+        digitalAddress: z.string(),
+        itemLocation: z.string(),
+      })
+    )
+    .optional(),
+  perils: z
+    .array(
+      z.object({
+        id: z.string(),
+        perilRate: z.number(),
+        additionalPeril: z.string(),
+      })
+    )
+    .optional(),
+  excesses: z
+    .array(
+      z.object({
+        id: z.string(),
+        policyExcesses: z.string(),
+        excessRate: z.number(),
+      })
+    )
+    .optional(),
 });
 
-const findCustomer = (fullName: string, id: string) => {
+const findCustomer = async (fullName: string, id: number) => {
   const fullNameToLowerCase = fullName.toLowerCase();
-  return customers.find(
-    customer =>
-      customer.fullName.toLowerCase() === fullNameToLowerCase &&
-      customer.ghanaCardNumber === id
-  );
+  const customer = await read_customer(id);
+  if (!customer.success) return false;
+  if (customer?.data.name.toLowerCase() == fullNameToLowerCase)
+    return customer.data;
 };
 
 const Page = () => {
-  const [selectedTab, setSelectedTab] = useState('');
+  const [selectedTab, setSelectedTab] = useState('building/item details');
+  const [branches, setBranches] = useState([]);
+  const [intermediaryNames, setIntermediaryNames] = useState([]);
+  const [intermediaryBranches, setIntermediaryBranches] = useState([]);
+  const [customerError, setCustomerError] = useState('');
+  const [intermediaryErrors, setIntermediaryErrors] = useState({});
+  const { items, isLoading } = read_institutions();
+  const { items: institutionTypes } = read_institution_types();
+  const { items: branchesItems, isLoading: branchesLoading } = read_branches();
+  const { items: currencies } = read_currencies();
+  const { items: banks } = read_banks();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      insuranceCompany: '',
-      branchOffice: '',
-      branchOfficeAddress: '',
+      insuranceCompany: 0,
+      branchOffice: 0,
+      distributionChannel: '',
+      intermediaryName: 0,
+      intermediaryType: 0,
+      intermediaryBranchOffice: 0,
       customerDetails: {
         fullName: '',
         address: '',
         email: '',
-        ghanaCardNumber: '',
+        ghanaCardNumber: 0,
         phoneNumber: '',
+        id: 0,
       },
-      distributionChannel: '',
-      intermediaryName: '',
       inceptionDate: '',
-      intermediaryType: '',
-      transhipment: [],
-      transits: [],
+      expiryDate: '',
+      currency: 0,
+      exchangeRate: '',
+      letterOfCredit: 0,
+      buildingItemsDetails: [],
+      perils: [],
+      excesses: [],
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
-
-  const setCustomerValues = () => {
-    const customer = findCustomer(
+  const setCustomerValues = async () => {
+    const customer = await findCustomer(
       form.watch('customerDetails.fullName'),
       form.watch('customerDetails.ghanaCardNumber')
     );
+
     if (customer) {
-      form.setValue('customerDetails.fullName', customer.fullName);
-      form.setValue('customerDetails.phoneNumber', customer.phoneNumber);
-      form.setValue('customerDetails.address', customer.address);
-      form.setValue('customerDetails.email', customer.email);
-      form.setValue(
-        'customerDetails.ghanaCardNumber',
-        customer.ghanaCardNumber
-      );
+      form.setValue('customerDetails.id', customer?.id);
+      form.setValue('customerDetails.fullName', customer?.name);
+      form.setValue('customerDetails.phoneNumber', customer?.phone);
+      form.setValue('customerDetails.address', customer['postal_address']);
+      form.setValue('customerDetails.email', customer?.email);
+      form.setValue('customerDetails.ghanaCardNumber', customer?.id);
     } else {
-      form.setValue('customerDetails.address', '');
+      form.resetField('customerDetails');
+      setCustomerError('Customer not found');
     }
   };
+
+  useEffect(() => {
+    if (branchesItems && !branchesLoading) {
+      const newBranches = branchesItems.filter(
+        (x: IBranch) => x.institution.id === form.watch('insuranceCompany')
+      );
+      setBranches(newBranches);
+    }
+  }, [form.watch('insuranceCompany')]);
+
+  useEffect(() => {
+    if (branchesItems && !branchesLoading) {
+      const newBranches = branchesItems.filter(
+        (x: IBranch) => x.institution.id === form.watch('intermediaryName')
+      );
+      setIntermediaryBranches(newBranches);
+    }
+  }, [form.watch('intermediaryName')]);
+
+  useEffect(() => {
+    if (items && !isLoading) {
+      const intermediaryNameValues = items.filter(
+        (x: IInstitution) =>
+          x['institution_type']?.id === form.watch('intermediaryType')
+      );
+      setIntermediaryNames(intermediaryNameValues);
+    }
+  }, [form.watch('intermediaryType')]);
+
+  useEffect(() => {
+    if (form.watch('distributionChannel') === 'direct') {
+      form.resetField('intermediaryType');
+      form.resetField('intermediaryName');
+      form.resetField('intermediaryBranchOffice');
+    }
+  }, [form.watch('distributionChannel')]);
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    setIntermediaryErrors({});
+    if (values.distributionChannel !== 'direct') {
+      if (values.intermediaryType === 0) {
+        setIntermediaryErrors(prev => {
+          return {
+            ...prev,
+            intermediaryType: 'Select an intermediary type',
+          };
+        });
+      }
+      if (values.intermediaryName === 0) {
+        setIntermediaryErrors(prev => {
+          return {
+            ...prev,
+            intermediaryName: 'Select an intermediary name',
+          };
+        });
+      }
+      if (values.intermediaryBranchOffice === 0) {
+        setIntermediaryErrors(prev => {
+          return {
+            ...prev,
+            intermediaryBranchOffice: 'Select an intermediary branch',
+          };
+        });
+      }
+    }
+    if (
+      values.distributionChannel !== 'direct' &&
+      (values.intermediaryType === 0 ||
+        values.intermediaryName === 0 ||
+        values.intermediaryBranchOffice === 0)
+    ) {
+      return intermediaryErrors;
+    }
+
+    console.log(values);
+  }
   return (
     <div>
       <Card>
         <CardTitle className='flex  items-center gap-2 font-thin border-b-[1px] p-5'>
           <ListTodo />
-          Open Cover Policy
+          Fire Policy
         </CardTitle>
         <CardContent className='px-0'>
           <Form {...form}>
@@ -198,13 +295,16 @@ const Page = () => {
                     form={form}
                     name='insuranceCompany'
                     label='Insurance Company'
-                    options={insuranceCompanies}
+                    options={convertDataToSelectObject(items)}
+                    isLoading={isLoading}
+                    placeholder='Select an insurance company'
                   />
                   <SelectFormField
                     form={form}
                     name='branchOffice'
                     label='Branch Office'
-                    options={companyBranches}
+                    options={convertDataToSelectObject(branches)}
+                    placeholder='Select a branch office'
                   />
                 </div>
                 <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
@@ -212,28 +312,44 @@ const Page = () => {
                     form={form}
                     name='distributionChannel'
                     label='Distribution Channel'
-                    options={insuranceCompanies}
-                    showWatchValue={false}
+                    options={distributionChannel}
+                    placeholder='Select a distribution channel'
                   />
                   <SelectFormField
                     form={form}
                     name='intermediaryType'
                     label='Intermediary Type:'
-                    options={insuranceCompanies}
-                    showWatchValue={false}
+                    options={convertDataToSelectObject(
+                      institutionTypes,
+                      'name',
+                      'id'
+                    )}
+                    disabled={form.watch('distributionChannel') === 'direct'}
+                    placeholder='Select an intermediary type'
                   />
                   <SelectFormField
                     form={form}
                     name='intermediaryName'
                     label='Intermediary Name:'
-                    options={insuranceCompanies}
+                    options={convertDataToSelectObject(
+                      intermediaryNames,
+                      'name',
+                      'id'
+                    )}
+                    disabled={form.watch('distributionChannel') === 'direct'}
+                    placeholder='Select an intermediary name'
                   />
                   <SelectFormField
                     form={form}
-                    name='branchOffice'
+                    name='intermediaryBranchOffice'
                     label='Branch Office of Intermediary:'
-                    options={insuranceCompanies}
-                    showWatchValue={false}
+                    options={convertDataToSelectObject(
+                      intermediaryBranches,
+                      'name',
+                      'id'
+                    )}
+                    disabled={form.watch('distributionChannel') === 'direct'}
+                    placeholder='Select a branch office'
                   />
                 </div>
                 <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
@@ -316,34 +432,55 @@ const Page = () => {
                       form={form}
                       className='flex flex-col lg:flex-row items-start lg:items-center lg:w-[40%] '
                       labelStyle=' lg:w-[40%] 2xl:w-[30%] '
-                      name='inceptionDate'
+                      name='expiryDate'
                       label='Expiry Date:'
                       type='date'
                     />
                   </div>
                   <SelectFormField
-                    options={[]}
                     form={form}
-                    name='inceptionDate'
+                    name='currency'
                     label='Currency'
+                    options={convertDataToSelectObject(currencies)}
                   />
                   <InputFormField
                     form={form}
-                    name='inceptionDate'
+                    name='exchangeRate'
                     label='Exchange Rate'
                     type='number'
                   />
                   <SelectFormField
-                    options={[]}
                     form={form}
-                    name='inceptionDate'
-                    label='Letter of Credit'
+                    name='letterOfCredit'
+                    label='Letter Of Credit'
+                    options={convertDataToSelectObject(banks)}
                   />
                   <SelectFormField
-                    options={[]}
+                    options={[
+                      { label: 'Test 1', value: 1 },
+                      { label: 'Test 2', value: 2 },
+                    ]}
                     form={form}
-                    name='inceptionDate'
+                    name='riskClass'
                     label='Risk Class'
+                  />
+                  <SelectFormField
+                    options={[
+                      { label: 'Test 1', value: 1 },
+                      { label: 'Test 2', value: 2 },
+                    ]}
+                    form={form}
+                    name='insuredInterest'
+                    label='Insured interest'
+                  />
+                  <SelectFormField
+                    options={[
+                      { label: 'Test 1', value: 1 },
+                      { label: 'Test 2', value: 2 },
+                    ]}
+                    form={form}
+                    name='propertyType'
+                    label='Property Type'
                   />
                 </div>
               </div>
@@ -377,10 +514,47 @@ const Page = () => {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
+
+                {selectedTab.toLowerCase() === 'building/item details' && (
+                  <BuildingItemDetails
+                    items={form.watch('buildingItemsDetails') || []}
+                    addItem={(item: BuildingItemDetailsType) =>
+                      addToTable(item, 'buildingItemsDetails', form)
+                    }
+                    deleteItem={(id: string) =>
+                      deleteTableValue(id, 'buildingItemsDetails', form)
+                    }
+                    updateItem={(item: BuildingItemDetailsType) =>
+                      updateTableValue(item, 'buildingItemsDetails', form)
+                    }
+                  />
+                )}
+                {selectedTab.toLowerCase() === 'perils' && (
+                  <Perils
+                    items={form.watch('perils') || []}
+                    addItem={(item: PerilsType) =>
+                      addToTable(item, 'perils', form)
+                    }
+                    deleteItem={(id: string) =>
+                      deleteTableValue(id, 'perils', form)
+                    }
+                    updateItem={(item: PerilsType) =>
+                      updateTableValue(item, 'perils', form)
+                    }
+                  />
+                )}
                 {selectedTab.toLowerCase() === 'excesses' && (
-                  <PolicyExtenxions
-                    addPolicyExtension={() => console.log('policy extension')}
-                    policyExtensions={[]}
+                  <Excesses
+                    items={form.watch('excesses') || []}
+                    addItem={(item: ExcessType) =>
+                      addToTable(item, 'excesses', form)
+                    }
+                    deleteItem={(id: string) =>
+                      deleteTableValue(id, 'excesses', form)
+                    }
+                    updateItem={(item: ExcessType) =>
+                      updateTableValue(item, 'excesses', form)
+                    }
                   />
                 )}
               </div>

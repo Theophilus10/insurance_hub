@@ -25,7 +25,7 @@ export function DataTablePagination<TData>({
   return (
     <div className='flex items-center justify-between px-2'>
       <div className='flex items-center justify-between  w-full '>
-        <div className='flex items-center space-x-2 '>
+        <div className='hidden md:flex items-center space-x-2 '>
           <p className='text-sm font-medium'>Rows per page</p>
           <Select
             value={`${table.getState().pagination.pageSize}`}
@@ -38,7 +38,11 @@ export function DataTablePagination<TData>({
             </SelectTrigger>
             <SelectContent side='top'>
               {[10, 20, 30, 40, 50].map(pageSize => (
-                <SelectItem key={pageSize} value={`${pageSize}`} className='cursor-pointer'>
+                <SelectItem
+                  key={pageSize}
+                  value={`${pageSize}`}
+                  className='cursor-pointer'
+                >
                   {pageSize}
                 </SelectItem>
               ))}

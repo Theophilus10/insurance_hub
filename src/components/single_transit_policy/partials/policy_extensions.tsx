@@ -11,7 +11,7 @@ import { convertDataToSelectObject } from '@app/helpers/index';
 import { nanoid } from 'nanoid';
 
 export type PolicyExtenxionsType = {
-  extension: string;
+  extension: number;
   exchangeRate: number;
   id: string;
 };
@@ -51,7 +51,7 @@ const PolicyExtenxions = ({
 }: PolicyExtenxionProps) => {
   const [policyExtension, setPolicyExtension] = useState<PolicyExtenxionsType>({
     exchangeRate: 0,
-    extension: '',
+    extension: 0,
     id: '',
   });
   const [validationErrors, setValidationErrors] = useState({});
@@ -69,7 +69,7 @@ const PolicyExtenxions = ({
   const reset = () =>
     setPolicyExtension({
       exchangeRate: 0,
-      extension: '',
+      extension: 0,
       id: '',
     });
 
@@ -139,6 +139,7 @@ const PolicyExtenxions = ({
                 });
               }
             }}
+            type='number'
             value={policyExtension.exchangeRate}
           />
 
@@ -166,7 +167,7 @@ const PolicyExtenxions = ({
                     }
                   }}
                 >
-                  Update Transhipment
+                  Update
                 </Button>
               </div>
             ) : (
