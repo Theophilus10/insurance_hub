@@ -7,7 +7,7 @@ import React, { useEffect } from "react";
 import * as z from "zod";
 
 const initialValues = {
-  peril: "",
+  excess: "",
   riskClass: "",
   rate: "",
   startDate: "",
@@ -39,8 +39,8 @@ const Editor = ({ prevalues }: any) => {
     >
       <div className="grid gap-4">
         <SelectField
-          name="peril"
-          label="Select Peril"
+          name="excess"
+          label="Select Excess"
           required
           options={[]}
         />

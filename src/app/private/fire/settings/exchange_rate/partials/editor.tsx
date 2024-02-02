@@ -7,11 +7,8 @@ import React, { useEffect } from "react";
 import * as z from "zod";
 
 const initialValues = {
-  peril: "",
-  riskClass: "",
-  rate: "",
-  startDate: "",
-  endDate: "",
+  currency: "",
+  rate: null,
 };
 const schema = z.object({
   // name: z
@@ -25,11 +22,10 @@ const schema = z.object({
 });
 
 const Editor = ({ prevalues }: any) => {
-  useEffect(()=>{
-    if (prevalues){
-      
+  useEffect(() => {
+    if (prevalues) {
     }
-  },[prevalues])
+  }, [prevalues]);
 
   return (
     <Form
@@ -38,26 +34,9 @@ const Editor = ({ prevalues }: any) => {
       className="flex flex-col gap-6 w-full h-full px-2"
     >
       <div className="grid gap-4">
-        <SelectField
-          name="peril"
-          label="Select Peril"
-          required
-          options={[]}
-        />
-        <SelectField
-          name="riskClass"
-          label="Select Risk Class"
-          required
-          options={[]}
-        />
-        <InputField name="rate" label="Rate" type="number" />
-        {/* dates */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* start date */}
-          <InputField name="startDate" label="Start Date" type="date" />
-          {/* end date */}
-          <InputField name="endDate" label="End Date" type="date" />
-        </div>
+        <SelectField name="currency" label="Select Currency" options={[]} />
+        {/* end date */}
+        <InputField name="rate" label="Name" type="number" />
       </div>
       <div className="ml-auto flex gap-4">
         <Button label="Submit" variant="primary" />

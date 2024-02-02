@@ -21,7 +21,7 @@ export type IRiskClass = {
 export const columns: ColumnDef<IRiskClass>[] = [
   {
     accessorKey: "code",
-    header: "Bank Code",
+    header: "Code",
   },
   {
     header: "description",
