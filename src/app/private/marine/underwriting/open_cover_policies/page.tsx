@@ -218,7 +218,7 @@ const Page = () => {
       <Card>
         <CardTitle className='flex  items-center gap-2 font-thin border-b-[1px] p-5'>
           <ListTodo />
-          Fire Policy
+          Open Cover Policy
         </CardTitle>
         <CardContent className='px-0'>
           <Form {...form}>

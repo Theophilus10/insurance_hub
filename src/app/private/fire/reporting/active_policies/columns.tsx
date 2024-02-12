@@ -8,11 +8,10 @@ import { Checkbox } from '@app/components/ui/checkbox';
 // This type is used to define the shape of our data.
 
 export type Policies = {
-  policyNumber: string;
-  customerName: string;
-  customerEmail: string;
-  openCoverNumber: string;
-  createdAt: string;
+  policy_number: string;
+  customer: { email: string; name: string };
+  openCoverNumber: string | undefined;
+  createdAt: string | undefined;
 };
 
 export const columns: ColumnDef<Policies>[] = [
@@ -39,7 +38,7 @@ export const columns: ColumnDef<Policies>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'policyNumber',
+    accessorKey: 'policy_number',
     header: ({ column }) => {
       return (
         <Button
@@ -53,7 +52,7 @@ export const columns: ColumnDef<Policies>[] = [
     },
   },
   {
-    accessorKey: 'customerName',
+    accessorKey: 'customer',
     header: ({ column }) => {
       return (
         <Button
@@ -69,12 +68,12 @@ export const columns: ColumnDef<Policies>[] = [
       return (
         <div className='flex items-center gap-2'>
           <div className='bg-[#D6D1F7] text-[#2406F5] rounded-full w-8 h-8 flex items-center justify-center'>
-            <p>{row.original.customerName.split('')[0]}</p>
+            <p>{row.original.customer.name.split('')[0]}</p>
           </div>
           <div>
-            <p>{row.original.customerName}</p>
+            <p>{row.original.customer.name}</p>
             <p className='text-sm text-gray-500 '>
-              {row.original.customerEmail}
+              {row.original.customer.email}
             </p>
           </div>
         </div>
@@ -86,13 +85,13 @@ export const columns: ColumnDef<Policies>[] = [
     header: 'Open Cover Number',
   },
   {
-    accessorKey: 'createdAt',
+    accessorKey: 'created_at',
     header: 'Created Date',
   },
   {
     id: 'actions',
     cell: ({ row }) => {
-      const payment = row.original;
+      const id = row.original;
 
       return (
         <div className='flex items-center gap-3 text-gray-400'>

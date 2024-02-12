@@ -1,3 +1,9 @@
+import {
+  BuildingItemDetailsType,
+  ExcessType,
+  PerilsType,
+} from '@app/types/policyTypes';
+
 export interface InstitutionType {
   id: number;
   code: string;
@@ -95,6 +101,16 @@ export interface PolicyExtension {
   description: string;
 }
 
+export interface PolicyGlobal {
+  exchange_rate: number;
+  customer_id: number;
+  insurer_id: number;
+  distribution_channel: string;
+  intermediary_id: number;
+  currency_id: number;
+  letter_of_credit_id: number;
+}
+
 export interface Policy {
   vessel_flag: string;
   flight_vessel_number: string;
@@ -124,4 +140,14 @@ export interface Policy {
   intermediary_id: number;
   letter_of_credit_id: number;
   open_cover_policy_id: number;
+}
+
+export interface FirePolicy {
+  policy: PolicyGlobal;
+  inception_date: string;
+  expiry_date: string;
+  risk_class_id: number;
+  policy_items: PerilsType[] | [];
+  policy_perils: PerilsType[] | [];
+  policy_excesses: ExcessType[] | [];
 }

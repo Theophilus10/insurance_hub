@@ -1,5 +1,6 @@
 'use client';
 
+import * as z from 'zod';
 import {
   Form,
   FormControl,
@@ -18,11 +19,10 @@ import {
 } from '@app/components/ui/select';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import * as z from 'zod';
 import { Card, CardTitle, CardContent } from '@app/components/ui/card';
 import { ListTodo } from 'lucide-react';
 import { Input } from '@app/components/ui/input';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from '@app/components/ui/button';
 import {
   InputFormField,
@@ -393,6 +393,27 @@ const Page = () => {
       setCustomerError('Customer not found');
     }
   };
+
+  const markupAmount = useMemo(() => {
+    let markupAmount = 0;
+    const interestItems = form.watch('interests');
+    for (const element of interestItems) {
+      const { markupRate, itemCost, freightAmount } = element;
+      markupAmount += (markupRate / 100) * itemCost + freightAmount;
+    }
+    return markupAmount;
+  }, [form.watch('interests')]);
+
+  const dutyAmount = useMemo(() => {
+    let dutyAmount = 0;
+    const interestItems = form.watch('interests');
+    for (const element of interestItems) {
+      const { dutyRate, itemCost, freightAmount } = element;
+      dutyAmount += (dutyRate / 100) * itemCost + freightAmount;
+    }
+    return dutyAmount;
+  }, [form.watch('interests')]);
+
   return (
     <Card>
       <CardTitle className='flex  items-center gap-2 font-thin border-b-[1px] p-5'>

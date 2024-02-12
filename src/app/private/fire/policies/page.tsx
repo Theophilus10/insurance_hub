@@ -31,12 +31,14 @@ import {
   IInstitution,
   read_customer,
   read_banks,
+  read_financial_interests,
 } from '@app/server/services';
 import {
   BuildingItemDetailsType,
   ExcessType,
   PerilsType,
 } from '@app/types/policyTypes';
+import { createFirePolicy } from '@app/server/services/policies/fire';
 import BuildingItemDetails from '@app/components/fire/BuildingItemDetails';
 import Perils from '@app/components/fire/Perils';
 import Excesses from '@app/components/fire/Excesses';
@@ -155,7 +157,7 @@ const Page = () => {
   const { items: institutionTypes } = read_institution_types();
   const { items: branchesItems, isLoading: branchesLoading } = read_branches();
   const { items: currencies } = read_currencies();
-  const { items: banks } = read_banks();
+  const { items: financialInterests } = read_financial_interests();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -240,7 +242,7 @@ const Page = () => {
     }
   }, [form.watch('distributionChannel')]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIntermediaryErrors({});
     if (values.distributionChannel !== 'direct') {
       if (values.intermediaryType === 0) {
@@ -278,7 +280,28 @@ const Page = () => {
     }
 
     console.log(values);
+    const formData = {
+      policy: {
+        ['exchange_rate']: parseInt(values.exchangeRate),
+        ['customer_id']: values.customerDetails.id,
+        ['insurer_id']: values.insuranceCompany,
+        ['distribution_channel']: values.distributionChannel,
+        ['intermediary_id']: values.intermediaryName,
+        ['currency_id']: values.currency,
+        ['letter_of_credit_id']: values.letterOfCredit,
+      },
+      ['inception_date']: values.inceptionDate,
+      ['expiry_date']: values.expiryDate,
+      ['risk_class_id']: values.riskClass,
+      ['policy_items']: [],
+      ['policy_perils']: [],
+      ['policy_excesses']: [],
+    };
+    await createFirePolicy(formData)
+      .then(res => console.log(res))
+      .catch(err => console.log(err));
   }
+
   return (
     <div>
       <Card>
@@ -453,7 +476,7 @@ const Page = () => {
                     form={form}
                     name='letterOfCredit'
                     label='Letter Of Credit'
-                    options={convertDataToSelectObject(banks)}
+                    options={convertDataToSelectObject(financialInterests)}
                   />
                   <SelectFormField
                     options={[

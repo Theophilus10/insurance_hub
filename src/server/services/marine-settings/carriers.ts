@@ -1,13 +1,13 @@
-import useSWR from "swr";
-import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import useSWR from 'swr';
+import { format } from 'date-fns';
+import API from '@app/server/useAxios';
 import {
   axiosError,
   callResult,
   fetcher,
   queryResult,
-} from "@app/server/shared";
-import { IShippingType } from "..";
+} from '@app/server/shared';
+import { IShippingType } from '..';
 
 export type ICarrier = {
   id: number;
@@ -19,13 +19,13 @@ export type ICarrier = {
 };
 
 export const read_carriers = () => {
-  const { data, error, isLoading, mutate } = useSWR("carriers/all", fetcher);
+  const { data, error, isLoading, mutate } = useSWR('carriers/all', fetcher);
 
   return {
     items: data
       ? data.map((x: ICarrier) => ({
           ...x,
-          created_at: format(new Date(x.created_at), "dd MMMM yyy"),
+          created_at: format(new Date(x.created_at), 'dd MMMM yyy'),
         }))
       : [],
     isLoading,
@@ -41,7 +41,7 @@ export const create_carrier = async (data: {
   shipping_type_id: number;
 }) => {
   try {
-    const res = await API.post("carriers/", data);
+    const res = await API.post('carriers/', data);
     return callResult(res, res.data);
   } catch (err) {
     return axiosError(err);
