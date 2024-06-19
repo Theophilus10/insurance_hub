@@ -8,74 +8,45 @@ import Select from 'react-select';
 import { Button } from '@app/components/ui/button';
 import DataTable from '@app/components/datatable/datatable';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown } from 'lucide-react';
+import { HeaderWithSorting } from '@app/components/datatable/columnHeaders';
+import { nanoid } from 'nanoid';
 
 export type TranshipmentType = {
   originCountry: string;
   destinationCountry: string;
   rate: number;
   description: string;
+  id: string;
 };
+
+const countries = [
+  { label: 'Nigeria', value: 'nigeria' },
+  { label: 'Ghana', value: 'ghana' },
+];
 
 const columns: ColumnDef<TranshipmentType>[] = [
   {
     accessorKey: 'originCountry',
     header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          className='text-lg p-0'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Origin Country
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      );
+      return <HeaderWithSorting column={column} label='Orgin Country' />;
     },
   },
   {
     accessorKey: 'destinationCountry',
     header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          className='text-lg p-0'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Destination Country
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      );
+      return <HeaderWithSorting column={column} label='Destination Country' />;
     },
   },
   {
     accessorKey: 'rate',
     header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          className='text-lg p-0'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Rate
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      );
+      return <HeaderWithSorting column={column} label='Rate' />;
     },
   },
   {
     accessorKey: 'description',
     header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          className='text-lg  p-0'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Description
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      );
+      return <HeaderWithSorting column={column} label='Description' />;
     },
     cell: ({ row }) => {
       return (
@@ -88,20 +59,85 @@ const columns: ColumnDef<TranshipmentType>[] = [
 interface TranshipmentProps {
   transhipments: TranshipmentType[];
   addTranshipments: (transhipment: TranshipmentType) => void;
+  updateTranshipment: (transhipment: TranshipmentType) => void;
+  deleteTranshipment: (id: string) => void;
 }
 
 const Transhipment = ({
   transhipments,
   addTranshipments,
+  updateTranshipment,
+  deleteTranshipment,
 }: TranshipmentProps) => {
   const [transhipment, setTranshipment] = useState({
+    id: '',
     originCountry: '',
     destinationCountry: '',
     rate: 0,
     description: '',
   });
+  const [validationErrors, setValidationErrors] = useState({
+    originCountry: '',
+    destinationCountry: '',
+    rate: '',
+    description: '',
+  });
+  const [updating, setUpdating] = useState(false);
 
-  const deleteTranshipment = (index: number) => {};
+  const validateForm = () => {
+    let errors = {
+      originCountry: '',
+      destinationCountry: '',
+      rate: '',
+      description: '',
+    };
+
+    // Add your validation logic here
+    if (!transhipment.originCountry) {
+      errors.originCountry = 'Origin Country is required';
+    }
+
+    if (!transhipment.destinationCountry) {
+      errors.destinationCountry = 'Destination Country is required';
+    }
+
+    if (transhipment.rate <= 0) {
+      errors.rate = 'Rate must be a positive number';
+    }
+
+    if (!transhipment.description) {
+      errors.description = 'Description is required';
+    }
+
+    setValidationErrors(errors);
+
+    // Return true if there are no validation errors, false otherwise
+    return Object.values(errors).every(error => !error);
+  };
+
+  const onRowAction = (action: string, row: any) => {
+    switch (action) {
+      case 'edit':
+        setTranshipment(row);
+        setUpdating(true);
+        break;
+      case 'delete':
+        deleteTranshipment(row.id);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const reset = () =>
+    setTranshipment({
+      id: '',
+      originCountry: '',
+      destinationCountry: '',
+      rate: 0,
+      description: '',
+    });
+
   return (
     <div className='p-3 2xl:px-10 box-border'>
       <div>
@@ -116,19 +152,16 @@ const Transhipment = ({
                   });
                 }
               }}
-              options={[
-                { label: 'Ghana', value: 'ghana' },
-                { label: 'Nigeria', value: 'nigeria' },
-              ]}
+              options={countries}
+              value={countries.find(
+                c => c.value === transhipment.originCountry
+              )}
             />
           </FormItem>
           <FormItem className='lg:col-span-2'>
             <FormLabel>To:</FormLabel>
             <Select
-              options={[
-                { label: 'Nigeria', value: 'nigeria' },
-                { label: 'Ghana', value: 'ghana' },
-              ]}
+              options={countries}
               onChange={e => {
                 if (e) {
                   setTranshipment(prev => {
@@ -136,6 +169,9 @@ const Transhipment = ({
                   });
                 }
               }}
+              value={countries.find(
+                c => c.value === transhipment.destinationCountry
+              )}
             />
           </FormItem>
           <FormItem>
@@ -147,6 +183,7 @@ const Transhipment = ({
                   return { ...prev, rate: +e.target.value };
                 });
               }}
+              value={transhipment.rate}
             />
           </FormItem>
           <FormItem className='lg:col-span-5'>
@@ -159,18 +196,52 @@ const Transhipment = ({
                   });
                 }
               }}
+              value={transhipment.description}
             />
           </FormItem>
         </div>
         <div className='flex justify-end'>
-          <Button
-            variant='primary'
-            className='my-10 font-semibold'
-            type='button'
-            onClick={() => addTranshipments(transhipment)}
-          >
-            Add Transhipment
-          </Button>
+          {updating ? (
+            <div>
+              <Button
+                variant='link'
+                className='text-red-500'
+                onClick={() => {
+                  reset();
+                  setUpdating(false);
+                }}
+              >
+                Clear
+              </Button>
+              <Button
+                variant='secondary'
+                className='my-10 font-semibold'
+                type='button'
+                onClick={() => {
+                  if (validateForm()) {
+                    updateTranshipment(transhipment);
+                    reset();
+                  }
+                }}
+              >
+                Update Transhipment
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant='primary'
+              className='my-10 font-semibold'
+              type='button'
+              onClick={() => {
+                if (validateForm()) {
+                  addTranshipments({ ...transhipment, id: nanoid() });
+                  reset();
+                }
+              }}
+            >
+              Add Transhipment
+            </Button>
+          )}
         </div>
       </div>
       <div className='py-8'>
@@ -179,6 +250,7 @@ const Transhipment = ({
           data={transhipments}
           showHeader={false}
           showActions
+          onRowAction={onRowAction}
         />
       </div>
     </div>

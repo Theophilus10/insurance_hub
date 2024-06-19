@@ -63,3 +63,65 @@ export interface User {
   refresh_token: string;
   token_type: string;
 }
+
+export interface Interest {
+  cover_type_id: number;
+  interest_id: number;
+  rate: number;
+  package_type: string;
+  freight: number;
+  cost: number;
+  markup: number;
+  duty_rate: number;
+  item_description: string;
+}
+
+export interface Transhipment {
+  origin_country_id: number;
+  destination_country_id: number;
+  rate: number;
+  description: string;
+}
+
+export interface Transit {
+  transit_from: string;
+  transit_to: string;
+  rate: number;
+}
+
+export interface PolicyExtension {
+  extension_id: number;
+  rate: number;
+  description: string;
+}
+
+export interface Policy {
+  vessel_flag: string;
+  flight_vessel_number: string;
+  flight_vessel_name: string;
+  bill_of_laden_number: string;
+  commercial_invoice_number: string;
+  no_known_loss: string;
+  exchange_rate: number;
+  customer_id: number;
+  insurer_id: number;
+  distribution_channel: string;
+  issue_date: string;
+  policy_excess: string;
+  currency_id: number;
+  shipping_type_id: number;
+  carrier_id: number;
+  country_of_origin_id: number;
+  country_of_destination_id: number;
+  port_of_loading_id: number;
+  port_of_destination_id: number;
+  sailing_date: string;
+  estimated_arrival_date: string;
+  interests: Interest[];
+  transhipments: Transhipment[];
+  transits: Transit[];
+  policy_extensions: PolicyExtension[];
+  intermediary_id: number;
+  letter_of_credit_id: number;
+  open_cover_policy_id: number;
+}

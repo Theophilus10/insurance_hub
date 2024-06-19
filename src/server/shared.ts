@@ -1,5 +1,5 @@
-import { AxiosResponse } from "axios";
-import api from "./useAxios";
+import { AxiosResponse } from 'axios';
+import api from './useAxios';
 
 export const fetcher = async (url: string) => {
   const res = await api.get(url);
@@ -37,23 +37,27 @@ export function callResult<R>(rawResponse: AxiosResponse<R>, result: any) {
   if (!result) {
     return <IFailureResult>{
       success: false,
-      message: "No valid response was received",
+      message: 'No valid response was received',
     };
   }
 
-  return <IOk>{ success: true, message: result.message || "" };
+  return <IOk>{ success: true, message: result.message || '' };
 }
 
 export function axiosError(response: any): IFailureResult {
   if (response.status >= 200 && response.status < 300) {
     // Successful response, return success: true
-    return { success: false, message: "Success" };
+    return { success: false, message: 'Success' };
   } else {
     // Handle error response
     const errorMessage =
       (response.data && response.data.message) ||
       (response.statusText && response.statusText) ||
-      "Unknown error";
+      (response.data &&
+        response.detail &&
+        response.detail.map((x: any) => x.msg).join(' , ')) ||
+      response.message;
+    ('Unknown error');
 
     return { success: false, message: errorMessage };
   }
@@ -66,9 +70,9 @@ export function queryResult<R, T>(
   if (rawResponse.errors) {
     return {
       success: false,
-      message: rawResponse.errors.map((x: any) => x.message).join(".\n"),
+      message: rawResponse.errors.map((x: any) => x.message).join('.\n'),
     };
   }
 
-  return { success: true, message: "", data: data as NonNullable<T> };
+  return { success: true, message: '', data: data as NonNullable<T> };
 }

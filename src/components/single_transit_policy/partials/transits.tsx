@@ -1,64 +1,38 @@
 'use client';
 
 import React, { useState } from 'react';
+import DataTable from '@app/components/datatable/datatable';
 import { FormItem, FormLabel } from '@app/components/ui/form';
 import { Input } from '@app/components/ui/input';
-import Select from 'react-select';
 import { Button } from '@app/components/ui/button';
-import DataTable from '@app/components/datatable/datatable';
 import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown } from 'lucide-react';
+import { HeaderWithSorting } from '@app/components/datatable/columnHeaders';
+import { nanoid } from 'nanoid';
 
 export type TransitType = {
   originCountry: string;
   destinationCountry: string;
   rate: number;
+  id: string;
 };
 
 const columns: ColumnDef<TransitType>[] = [
   {
     accessorKey: 'originCountry',
     header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          className='text-lg p-0'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          From
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      );
+      return <HeaderWithSorting column={column} label='From' />;
     },
   },
   {
     accessorKey: 'destinationCountry',
     header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          className='text-lg p-0'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          To
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      );
+      return <HeaderWithSorting column={column} label='To' />;
     },
   },
   {
     accessorKey: 'rate',
     header: ({ column }) => {
-      return (
-        <Button
-          variant='ghost'
-          className='text-lg p-0'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-        >
-          Rate
-          <ArrowUpDown className='ml-2 h-4 w-4' />
-        </Button>
-      );
+      return <HeaderWithSorting column={column} label='Transit Rate(%)' />;
     },
   },
 ];
@@ -66,15 +40,74 @@ const columns: ColumnDef<TransitType>[] = [
 interface TransitProps {
   transits: TransitType[];
   addTransit: (transit: TransitType) => void;
+  updateTransit: (transit: TransitType) => void;
+  deleteTransit: (id: string) => void;
 }
 
-const Transits = ({ transits, addTransit }: TransitProps) => {
+const Transits = ({
+  transits,
+  addTransit,
+  deleteTransit,
+  updateTransit,
+}: TransitProps) => {
   const [transit, setTransit] = useState({
     originCountry: '',
     destinationCountry: '',
     rate: 0,
-    description: '',
+    id: '',
   });
+
+  const [validationErrors, setValidationErrors] = useState({
+    originCountry: '',
+    destinationCountry: '',
+    rate: '',
+  });
+
+  const [updating, setUpdating] = useState(false);
+
+  const reset = () => {
+    setTransit({ originCountry: '', destinationCountry: '', rate: 0, id: '' });
+  };
+
+  const onRowAction = (action: string, row: any) => {
+    switch (action) {
+      case 'edit':
+        setTransit(row);
+        setUpdating(true);
+        break;
+      case 'delete':
+        deleteTransit(row.id);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const validateForm = () => {
+    let errors = {
+      originCountry: '',
+      destinationCountry: '',
+      rate: '',
+    };
+
+    // Add your validation logic here
+    if (!transit.originCountry) {
+      errors.originCountry = 'Origin Country is required';
+    }
+
+    if (!transit.destinationCountry) {
+      errors.destinationCountry = 'Destination Country is required';
+    }
+
+    if (transit.rate <= 0) {
+      errors.rate = 'Rate must be a positive number';
+    }
+
+    setValidationErrors(errors);
+
+    // Return true if there are no validation errors, false otherwise
+    return Object.values(errors).every(error => !error);
+  };
 
   return (
     <div className='p-3 2xl:px-10 box-border'>
@@ -82,38 +115,28 @@ const Transits = ({ transits, addTransit }: TransitProps) => {
         <div className='grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-10  '>
           <FormItem className='lg:col-span-2'>
             <FormLabel>From:</FormLabel>
-            <Select
+            <Input
               onChange={e => {
-                if (e) {
-                  setTransit(prev => {
-                    return { ...prev, originCountry: e.value };
-                  });
-                }
+                setTransit(prev => {
+                  return { ...prev, originCountry: e.target.value };
+                });
               }}
-              options={[
-                { label: 'Ghana', value: 'ghana' },
-                { label: 'Nigeria', value: 'nigeria' },
-              ]}
+              value={transit.originCountry}
             />
           </FormItem>
           <FormItem className='lg:col-span-2'>
             <FormLabel>To:</FormLabel>
-            <Select
-              options={[
-                { label: 'Nigeria', value: 'nigeria' },
-                { label: 'Ghana', value: 'ghana' },
-              ]}
+            <Input
               onChange={e => {
-                if (e) {
-                  setTransit(prev => {
-                    return { ...prev, destinationCountry: e.value };
-                  });
-                }
+                setTransit(prev => {
+                  return { ...prev, destinationCountry: e.target.value };
+                });
               }}
+              value={transit.destinationCountry}
             />
           </FormItem>
           <FormItem>
-            <FormLabel>Transhipment Rate(%):</FormLabel>
+            <FormLabel>Transit Rate(%):</FormLabel>
             <Input
               type='number'
               onChange={e => {
@@ -121,18 +144,52 @@ const Transits = ({ transits, addTransit }: TransitProps) => {
                   return { ...prev, rate: +e.target.value };
                 });
               }}
+              value={transit.rate}
             />
           </FormItem>
         </div>
         <div className='flex justify-end'>
-          <Button
-            variant='primary'
-            className='my-10 font-semibold'
-            type='button'
-            onClick={() => addTransit(transit)}
-          >
-            Add Transit
-          </Button>
+          {updating ? (
+            <div>
+              <Button
+                variant='link'
+                className='text-red-500'
+                onClick={() => {
+                  reset();
+                  setUpdating(false);
+                }}
+              >
+                Clear
+              </Button>
+              <Button
+                variant='secondary'
+                className='my-10 font-semibold'
+                type='button'
+                onClick={() => {
+                  if (validateForm()) {
+                    updateTransit(transit);
+                    setUpdating(false);
+                    reset();
+                  }
+                }}
+              >
+                Update Transhipment
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant='primary'
+              className='my-10 font-semibold'
+              type='button'
+              onClick={() => {
+                if (validateForm()) {
+                  addTransit({ ...transit, id: nanoid() });
+                }
+              }}
+            >
+              Add Transit
+            </Button>
+          )}
         </div>
       </div>
       <div className='py-8'>
@@ -141,6 +198,7 @@ const Transits = ({ transits, addTransit }: TransitProps) => {
           data={transits}
           showHeader={false}
           showActions
+          onRowAction={onRowAction}
         />
       </div>
     </div>

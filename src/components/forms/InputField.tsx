@@ -48,6 +48,9 @@ const InputField: React.FC<TextInputProps> = ({
     : fieldState.isDirty && !fieldState.error
     ? "border-green-500"
     : "border-gray-300";
+
+  const inputFieldValue =
+    type === "number" ? parseFloat(field.value || value) : field.value || value;
   return (
     <div className="flex flex-col gap-1.5">
       <label className="font-light ">
@@ -60,9 +63,8 @@ const InputField: React.FC<TextInputProps> = ({
         placeholder={placeholder}
         type={type}
         disabled={disabled}
-        value={field.value || value}
+        value={inputFieldValue}
         className={`h-[38px] px-2 rounded-[5px] text-black border ${borderClass} shadow-sm ${className}`}
-        // onChange={(e) => field.onChange(e.target.value)}
       />
       {helpText && <span className="text-sm text-gray-500">{helpText}</span>}
       {fieldState.error && (

@@ -105,11 +105,6 @@ const Page = () => {
           edit={edit.open}
           data={data!}
         />
-        {/* <IconifyIcon
-          icon="  solar:round-double-alt-arrow-down-bold"
-          fontSize={40}
-          className="text-red-500"
-        /> */}
       </Modal>
       <AlertModal
         open={alert.open}

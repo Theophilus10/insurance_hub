@@ -1,7 +1,6 @@
 import React from "react";
 import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/light.css";
-import { Icon } from "@iconify/react";
 import { nanoid } from "nanoid";
 import { convertParam } from "@app/lib/utils";
 import { useController, useFormContext } from "react-hook-form";
@@ -26,9 +25,9 @@ interface DateInputProps {
 }
 
 const DateInput: React.FC<DateInputProps> = ({
-  label,
-  required,
-  placeholder,
+  label = "",
+  required = false,
+  placeholder = "",
   name,
   enableTime = false,
   noCalendar = false,
@@ -70,7 +69,7 @@ const DateInput: React.FC<DateInputProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5 relative">
       <label className="text-gray-800 font-light">
         {label}
         {required && <span className="text-red-500 pl-1">*</span>}
@@ -81,6 +80,7 @@ const DateInput: React.FC<DateInputProps> = ({
         value={field.value}
         options={flatpickrOptions}
         onChange={(selectedDates: Date[], event: any) =>
+          event.stopPropagation() &&
           field.onChange(convertParam(event, selectedDates, name))
         }
         // onChange={(e: Date[]) => console.log(e)}

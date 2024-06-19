@@ -1,10 +1,18 @@
 import { InputField } from '@app/components/forms/ShadcnFields';
 import React from 'react';
 
-const PolicyExcess = () => {
+interface Props {
+  policyExcess: string;
+  onChange: (value: string) => void;
+}
+const PolicyExcess = ({ policyExcess, onChange }: Props) => {
   return (
-    <div>
-      <InputField label='Policy Excess' onChange={e => console.log(e)} />
+    <div className='py-5'>
+      <InputField
+        label='Policy Excess'
+        onChange={e => onChange(e.target.value)}
+        value={policyExcess}
+      />
     </div>
   );
 };
