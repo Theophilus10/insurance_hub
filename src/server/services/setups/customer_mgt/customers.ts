@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { fetcher } from "../../../shared";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import { API } from "@app/server/useAxios";
 import { axiosError, callResult, queryResult } from "@app/server/shared";
 import {
   ICustomerCategory,
@@ -45,11 +45,11 @@ export interface CustomerDTO {
 }
 
 export const read_customers = () => {
-  const { data, error, isLoading, mutate } = useSWR("/customers/all", fetcher);
-
+  const { data, error, isLoading, mutate } = useSWR("/customers", fetcher);
+  console.log(data, "data");
   return {
     items: data
-      ? data.map((x: ICustomer) => ({
+      ? data?.map((x: ICustomer) => ({
           ...x,
           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
@@ -63,7 +63,7 @@ export const read_customers = () => {
 
 export const create_customer = async (data: CustomerDTO) => {
   try {
-    const res = await API.post("/customers/", data);
+    const res = await API.post("/customers", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {

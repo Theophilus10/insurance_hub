@@ -9,7 +9,7 @@ import { ArrowUpDown } from "lucide-react";
 
 export const columns: ColumnDef<IIdentificationType>[] = [
   {
-    accessorKey: "code",
+    accessorKey: "id",
     header: "Code",
   },
   {

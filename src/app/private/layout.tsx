@@ -45,84 +45,84 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <PrivateRoute>
-      <LayoutContext.Provider value={{ pageDetails, setPageDetails }}>
-        <div className="w-screen h-screen overflow-hidden relative">
-          <aside
-            id="sidebar"
-            className={`relative ${
-              hideSidebar && "hide"
-            } overflow-y-hidden  flex flex-col`}
+    // <PrivateRoute>
+    <LayoutContext.Provider value={{ pageDetails, setPageDetails }}>
+      <div className="w-screen h-screen overflow-hidden relative">
+        <aside
+          id="sidebar"
+          className={`relative ${
+            hideSidebar && "hide"
+          } overflow-y-hidden  flex flex-col`}
+        >
+          <a
+            // href="/private/dashboard"
+            className="brand py-4 flex flex-col  gap-1"
           >
-            <a
-              // href="/private/dashboard"
-              className="brand py-4 flex flex-col  gap-1"
-            >
-              <Image
-                src={LogoUrl}
-                alt="logo"
-                loading="lazy"
-                className={hideSidebar ? "w-10" : "w-[80px]"}
-              />
-              <span
-                className={`font-medium text-[16px]  ${
-                  hideSidebar ? "hidden" : "hidden md:block"
-                }`}
-              >
-                INSURANCE HUB
-              </span>
-            </a>
-
-            <Divider className="mt-2 bg-gray-200 mx-4" />
-            <div className="pt-3">
-              <AppServices
-                appList={appList}
-                setActiveMenu={setActiveAppMenu}
-                activeMenu={activeMenu}
-              />
-            </div>
-
-            <ScrollSection className="mt-5 h-full overflow-y-auto flex-grow">
-              <Sidebar
-                generalRouteItems={generalMenuItems}
-                basicRouteItems={menuItems}
-                settingsRouteItems={settingsItems}
-              />
-            </ScrollSection>
-          </aside>
-          <section id="content" className="w-full h-full">
-            <Navbar
-              toggleSidebar={() => setHideSidebar(!hideSidebar)}
-              triggerSignOut={triggerSignOut}
-              hideSidebar={hideSidebar}
-              user={user}
+            <Image
+              src={LogoUrl}
+              alt="logo"
+              loading="lazy"
+              className={hideSidebar ? "w-10" : "w-[80px]"}
             />
-            <section className="bg-[#f5e9eb78] w-full h-full flex-grow flex flex-col">
-              {/* <div
+            <span
+              className={`font-medium text-[16px]  ${
+                hideSidebar ? "hidden" : "hidden md:block"
+              }`}
+            >
+              INSURANCE HUB
+            </span>
+          </a>
+
+          <Divider className="mt-2 bg-gray-200 mx-4" />
+          <div className="pt-3">
+            <AppServices
+              appList={appList}
+              setActiveMenu={setActiveAppMenu}
+              activeMenu={activeMenu}
+            />
+          </div>
+
+          <ScrollSection className="mt-5 h-full overflow-y-auto flex-grow">
+            <Sidebar
+              generalRouteItems={generalMenuItems}
+              basicRouteItems={menuItems}
+              settingsRouteItems={settingsItems}
+            />
+          </ScrollSection>
+        </aside>
+        <section id="content" className="w-full h-full">
+          <Navbar
+            toggleSidebar={() => setHideSidebar(!hideSidebar)}
+            triggerSignOut={triggerSignOut}
+            hideSidebar={hideSidebar}
+            user={user}
+          />
+          <section className="bg-[#f5e9eb78] w-full h-full flex-grow flex flex-col">
+            {/* <div
                 className={`px-6 pt-3 text-gray-500 font-medium text-[22px] ${
                   !pageDetails.showTitle && "hidden"
                 }`}
               >
                 {pageDetails.title}
               </div> */}
-              <div className=" w-full h-full flex-grow overflow-auto px-6 py-3  ">
-                {children}
-              </div>
-            </section>
+            <div className=" w-full h-full flex-grow overflow-auto px-6 py-3  ">
+              {children}
+            </div>
           </section>
-        </div>
-        <AlertModal
-          open={showAlert}
-          onCancel={() => setShowAlert(false)}
-          onContinue={async () => {
-            await signOut();
-            router.replace("/login");
-          }}
-          message="Are you sure you want to logout?"
-          title="Logout"
-        />
-      </LayoutContext.Provider>
-    </PrivateRoute>
+        </section>
+      </div>
+      <AlertModal
+        open={showAlert}
+        onCancel={() => setShowAlert(false)}
+        onContinue={async () => {
+          await signOut();
+          router.replace("/login");
+        }}
+        message="Are you sure you want to logout?"
+        title="Logout"
+      />
+    </LayoutContext.Provider>
+    // </PrivateRoute>
   );
 };
 

@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { fetcher } from "../../../shared";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import { API } from "@app/server/useAxios";
 import { axiosError, callResult, queryResult } from "@app/server/shared";
 
 export interface IOccupation {
@@ -13,14 +13,11 @@ export interface IOccupation {
 }
 
 export const read_occupations = () => {
-  const { data, error, isLoading, mutate } = useSWR(
-    "/occupations/all",
-    fetcher
-  );
+  const { data, error, isLoading, mutate } = useSWR("/occupations", fetcher);
 
   return {
     items: data
-      ? data.map((x: IOccupation) => ({
+      ? data?.occupations.map((x: IOccupation) => ({
           ...x,
           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
@@ -37,7 +34,7 @@ export const create_occupation = async (data: {
   code: string;
 }) => {
   try {
-    const res = await API.post("/occupations/", data);
+    const res = await API.post("/occupations", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {

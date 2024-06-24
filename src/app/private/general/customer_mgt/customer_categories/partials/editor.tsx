@@ -12,9 +12,11 @@ import React, { useEffect, useState } from "react";
 import * as z from "zod";
 
 const initialValues = {
+  code: "",
   name: "",
 };
 const schema = z.object({
+  code: z.string().min(1, "Code is required").min(1, "Code is too short"),
   name: z.string().min(1, "Name is required").min(3, "Name is too short"),
 });
 interface IEditor {
@@ -29,7 +31,7 @@ const Editor: React.FC<IEditor> = ({ id = 0, edit = false, isDone, data }) => {
   const [busy, setBusy] = useState(false);
   useEffect(() => {
     if (data) {
-      setFormData({ name: data.name });
+      setFormData({ code: data.code, name: data.name });
     } else {
       setFormData(initialValues);
     }
@@ -38,7 +40,7 @@ const Editor: React.FC<IEditor> = ({ id = 0, edit = false, isDone, data }) => {
   const handleSubmit = async (values: Record<string, any>) => {
     try {
       setBusy(true);
-      const d = { name: values.name };
+      const d = { code: values.code, name: values.name };
       const res = edit
         ? await update_customer_category(id, d)
         : await create_customer_category(d);
@@ -66,6 +68,12 @@ const Editor: React.FC<IEditor> = ({ id = 0, edit = false, isDone, data }) => {
       className="flex flex-col gap-6 w-full h-full px-2"
       onSubmit={handleSubmit}
     >
+      <InputField
+        name="code"
+        label="Customer Category Code"
+        required
+        placeholder="Enter category Code"
+      />
       <InputField
         name="name"
         label="Customer Category Name"

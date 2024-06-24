@@ -95,7 +95,7 @@ const Page = () => {
       <DataTable
         data={items ?? []}
         columns={columns}
-        addButtonLabel="New Insurer"
+        addButtonLabel="New Customer"
         addButtonFunction={toggleModal}
         showActions
         onRowAction={onRowAction}

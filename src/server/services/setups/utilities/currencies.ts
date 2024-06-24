@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { fetcher } from "../../../shared";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import { API } from "@app/server/useAxios";
 import { axiosError, callResult, queryResult } from "@app/server/shared";
 
 export type ICurrency = {
@@ -14,11 +14,11 @@ export type ICurrency = {
 };
 
 export const read_currencies = () => {
-  const { data, error, isLoading, mutate } = useSWR("/currencies/all", fetcher);
+  const { data, error, isLoading, mutate } = useSWR("/currencies", fetcher);
 
   return {
     items: data
-      ? data.map((x: ICurrency) => ({
+      ? data.currencies.map((x: ICurrency) => ({
           ...x,
           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
@@ -36,7 +36,7 @@ export const create_currency = async (data: {
   is_base: boolean;
 }) => {
   try {
-    const res = await API.post("/currencies/", data);
+    const res = await API.post("/currencies", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {

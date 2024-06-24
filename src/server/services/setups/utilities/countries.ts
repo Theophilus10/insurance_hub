@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { fetcher } from "../../../shared";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import { API } from "@app/server/useAxios";
 import { axiosError, callResult, queryResult } from "@app/server/shared";
 
 export type ICountry = {
@@ -13,11 +13,11 @@ export type ICountry = {
 };
 
 export const read_countries = () => {
-  const { data, error, isLoading, mutate } = useSWR("/countries/all", fetcher);
-
+  const { data, error, isLoading, mutate } = useSWR("/countries", fetcher);
+  console.log(data, "data");
   return {
     items: data
-      ? data.map((x: ICountry) => ({
+      ? data?.countries.map((x: ICountry) => ({
           ...x,
           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
@@ -31,7 +31,7 @@ export const read_countries = () => {
 
 export const create_country = async (data: { name: string; code: string }) => {
   try {
-    const res = await API.post("/countries/", data);
+    const res = await API.post("/countries", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {

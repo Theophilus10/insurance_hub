@@ -2,32 +2,17 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 async function login(username: string, password: string) {
-  try {
-    const formData = new URLSearchParams();
-    formData.append("username", username);
-    formData.append("password", password);
+  // Hardcoded user response
+  const hardcodedResponse = {
+    // access_token: "hardcoded_access_token",
+    username: "obed@gmail.com",
+    // Add any other user details you need here
+  };
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formData.toString(),
-      }
-    );
-
-    const data = await response.json();
-    // console.log("data", data);
-
-    if (response.ok && data.access_token) {
-      return Promise.resolve({ ...data, username });
-    } else {
-      return Promise.resolve(null);
-    }
-  } catch (error) {
-    console.error("Authentication error:", error);
+  // Simulate successful login
+  if (username === "obed@gmail.com" && password === "password") {
+    return Promise.resolve(hardcodedResponse);
+  } else {
     return Promise.resolve(null);
   }
 }
@@ -43,7 +28,6 @@ export const options: NextAuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
-
       credentials: {
         username: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
@@ -69,7 +53,7 @@ export const options: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token) {
-        session.user = token;
+        session.user = token.user;
         session.expires = token.expires;
         // console.log('session',session.user)
       }

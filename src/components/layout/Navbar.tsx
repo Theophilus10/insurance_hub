@@ -48,7 +48,7 @@ const Navbar: React.FC<INavbar> = ({
           <div />
           <DropdownMenu>
             <DropdownMenuTrigger className="focus:outline-none">
-              <AvatarButton user={user} />
+              {/* <AvatarButton user={user} />
               <DropdownMenuContent>
                 <div className="px-4 py-2 space-y-2 max-w-[300px]">
                   <div className="block text-sm font-bold truncate">
@@ -66,9 +66,7 @@ const Navbar: React.FC<INavbar> = ({
                     <span className="font-light text-gray-500">
                       Institution:
                     </span>
-                    <span className="font-bold">
-                      {user?.branch.institution.name}
-                    </span>
+                    <span className="font-bold">{user?.name}</span>
                   </div>
                   <div className="block truncate text-sm space-x-1">
                     <span className="font-light text-gray-500">Branch:</span>
@@ -88,7 +86,7 @@ const Navbar: React.FC<INavbar> = ({
                 >
                   Sign Out
                 </DropdownMenuItem>
-              </DropdownMenuContent>
+              </DropdownMenuContent> */}
             </DropdownMenuTrigger>
           </DropdownMenu>
         </div>
