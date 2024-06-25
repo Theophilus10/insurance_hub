@@ -146,10 +146,10 @@ export const marineSettings: IMenuItem[] = [
         title: "Carriers",
         path: "/private/marine/settings/carriers",
       },
-      {
-        title: "Exchange Rates",
-        path: "/private/marine/settings/exchange_rates",
-      },
+      // {
+      //   title: "Exchange Rates",
+      //   path: "/private/marine/settings/exchange_rates",
+      // },
     ],
   },
 ];
@@ -211,10 +211,10 @@ export const fireSettings: IMenuItem[] = [
         title: "Discounts",
         path: "/private/fire/settings/discounts",
       },
-      {
-        title: "Exchange Rate",
-        path: "/private/fire/settings/exchange_rate",
-      },
+      // {
+      //   title: "Exchange Rate",
+      //   path: "/private/fire/settings/exchange_rate",
+      // },
     ],
   },
 ];
@@ -390,6 +390,10 @@ export const generalMenuItems: IMenuItem[] = [
       {
         title: "Currencies",
         path: "/private/general/utilities/currencies",
+      },
+      {
+        title: "Exchange Rates",
+        path: "/private/marine/settings/exchange_rates",
       },
       { title: "Banks", path: "/private/general/utilities/banks" },
       {

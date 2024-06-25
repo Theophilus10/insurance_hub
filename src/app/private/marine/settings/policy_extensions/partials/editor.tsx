@@ -12,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import * as z from "zod";
 
 const initialValues = {
+  code: "",
   name: "",
 };
 
@@ -23,6 +24,7 @@ interface EditorProps {
 }
 
 const schema = z.object({
+  code: z.string().min(1, "Code is required").min(3, "Enter a valid code"),
   name: z.string().min(1, "Name is required").min(3, "Enter a valid name"),
 });
 const Editor: React.FC<EditorProps> = ({
@@ -37,6 +39,7 @@ const Editor: React.FC<EditorProps> = ({
   useEffect(() => {
     if (data) {
       setFormData({
+        code: data.code,
         name: data.name,
       });
     } else {
@@ -49,9 +52,11 @@ const Editor: React.FC<EditorProps> = ({
       setBusy(true);
       const res = edit
         ? await update_policy_extension(id, {
+            code: values.code,
             name: values.name,
           })
         : await create_policy_extension({
+            code: values.code,
             name: values.name,
           });
 
@@ -80,6 +85,7 @@ const Editor: React.FC<EditorProps> = ({
       className="flex flex-col gap-6 w-full h-full px-2"
     >
       <div className="grid gap-4">
+        <InputField name="code" label="Code" type="text" required />
         <InputField name="name" label="Name" type="text" required />
       </div>
       <div className="ml-auto flex gap-4">

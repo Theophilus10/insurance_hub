@@ -46,7 +46,7 @@ export interface CustomerDTO {
 
 export const read_customers = () => {
   const { data, error, isLoading, mutate } = useSWR("/customers", fetcher);
-  console.log(data, "data");
+
   return {
     items: data
       ? data?.map((x: ICustomer) => ({

@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import { API } from "@app/server/useAxios";
 import {
   axiosError,
   callResult,
@@ -17,11 +17,11 @@ export type ICoverType = {
 };
 
 export const read_cover_types = () => {
-  const { data, error, isLoading, mutate } = useSWR("cover-types/all", fetcher);
+  const { data, error, isLoading, mutate } = useSWR("cover_types", fetcher);
 
   return {
     items: data
-      ? data.map((x: ICoverType) => ({
+      ? data.cover_types.map((x: ICoverType) => ({
           ...x,
           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
@@ -38,7 +38,7 @@ export const create_cover_type = async (data: {
   code: string;
 }) => {
   try {
-    const res = await API.post("cover-types/", data);
+    const res = await API.post("cover_types", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {
@@ -50,7 +50,7 @@ export const create_cover_type = async (data: {
 
 export const delete_cover_type = async (id: number) => {
   try {
-    const res = await API.delete(`cover-types/${id}`);
+    const res = await API.delete(`cover_types/${id}`);
     // console.log(res)
     return callResult(res, res.data);
   } catch (err) {
@@ -63,7 +63,7 @@ export const update_cover_type = async (
   data: { name: string; code: string }
 ) => {
   try {
-    const res = await API.put(`cover-types/${id}`, data);
+    const res = await API.put(`cover_types/${id}`, data);
     return callResult(res, res.data);
   } catch (err) {
     return axiosError(err);
@@ -72,7 +72,7 @@ export const update_cover_type = async (
 
 export const read_cover_type = async (id: number) => {
   try {
-    const res = await API.get(`cover-types/${id}`);
+    const res = await API.get(`cover_types/${id}`);
     return queryResult(res, res.data);
   } catch (err) {
     return axiosError(err);
