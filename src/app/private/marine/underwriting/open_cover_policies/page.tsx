@@ -1,121 +1,82 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import * as z from 'zod';
-import { Card, CardContent, CardTitle } from '@app/components/ui/card';
-import { ListTodo } from 'lucide-react';
-import { Form, FormItem, FormLabel } from '@app/components/ui/form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useState, useEffect } from "react";
+import * as z from "zod";
+import { Card, CardContent, CardTitle } from "@app/components/ui/card";
+import { ListTodo } from "lucide-react";
+import { Form, FormItem, FormLabel } from "@app/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import {
   InputFormField,
   SelectFormField,
   TextareaFormField,
-} from '@app/components/forms/ShadcnFormFields';
-import { Button } from '@app/components/ui/button';
-import { Input } from '@app/components/ui/input';
-import { convertDataToSelectObject } from '@app/helpers/index';
+} from "@app/components/forms/ShadcnFormFields";
+import { Button } from "@app/components/ui/button";
+import { Input } from "@app/components/ui/input";
+import { convertDataToSelectObject } from "@app/helpers/index";
 import {
   read_institutions,
   read_branches,
   read_institution_types,
   IBranch,
   IInstitution,
-} from '@app/server/services';
+  find_customer,
+  createOpenCoverPolicy,
+} from "@app/server/services";
+import InputField from "@app/components/forms/InputField";
+import IconButton from "@app/components/ui/IconButton";
+import toast from "react-hot-toast";
 
 const distributionChannel = [
-  { value: 'indirect', label: 'INDIRECT' },
-  { value: 'direct', label: 'DIRECT' },
-];
-
-const customers = [
-  {
-    id: 1,
-    fullName: 'Hartwell Sygrove',
-    phoneNumber: '404-460-2527',
-    email: 'hsygrove0@psu.edu',
-    address: '13 Utah Lane',
-    ghanaCardNumber: '61.10.247.114',
-  },
-  {
-    id: 2,
-    fullName: 'Wendel Dunkerton',
-    phoneNumber: '209-839-9861',
-    email: 'wdunkerton1@answers.com',
-    address: '4 Briar Crest Pass',
-    ghanaCardNumber: '125.157.233.91',
-  },
-  {
-    id: 3,
-    fullName: 'Tommie Shillaber',
-    phoneNumber: '463-578-8069',
-    email: 'tshillaber2@stumbleupon.com',
-    address: '3460 Hollow Ridge Place',
-    ghanaCardNumber: '242.40.128.92',
-  },
-  {
-    id: 4,
-    fullName: 'Melissa Bednell',
-    phoneNumber: '336-667-7195',
-    email: 'mbednell3@bbb.org',
-    address: '150 Dawn Street',
-    ghanaCardNumber: '23.182.249.187',
-  },
-  {
-    id: 5,
-    fullName: 'Clifford Fawlks',
-    phoneNumber: '834-758-6419',
-    email: 'cfawlks4@ycombinator.com',
-    address: '9 Carpenter Terrace',
-    ghanaCardNumber: '93.86.215.166',
-  },
+  { value: "indirect", label: "INDIRECT" },
+  { value: "direct", label: "DIRECT" },
 ];
 
 const formSchema = z.object({
-  insuranceCompany: z.number().min(1, { message: 'Select an institution' }),
-  branchOffice: z.number().min(1, { message: 'Select a branch' }),
-  distributionChannel: z.string().min(1, { message: 'Select a channel' }),
-  intermediaryType: z.number().min(1, { message: 'Select a type' }),
-  intermediaryName: z.number().min(1, { message: 'Select a name' }),
-  branchOfficeAddress: z.string(),
-  customerDetails: z.object({
-    fullName: z.string(),
-    ghanaCardNumber: z.string(),
-    phoneNumber: z.string(),
-    address: z.string(),
+  institution_id: z.number().min(1, { message: "Select an institution" }),
+  branch_id: z.number().min(1, { message: "Select a branch" }),
+  distribution_channel: z.string().min(1, { message: "Select a channel" }),
+  intermediary_branch_id: z.number(),
+  intermediary_type_id: z.number(),
+  intermediary_id: z.number(),
+  customer_details: z.object({
+    name: z.string(),
+    identification_number: z.string(),
+    phone: z.string(),
     email: z.string(),
-    id: z.string(),
+    id: z.number(),
   }),
-  inceptionDate: z.string().min(1, { message: 'Select a date' }),
-  expiryDate: z.string().min(1, { message: 'Select a date' }),
-  limitPerShippment: z.string(),
-  estimatedAnnualShipmentValue: z.string(),
-  policyDeclaration: z.string(),
-  contractingClause: z.string(),
-  cancellationClause: z.string(),
+  find_customer: z.string(),
+  inception_date: z.string().min(1, { message: "Select a date" }),
+  expiry_date: z.string().min(1, { message: "Select a date" }),
+  limit_per_shippment: z.string(),
+  estimated_annual_shipment_value: z.string(),
+  declaration: z.string(),
+  contracting_clause: z.string(),
+  cancellation_clause: z.string(),
   conveyance: z.string(),
   voyages: z.string(),
   conditions: z.string(),
-  policies: z.string(),
+  policies_of_cover: z.string(),
   interest: z.string(),
-  basisOfValuation: z.string(),
+  basis_of_valuation: z.string(),
   rates: z.string(),
   deductible: z.string(),
 });
 
-const findCustomer = (fullName: string, id: string) => {
-  const fullNameToLowerCase = fullName.toLowerCase();
-  return customers.find(
-    customer =>
-      customer.fullName.toLowerCase() === fullNameToLowerCase &&
-      customer.ghanaCardNumber === id
-  );
+const findCustomer = async (identifier: string) => {
+  const customer = await find_customer(identifier);
+  if (!customer.success) return false;
+
+  return customer.data;
 };
 
 const Page = () => {
   const [branches, setBranches] = useState([]);
   const [intermediaryNames, setIntermediaryNames] = useState([]);
   const [intermediaryBranches, setIntermediaryBranches] = useState([]);
+  const [intermediaryErrors, setIntermediaryErrors] = useState({});
   const { items, isLoading } = read_institutions();
   const { items: institutionTypes } = read_institution_types();
   const { items: branchesItems, isLoading: branchesLoading } = read_branches();
@@ -123,316 +84,391 @@ const Page = () => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      insuranceCompany: 0,
-      branchOffice: 0,
-      branchOfficeAddress: '',
-      customerDetails: {
-        fullName: '',
-        address: '',
-        email: '',
-        ghanaCardNumber: '',
-        phoneNumber: '',
-        id: '',
+      institution_id: 0,
+      branch_id: 0,
+      customer_details: {
+        name: "",
+        email: "",
+        identification_number: "",
+        phone: "",
+        id: 0,
       },
-      distributionChannel: '',
-      intermediaryName: 0,
-      inceptionDate: '',
-      intermediaryType: 0,
-      expiryDate: '',
-      limitPerShippment: '',
-      estimatedAnnualShipmentValue: '',
-      policyDeclaration: '',
-      contractingClause: '',
-      cancellationClause: '',
-      conveyance: '',
-      voyages: '',
-      conditions: '',
-      policies: '',
-      interest: '',
-      basisOfValuation: '',
-      rates: '',
-      deductible: '',
+      distribution_channel: "",
+      intermediary_branch_id: 0,
+      intermediary_type_id: 0,
+      intermediary_id: 0,
+      inception_date: "",
+
+      expiry_date: "",
+      limit_per_shippment: "",
+      estimated_annual_shipment_value: "",
+      declaration: "",
+      contracting_clause: "",
+      cancellation_clause: "",
+      conveyance: "",
+      voyages: "",
+      conditions: "",
+      policies_of_cover: "",
+      interest: "",
+      basis_of_valuation: "",
+      rates: "",
+      deductible: "",
     },
   });
   useEffect(() => {
     if (branchesItems && !branchesLoading) {
       const newBranches = branchesItems.filter(
-        (x: IBranch) => x.institution.id === form.watch('insuranceCompany')
+        (x: IBranch) => x.institution.id === form.watch("institution_id")
       );
       setBranches(newBranches);
     }
-  }, [form.watch('insuranceCompany')]);
+  }, [form.watch("institution_id")]);
 
   useEffect(() => {
     if (branchesItems && !branchesLoading) {
       const newBranches = branchesItems.filter(
-        (x: IBranch) => x.institution.id === form.watch('intermediaryName')
+        (x: IBranch) => x.institution.id === form.watch("intermediary_id")
       );
       setIntermediaryBranches(newBranches);
     }
-  }, [form.watch('intermediaryName')]);
+  }, [form.watch("intermediary_id")]);
 
   useEffect(() => {
     if (items && !isLoading) {
       const intermediaryNamesValues = items.filter(
         (x: IInstitution) =>
-          x['institution_type']?.id === form.watch('intermediaryType')
+          x["institution_type"]?.id === form.watch("intermediary_type_id")
       );
       setIntermediaryNames(intermediaryNamesValues);
     }
-  }, [form.watch('intermediaryType')]);
+  }, [form.watch("intermediary_type_id")]);
 
   useEffect(() => {
-    if (form.watch('distributionChannel') === 'direct') {
-      form.resetField('intermediaryType');
-      form.resetField('intermediaryName');
-      form.resetField('branchOfficeAddress');
+    if (form.watch("distribution_channel") === "direct") {
+      form.resetField("intermediary_type_id");
+      // form.resetField("intermediaryName");
+      form.resetField("intermediary_branch_id");
     }
-  }, [form.watch('distributionChannel')]);
+  }, [form.watch("distribution_channel")]);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    setIntermediaryErrors({});
+    if (values.distribution_channel !== "direct") {
+      if (values.intermediary_type_id === 0) {
+        setIntermediaryErrors((prev) => {
+          return {
+            ...prev,
+            intermediary_type_id: "Select an intermediary type",
+          };
+        });
+      }
+      if (values.intermediary_id === 0) {
+        setIntermediaryErrors((prev) => {
+          return {
+            ...prev,
+            intermediary_id: "Select an intermediary name",
+          };
+        });
+      }
+      if (values.intermediary_branch_id === 0) {
+        setIntermediaryErrors((prev) => {
+          return {
+            ...prev,
+            intermediary_branch_id: "Select an intermediary branch",
+          };
+        });
+      }
+    }
+    if (
+      values.distribution_channel !== "direct" &&
+      (values.intermediary_type_id === 0 ||
+        values.intermediary_id === 0 ||
+        values.intermediary_branch_id === 0)
+    ) {
+      return intermediaryErrors;
+    }
 
-  const setCustomerValues = () => {
-    const customer = findCustomer(
-      form.watch('customerDetails.fullName'),
-      form.watch('customerDetails.ghanaCardNumber')
-    );
+    const formData = {
+      customer_id: values.customer_details.id,
+      institution_id: values.institution_id,
+      branch_id: values.branch_id,
+      distribution_channel: values.distribution_channel,
+      intermediary_branch_id: values.intermediary_branch_id,
+      intermediary_id: values.intermediary_id,
+      intermediary_type_id: values.intermediary_type_id,
+      expiry_date: values.expiry_date,
+      limit_per_shippment: values.limit_per_shippment,
+      estimated_annual_shipment_value: values.estimated_annual_shipment_value,
+      declaration: values.declaration,
+      contracting_clause: values.contracting_clause,
+      cancellation_clause: values.cancellation_clause,
+      conveyance: values.conveyance,
+      voyages: values.voyages,
+      conditions: values.conditions,
+      policies_of_cover: values.policies_of_cover,
+      interest: values.interest,
+      basis_of_valuation: values.basis_of_valuation,
+      rates: values.rates,
+      deductible: values.deductible,
+      limit_per_shipment: values.limit_per_shippment,
+    };
+
+    const response = await createOpenCoverPolicy(formData);
+    // console.log(response);
+  };
+
+  const setCustomerValues = async () => {
+    const searchValue = form.watch("find_customer");
+
+    const customer = await findCustomer(searchValue);
+
     if (customer) {
-      form.setValue('customerDetails.fullName', customer.fullName);
-      form.setValue('customerDetails.phoneNumber', customer.phoneNumber);
-      form.setValue('customerDetails.address', customer.address);
-      form.setValue('customerDetails.email', customer.email);
+      console.log(customer, "customer info");
+      toast.success("Customer Found Successfully");
+      form.setValue("customer_details.id", customer.id);
+      form.setValue("customer_details.name", customer.name);
+      form.setValue("customer_details.phone", customer.phone);
+      form.setValue("customer_details.email", customer.email);
       form.setValue(
-        'customerDetails.ghanaCardNumber',
-        customer.ghanaCardNumber
+        "customer_details.identification_number",
+        customer.identification_number
       );
     } else {
-      form.setValue('customerDetails.address', '');
+      form.setValue("customer_details.id", 0);
+      form.setValue("customer_details.name", "");
+      form.setValue("customer_details.phone", "");
+      form.setValue("customer_details.email", "");
+      form.setValue("customer_details.identification_number", "");
+      form.setValue("find_customer", ""); // Reset the search input field
+
+      toast.error("Customer not found. Please provide valid customer details.");
     }
   };
+
+  console.log(form.watch(), "values");
+  console.log(form.formState.errors, "errros");
 
   return (
     <div>
       <Card>
-        <CardTitle className='flex  items-center gap-2 font-thin border-b-[1px] p-5'>
+        <CardTitle className="flex  items-center gap-2 font-thin border-b-[1px] p-5">
           <ListTodo />
-          Fire Policy
+          Open Cover Policy
         </CardTitle>
-        <CardContent className='px-0'>
+        <CardContent className="px-0">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className='border-b-[5px]'>
-                <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8   '>
+              <div className="border-b-[5px]">
+                <div className="p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8   ">
                   <SelectFormField
                     form={form}
-                    name='insuranceCompany'
-                    label='Insurance Company'
+                    name="institution_id"
+                    label="Insurance Company"
                     options={convertDataToSelectObject(items)}
                   />
                   <SelectFormField
                     form={form}
-                    name='branchOffice'
-                    label='Branch Office'
+                    name="branch_id"
+                    label="Branch Office"
                     options={convertDataToSelectObject(branches)}
                   />
                 </div>
-                <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
+                <div className="p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 ">
                   <SelectFormField
                     form={form}
-                    name='distributionChannel'
-                    label='Distribution Channel'
+                    name="distribution_channel"
+                    label="Distribution Channel"
                     options={distributionChannel}
                     showWatchValue={false}
                   />
                   <SelectFormField
                     form={form}
-                    name='intermediaryType'
-                    label='Intermediary Type:'
-                    options={convertDataToSelectObject(institutionTypes)}
-                    showWatchValue={false}
+                    name="intermediary_type_id"
+                    label="Intermediary Type:"
+                    options={convertDataToSelectObject(
+                      institutionTypes,
+                      "name",
+                      "id"
+                    )}
+                    disabled={form.watch("distribution_channel") === "direct"}
+                    placeholder="Select an intermediary type"
                   />
                   <SelectFormField
                     form={form}
-                    name='intermediaryName'
-                    label='Intermediary Name:'
-                    options={convertDataToSelectObject(intermediaryNames)}
+                    name="intermediary_id"
+                    label="Intermediary Name:"
+                    options={convertDataToSelectObject(
+                      intermediaryNames,
+                      "name",
+                      "id"
+                    )}
+                    disabled={form.watch("distribution_channel") === "direct"}
+                    placeholder="Select an intermediary name"
                   />
                   <SelectFormField
                     form={form}
-                    name='branchOfficeAddress'
-                    label='Branch Office of Intermediary:'
-                    options={convertDataToSelectObject(intermediaryBranches)}
-                    showWatchValue={false}
+                    name="intermediary_branch_id"
+                    label="Branch Office of Intermediary:"
+                    options={convertDataToSelectObject(
+                      intermediaryBranches,
+                      "name",
+                      "id"
+                    )}
+                    disabled={form.watch("distribution_channel") === "direct"}
+                    placeholder="Select a branch office"
                   />
                 </div>
-                <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
-                  <FormItem>
-                    <FormLabel> Policy To:</FormLabel>
-                    <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
-                      <Input
-                        placeholder='Full Name'
-                        {...form.register('customerDetails.fullName')}
-                      />
-                      <Input
-                        placeholder='ID Number'
-                        {...form.register('customerDetails.ghanaCardNumber')}
-                      />
-                      <div className='flex items-center flex-wrap gap-4 px-5 '>
-                        <Button variant='primary' type='button'>
-                          Add New Customer
-                        </Button>
-                        <Button
-                          variant='secondary'
-                          type='button'
+                <div className="md:p-10">
+                  <div className="text-lg md:text-xl font-extrabold">
+                    Customer Info
+                  </div>
+                  <div className="flex flex-col md:flex-row md:space-x-20">
+                    <div className="md:w-1/2">
+                      <div>
+                        <h3 className="font-semibold py-5">Policy To:</h3>
+                        <InputField
+                          label="Full Name, ID, or Email"
+                          name="find_customer"
+                          type="search"
+                          className="border m-2 rounded-md focus:outline-none focus:ring focus:border-blue-300"
+                        />
+                      </div>
+                      <div className="flex gap-6">
+                        <IconButton
+                          icon="mdi:search"
+                          color="primary"
                           onClick={setCustomerValues}
-                        >
-                          Find Customer
-                        </Button>
+                        />
+                        <Button>Add New Customer</Button>
                       </div>
                     </div>
-                  </FormItem>
-                  <div className='px-5 space-y-1 text-gray-700'>
-                    {form.watch('customerDetails.address') ? (
-                      <>
-                        <p className='grid grid-cols-3 '>
-                          <span>Name:</span>{' '}
-                          <span>{form.watch('customerDetails.fullName')}</span>
+
+                    <div className="w-full bg-gray-100 p-4 rounded-md mt-6 md:mt-0 md:w-1/2 lg:max-w-[300px] xl:max-w-[400px]">
+                      <div>
+                        <label className="block font-medium mb-1">
+                          Full Name
+                        </label>
+                        <p className="bg-gray-300 p-2 rounded-md h-10 mb-2">
+                          {form.watch("customer_details.name")}
                         </p>
-                        <p className='grid grid-cols-3'>
-                          <span>Telephone:</span>{' '}
-                          <span>
-                            {form.watch('customerDetails.phoneNumber')}
-                          </span>
+                      </div>
+                      <div>
+                        <label className="block font-medium mb-1">Phone</label>
+                        <p className="bg-gray-300 p-2 rounded-md h-10 mb-2">
+                          {form.watch("customer_details.phone")}
                         </p>
-                        <p className='grid grid-cols-3'>
-                          <span>Email:</span>{' '}
-                          <span>{form.watch('customerDetails.email')}</span>
+                      </div>
+                      <div>
+                        <label className="block font-medium mb-1">Email</label>
+                        <p className="bg-gray-300 p-2 rounded-md h-10 mb-2">
+                          {form.watch("customer_details.email")}
                         </p>
-                        <p className='grid grid-cols-3'>
-                          <span>Address:</span>{' '}
-                          <span>{form.watch('customerDetails.address')}</span>
-                        </p>
-                        <p className='grid grid-cols-3'>
-                          <span>Ghana Card No.:</span>{' '}
-                          <span>
-                            {form.watch('customerDetails.ghanaCardNumber')}
-                          </span>
-                        </p>
-                      </>
-                    ) : (
-                      <p>
-                        {(form.formState.errors.customerDetails?.address
-                          ?.message &&
-                          'Select a Customer') ||
-                          'No Customer Found'}
-                      </p>
-                    )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className='p-10 grid lg:grid-cols-2 gap-8'>
-                <div className='flex lg:col-span-2 items-center gap-10 md:gap-0 flex-wrap justify-between lg:justify-around'>
+              <div className="p-10 grid lg:grid-cols-2 gap-8">
+                <div className="flex lg:col-span-2 items-center gap-10 md:gap-0 flex-wrap justify-between lg:justify-around">
                   <InputFormField
                     form={form}
-                    className='flex flex-col lg:flex-row items-start lg:items-center lg:w-[40%] '
-                    labelStyle=' lg:w-[40%] 2xl:w-[30%]'
-                    name='inceptionDate'
-                    label='Inception Date:'
-                    type='date'
+                    className="flex flex-col lg:flex-row items-start lg:items-center lg:w-[40%] "
+                    labelStyle=" lg:w-[40%] 2xl:w-[30%]"
+                    name="inception_date"
+                    label="Inception Date:"
+                    type="date"
                   />
                   <InputFormField
                     form={form}
-                    className='flex flex-col lg:flex-row items-start lg:items-center lg:w-[40%] '
-                    labelStyle=' lg:w-[40%] 2xl:w-[30%] '
-                    name='expiryDate'
-                    label='Expiry Date:'
-                    type='date'
+                    className="flex flex-col lg:flex-row items-start lg:items-center lg:w-[40%] "
+                    labelStyle=" lg:w-[40%] 2xl:w-[30%] "
+                    name="expiry_date"
+                    label="Expiry Date:"
+                    type="date"
                   />
                 </div>
                 <InputFormField
                   form={form}
-                  name='limitPerShipment'
-                  label='Limit Per Shipment/Bottom'
-                  type='number'
+                  name="limit_per_shippment"
+                  label="Limit Per Shipment/Bottom"
+                  type="number"
                 />
                 <InputFormField
                   form={form}
-                  name='estimatedAnnualShipmentValue'
-                  label='Estimated Annual Shipment Value'
-                  type='number'
+                  name="estimated_annual_shipment_value"
+                  label="Estimated Annual Shipment Value"
+                  type="number"
                 />
                 <TextareaFormField
                   form={form}
-                  name='policyDeclaration'
-                  label='Policy Declaration'
-                  className='lg:col-span-2'
+                  name="declaration"
+                  label="Policy Declaration"
+                  className="lg:col-span-2"
                 />
                 <TextareaFormField
                   form={form}
-                  name='contractingClause'
-                  label='Contracting Clause'
-                  className='lg:col-span-2'
+                  name="contracting_clause"
+                  label="Contracting Clause"
+                  className="lg:col-span-2"
                 />
                 <TextareaFormField
                   form={form}
-                  name='cancellationClause'
-                  label='Cancellation Clause'
-                  className='lg:col-span-2'
+                  name="cancellation_clause"
+                  label="Cancellation Clause"
+                  className="lg:col-span-2"
                 />
                 <TextareaFormField
                   form={form}
-                  name='conveyance'
-                  label='Conveyance'
-                  className='lg:col-span-2'
+                  name="conveyance"
+                  label="Conveyance"
+                  className="lg:col-span-2"
                 />
                 <TextareaFormField
                   form={form}
-                  name='voyages'
-                  label='Voyages'
-                  className='lg:col-span-2'
+                  name="voyages"
+                  label="Voyages"
+                  className="lg:col-span-2"
                 />
                 <TextareaFormField
                   form={form}
-                  name='conditions'
-                  label='Conditions'
-                  className='lg:col-span-2'
+                  name="conditions"
+                  label="Conditions"
+                  className="lg:col-span-2"
                 />
                 <TextareaFormField
                   form={form}
-                  name='policies'
-                  label='Policies'
-                  className='lg:col-span-2'
+                  name="policies_of_cover"
+                  label="Policies"
+                  className="lg:col-span-2"
                 />
                 <TextareaFormField
                   form={form}
-                  name='interest'
-                  label='Interest'
-                  className='lg:col-span-2'
+                  name="interest"
+                  label="Interest"
+                  className="lg:col-span-2"
                 />
                 <TextareaFormField
                   form={form}
-                  name='basisOfValuation'
-                  label='Base Of Valuations'
-                  className='lg:col-span-2'
+                  name="basis_of_valuation"
+                  label="Base Of Valuations"
+                  className="lg:col-span-2"
                 />
                 <TextareaFormField
                   form={form}
-                  name='rates'
-                  label='Rates'
-                  className='lg:col-span-2'
+                  name="rates"
+                  label="Rates"
+                  className="lg:col-span-2"
                 />
                 <TextareaFormField
                   form={form}
-                  name='deductible'
-                  label='Dedcuctible'
-                  className='lg:col-span-2'
+                  name="deductible"
+                  label="Dedcuctible"
+                  className="lg:col-span-2"
                 />
               </div>
-              <div className='flex items-end justify-end p-5'>
-                <Button variant='primary'>Submit Open Cover</Button>
+              <div className="flex items-end justify-end p-5">
+                <Button variant="primary">Submit Open Cover</Button>
               </div>
             </form>
           </Form>

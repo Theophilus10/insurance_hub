@@ -1,17 +1,17 @@
-import { InputField } from '@app/components/forms/ShadcnFields';
-import React from 'react';
+import { InputField } from "@app/components/forms/ShadcnFields";
+import React from "react";
 
 interface Props {
-  policyExcess: string;
+  policy_excess: string;
   onChange: (value: string) => void;
 }
-const PolicyExcess = ({ policyExcess, onChange }: Props) => {
+const PolicyExcess = ({ policy_excess, onChange }: Props) => {
   return (
-    <div className='py-5'>
+    <div className="py-5">
       <InputField
-        label='Policy Excess'
-        onChange={e => onChange(e.target.value)}
-        value={policyExcess}
+        label="Policy Excess"
+        onChange={(e) => onChange(e.target.value)}
+        value={policy_excess}
       />
     </div>
   );

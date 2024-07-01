@@ -1,33 +1,40 @@
-'use client';
+"use client";
 
-import React, { useEffect, useMemo, useState } from 'react';
-import { Button } from '@app/components/ui/button';
-import DataTable from '@app/components/datatable/datatable';
-import { ColumnDef } from '@tanstack/react-table';
-import { HeaderWithSorting } from '@app/components/datatable/columnHeaders';
+import React, { useEffect, useMemo, useState } from "react";
+import { Button } from "@app/components/ui/button";
+import DataTable from "@app/components/datatable/datatable";
+import { ColumnDef } from "@tanstack/react-table";
+import { HeaderWithSorting } from "@app/components/datatable/columnHeaders";
 import {
   InputField,
   SelectField,
   TextAreaField,
-} from '@app/components/forms/ShadcnFields';
-import { nanoid } from 'nanoid';
-import { read_cover_types, read_interests } from '@app/server/services';
-import { convertDataToSelectObject } from '@app/helpers/index';
+} from "@app/components/forms/ShadcnFields";
+import { nanoid } from "nanoid";
+import {
+  read_cover_types,
+  read_interest_rate,
+  read_interests,
+} from "@app/server/services";
+import {
+  convertDataToSelectObject,
+  convertDataToSelectObjectNameAsValue,
+} from "@app/helpers/index";
 
 export type InterestType = {
-  coverType: number | null;
-  interest: number | null;
-  packageType: string | null;
+  cover_type: string | null;
+  interest: string | null;
+  package_type: string | null;
   rate: number;
-  itemCost: number;
-  freightAmount: number;
-  markupRate: number;
-  dutyRate: number;
-  sumInsured: number;
-  markupAmount: number;
-  dutyAmount: number;
-  basicPremium: number;
-  description: string;
+  cost: number;
+  freight: number;
+  markup_rate: number;
+  duty_rate: number;
+  sum_insured: number;
+  markup: number;
+  duty_amount: number;
+  basic_premium: number;
+  item_description: string;
   id: string;
 };
 
@@ -38,39 +45,39 @@ type SelectType = {
 
 const columns: ColumnDef<InterestType>[] = [
   {
-    accessorKey: 'coverType',
+    accessorKey: "cover_type",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='Cover Type' />;
+      return <HeaderWithSorting column={column} label="Cover Type" />;
     },
   },
   {
-    accessorKey: 'interest',
+    accessorKey: "interest",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='Interest' />;
+      return <HeaderWithSorting column={column} label="Interest" />;
     },
   },
   {
-    accessorKey: 'rate',
+    accessorKey: "rate",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='Rate (%)' />;
+      return <HeaderWithSorting column={column} label="Rate (%)" />;
     },
   },
   {
-    accessorKey: 'sumInsured',
+    accessorKey: "sum_insured",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='Sum insured' />;
+      return <HeaderWithSorting column={column} label="Sum insured" />;
     },
   },
   {
-    accessorKey: 'dutyAmount',
+    accessorKey: "duty_amount",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='Duty amount' />;
+      return <HeaderWithSorting column={column} label="Duty amount" />;
     },
   },
   {
-    accessorKey: 'basicPremium',
+    accessorKey: "basic_premium",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='Basic Premium' />;
+      return <HeaderWithSorting column={column} label="Basic Premium" />;
     },
   },
 ];
@@ -83,8 +90,8 @@ interface InteresProps {
 }
 
 const packageTypes = [
-  { label: 'containerized', value: 'CONTAINERIZED' },
-  { label: 'non-containerized', value: 'NON-CONTAINERIZED' },
+  { label: "containerized", value: "CONTAINERIZED" },
+  { label: "non-containerized", value: "NON-CONTAINERIZED" },
 ];
 
 const InterestItems = ({
@@ -96,61 +103,61 @@ const InterestItems = ({
   const { items: coverTypes, isLoading: coverTypesIsLoading } =
     read_cover_types();
   const { items: interestItems, isLoading: interestsLoading } =
-    read_interests();
+    read_interest_rate();
   const [interest, setInterests] = useState<InterestType>({
-    coverType: 0,
-    interest: 0,
-    packageType: '',
+    cover_type: "",
+    interest: "",
+    package_type: "",
     rate: 0,
-    itemCost: 0,
-    freightAmount: 0,
-    markupRate: 0,
-    dutyRate: 0,
-    sumInsured: 0,
-    markupAmount: 0,
-    dutyAmount: 0,
-    basicPremium: 0,
-    description: '',
-    id: '',
+    cost: 0,
+    freight: 0,
+    markup_rate: 0,
+    duty_rate: 0,
+    sum_insured: 0,
+    markup: 0,
+    duty_amount: 0,
+    basic_premium: 0,
+    item_description: "",
+    id: "",
   });
   const [updating, setUpdating] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
 
   const reset = () => {
     setInterests({
-      coverType: null,
-      interest: null,
-      packageType: null,
+      cover_type: "",
+      interest: "",
+      package_type: "",
       rate: 0,
-      itemCost: 0,
-      freightAmount: 0,
-      markupRate: 0,
-      dutyRate: 0,
-      sumInsured: 0,
-      markupAmount: 0,
-      dutyAmount: 0,
-      basicPremium: 0,
-      description: '',
-      id: '',
+      cost: 0,
+      freight: 0,
+      markup_rate: 0,
+      duty_rate: 0,
+      sum_insured: 0,
+      markup: 0,
+      duty_amount: 0,
+      basic_premium: 0,
+      item_description: "",
+      id: "",
     });
   };
 
-  const coverType = useMemo(
-    () => convertDataToSelectObject(coverTypes),
+  const cover_type = useMemo(
+    () => convertDataToSelectObjectNameAsValue(coverTypes),
     [coverTypes]
   );
   const interestValues = useMemo(
-    () => convertDataToSelectObject(interestItems),
+    () => convertDataToSelectObjectNameAsValue(interestItems),
     [interestItems]
   );
 
   const onRowAction = (action: string, row: any) => {
     switch (action) {
-      case 'edit':
+      case "edit":
         setInterests(row);
         setUpdating(true);
         break;
-      case 'delete':
+      case "delete":
         deleteInterest(row.id);
         break;
       default:
@@ -160,158 +167,195 @@ const InterestItems = ({
 
   useEffect(() => {
     // Calculate markup amount
-    interest.markupAmount =
-      (interest.markupRate / 100) *
-      (interest.itemCost + interest.freightAmount);
+    interest.markup =
+      (interest.markup_rate / 100) * (interest.cost + interest.freight);
 
     // Calculate duty amount
-    interest.dutyAmount =
-      (interest.dutyRate / 100) * (interest.itemCost + interest.freightAmount);
+    interest.duty_amount =
+      (interest.duty_rate / 100) * (interest.cost + interest.freight);
 
     // Calculate sum insured
-    const { itemCost, freightAmount, markupAmount, dutyAmount } = interest;
-    interest.sumInsured = itemCost + freightAmount + markupAmount + dutyAmount;
+    const { cost, freight, markup, duty_amount } = interest;
+    interest.sum_insured = cost + freight + markup + duty_amount;
   }, [
-    interest.markupRate,
-    interest.dutyRate,
-    interest.itemCost,
-    interest.freightAmount,
-    interest.dutyAmount,
+    interest.markup_rate,
+    interest.duty_rate,
+    interest.cost,
+    interest.freight,
+    interest.duty_amount,
   ]);
 
   useEffect(() => {
     // Calculate basic premium
-    const { sumInsured, rate } = interest;
-    interest.basicPremium = sumInsured * (rate / 100);
-  }, [interest.rate, interest.sumInsured]);
+    const { sum_insured, rate } = interest;
+    interest.basic_premium = sum_insured * (rate / 100);
+  }, [interest.rate, interest.sum_insured]);
 
   const validateInterests = () => {
     const errors = {
-      coverType: '',
-      interest: '',
-      packageType: '',
-      rate: '',
-      itemCost: '',
-      freightAmount: '',
-      markupRate: '',
-      dutyRate: '',
-      sumInsured: '',
-      markupAmount: '',
-      dutyAmount: '',
-      basicPremium: '',
-      description: '',
-      id: '',
+      cover_type: "",
+      interest: "",
+      package_type: "",
+      rate: "",
+      cost: "",
+      freight: "",
+      markup_rate: "",
+      duty_rate: "",
+      sum_insured: "",
+      markup: "",
+      duty_amount: "",
+      basic_premium: "",
+      item_description: "",
+      id: "",
     };
 
-    // Validate coverType
-    if (typeof interest.coverType !== 'number') {
-      errors.coverType = 'Cover type must be a number.';
+    // Validate cover_type
+    if (typeof interest.cover_type !== "string") {
+      errors.cover_type = "Cover type must be a string.";
     }
 
     // Validate interest
-    if (typeof interest.interest !== 'number') {
-      errors.interest = 'Interest must be a number.';
+    if (typeof interest.interest !== "string") {
+      errors.interest = "Interest must be a string.";
     }
 
-    // Validate packageType
+    // Validate package_type
     if (
-      typeof interest.packageType !== 'string' ||
-      interest.packageType.trim() === ''
+      typeof interest.package_type !== "string" ||
+      interest.package_type.trim() === ""
     ) {
-      errors.packageType = 'Package type must be a non-empty string.';
+      errors.package_type = "Package type must be a non-empty string.";
     }
 
     // Validate rate
-    if (typeof interest.rate !== 'number') {
-      errors.rate = 'Rate must be a number.';
+    if (typeof interest.rate !== "number") {
+      errors.rate = "Rate must be a number.";
     }
 
-    // Validate itemCost
-    if (typeof interest.itemCost !== 'number') {
-      errors.itemCost = 'Item cost must be a number.';
+    // Validate cost
+    if (typeof interest.cost !== "number") {
+      errors.cost = "Item cost must be a number.";
     }
 
-    // Validate freightAmount
-    if (typeof interest.freightAmount !== 'number') {
-      errors.freightAmount = 'Freight amount must be a number.';
+    // Validate freight
+    if (typeof interest.freight !== "number") {
+      errors.freight = "Freight amount must be a number.";
     }
 
-    // Validate markupRate
-    if (typeof interest.markupRate !== 'number') {
-      errors.markupRate = 'Markup rate must be a number.';
+    // Validate markup_rate
+    if (typeof interest.markup_rate !== "number") {
+      errors.markup_rate = "Markup rate must be a number.";
     }
 
-    // Validate dutyRate
-    if (typeof interest.dutyRate !== 'number') {
-      errors.dutyRate = 'Duty rate must be a number.';
+    // Validate duty_rate
+    if (typeof interest.duty_rate !== "number") {
+      errors.duty_rate = "Duty rate must be a number.";
     }
 
-    // Validate sumInsured
-    if (typeof interest.sumInsured !== 'number') {
-      errors.sumInsured = 'Sum insured must be a number.';
+    // Validate sum_insured
+    if (typeof interest.sum_insured !== "number") {
+      errors.sum_insured = "Sum insured must be a number.";
     }
 
-    // Validate markupAmount
-    if (typeof interest.markupAmount !== 'number') {
-      errors.markupAmount = 'Markup amount must be a number.';
+    // Validate markup
+    if (typeof interest.markup !== "number") {
+      errors.markup = "Markup amount must be a number.";
     }
 
-    // Validate dutyAmount
-    if (typeof interest.dutyAmount !== 'number') {
-      errors.dutyAmount = 'Duty amount must be a number.';
+    // Validate duty_amount
+    if (typeof interest.duty_amount !== "number") {
+      errors.duty_amount = "Duty amount must be a number.";
     }
 
-    // Validate basicPremium
-    if (typeof interest.basicPremium !== 'number') {
-      errors.basicPremium = 'Basic premium must be a number.';
+    // Validate basic_premium
+    if (typeof interest.basic_premium !== "number") {
+      errors.basic_premium = "Basic premium must be a number.";
     }
 
-    // Validate description
-    if (typeof interest.description !== 'string') {
-      errors.description = 'Description must be a string.';
+    // Validate item_description
+    if (typeof interest.item_description !== "string") {
+      errors.item_description = "Description must be a string.";
     }
 
     // Validate id
-    if (typeof interest.id !== 'string') {
-      errors.id = 'ID must be a string.';
+    if (typeof interest.id !== "string") {
+      errors.id = "ID must be a string.";
     }
     setValidationErrors(errors);
-    return Object.values(errors).every(error => !error);
+    return Object.values(errors).every((error) => !error);
   };
 
+  const handleRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("Previous rate:", interest);
+    console.log("Event object:", e);
+    setInterests({
+      ...interest,
+      rate: +e.target.value,
+    });
+  };
+
+  // const handleInterestChange = (e: any) => {
+  //   if (e) {
+  //     setInterests((prev) => {
+  //       console.log("Previous state:", prev);
+  //       console.log("Event object:", e);
+  //       return { ...prev, interest: e.value };
+  //     });
+  //   }
+  // };
+
+  const handleInterestChange = (e: any) => {
+    if (e) {
+      const selectedInterest = interestItems.find(
+        (item: any) => item.name === e.value
+      );
+
+      console.log(selectedInterest, "selectedInterest");
+      const rateKey =
+        interest.package_type === "CONTAINERIZED"
+          ? "containerized_rate"
+          : "non_containerized_rate";
+      const selectedRate = selectedInterest?.rates?.[0]?.[rateKey] || 0;
+
+      setInterests((prev) => ({
+        ...prev,
+        interest: e.value,
+        rate: +selectedRate,
+      }));
+    }
+  };
+
+  useEffect(() => {
+    console.log("Current state:", interest);
+  }, [interest]);
+
   return (
-    <div className='p-3 2xl:px-10 box-border'>
+    <div className="p-3 2xl:px-10 box-border">
       <div>
-        <div className='grid grid-cols-1 lg:grid-cols-6 gap-6 lg:gap-10  '>
+        <div className="grid grid-cols-1 lg:grid-cols-6 gap-6 lg:gap-10  ">
           <SelectField
-            label='Cover Type'
-            className=' lg:col-span-2'
-            onChange={e => {
+            label="Cover Type"
+            className=" lg:col-span-2"
+            onChange={(e) => {
               if (e) {
-                setInterests(prev => {
-                  return { ...prev, coverType: e.value };
+                setInterests((prev) => {
+                  return { ...prev, cover_type: e.value };
                 });
               }
             }}
-            options={coverType}
+            options={cover_type}
             value={
-              coverType.find(
-                (c: SelectType) => c.value === interest.coverType
+              cover_type.find(
+                (c: SelectType) => c.value === interest.cover_type
               ) || null
             }
             isLoading={coverTypesIsLoading}
           />
           <SelectField
-            label='Interest/Item:'
-            className='lg:col-span-2 '
+            label="Interest/Item:"
+            className="lg:col-span-2 "
             options={interestValues}
-            onChange={e => {
-              if (e) {
-                setInterests(prev => {
-                  return { ...prev, interest: e.value };
-                });
-              }
-            }}
+            onChange={handleInterestChange}
             value={
               interestValues.find(
                 (c: SelectType) => c.value === interest.interest
@@ -320,93 +364,102 @@ const InterestItems = ({
             isLoading={interestsLoading}
           />
           <SelectField
-            label='Package Type:'
+            label="Package Type:"
             options={packageTypes}
-            onChange={e => {
+            onChange={(e) => {
               if (e) {
-                setInterests(prev => {
-                  return { ...prev, packageType: e.value };
+                setInterests((prev) => {
+                  const updatedInterest = { ...prev, package_type: e.value };
+                  const selectedInterest = interestItems.find(
+                    (item: any) => item.name === updatedInterest.interest
+                  );
+
+                  const rateKey =
+                    updatedInterest.package_type === "CONTAINERIZED"
+                      ? "containerized_rate"
+                      : "non_containerized_rate";
+                  const selectedRate =
+                    selectedInterest?.rates?.[0]?.[rateKey] || 0;
+
+                  return { ...updatedInterest, rate: +selectedRate };
                 });
               }
             }}
             value={
               packageTypes.find(
-                (c: SelectType) => c.value === interest.packageType
+                (c: SelectType) => c.value === interest.package_type
               ) || null
             }
             isLoading={interestsLoading}
           />
+
           <InputField
-            label='Rate(%):'
-            type='number'
-            onChange={e => {
-              setInterests(prev => {
-                return { ...prev, rate: +e.target.value };
-              });
-            }}
+            label="Rate(%):"
+            type="number"
+            onChange={handleRateChange}
             value={interest.rate}
           />
           <InputField
-            label='Item Cost:'
-            type='number'
-            className='lg:col-span-2'
-            onChange={e => {
-              setInterests(prev => {
-                return { ...prev, itemCost: +e.target.value };
+            label="Item Cost:"
+            type="number"
+            className="lg:col-span-2"
+            onChange={(e) => {
+              setInterests((prev) => {
+                return { ...prev, cost: +e.target.value };
               });
             }}
-            value={interest.itemCost}
+            value={interest.cost}
           />
           <InputField
-            label='Fraight Amount:'
-            className='lg:col-span-2'
-            type='number'
-            onChange={e => {
-              setInterests(prev => {
-                return { ...prev, freightAmount: +e.target.value };
+            label="Fraight Amount:"
+            className="lg:col-span-2"
+            type="number"
+            onChange={(e) => {
+              setInterests((prev) => {
+                return { ...prev, freight: +e.target.value };
               });
             }}
-            value={interest.freightAmount}
+            value={interest.freight}
           />
           <InputField
-            label='Markup Rate(%):'
-            type='number'
-            onChange={e => {
-              setInterests(prev => {
-                return { ...prev, markupRate: +e.target.value };
+            label="Markup Rate(%):"
+            type="number"
+            onChange={(e) => {
+              setInterests((prev) => {
+                return { ...prev, markup_rate: +e.target.value };
               });
             }}
-            value={interest.markupRate}
+            value={interest.markup_rate}
           />
           <InputField
-            label='Duty Rate(%):'
-            type='number'
-            onChange={e => {
-              setInterests(prev => {
-                return { ...prev, dutyRate: +e.target.value };
+            label="Duty Rate(%):"
+            type="number"
+            onChange={(e) => {
+              setInterests((prev) => {
+                return { ...prev, duty_rate: +e.target.value };
               });
             }}
-            value={interest.dutyRate}
+            value={interest.duty_rate}
           />
           <TextAreaField
-            label='Item Description:'
-            className='lg:col-span-6'
-            onChange={e => {
+            label="Item Description:"
+            className="lg:col-span-6"
+            onChange={(e) => {
               if (e) {
-                setInterests(prev => {
-                  return { ...prev, description: e.target.value };
+                setInterests((prev) => {
+                  return { ...prev, item_description: e.target.value };
                 });
               }
             }}
-            value={interest.description}
+            value={interest.item_description}
           />
         </div>
-        <div className='flex justify-end'>
+        <div className="flex justify-end">
           {updating ? (
             <div>
               <Button
-                variant='link'
-                className='text-red-500'
+                variant="link"
+                className="text-red-500"
                 onClick={() => {
                   reset();
                   setUpdating(false);
@@ -415,9 +468,9 @@ const InterestItems = ({
                 Clear
               </Button>
               <Button
-                variant='secondary'
-                className='my-10 font-semibold'
-                type='button'
+                variant="secondary"
+                className="my-10 font-semibold"
+                type="button"
                 onClick={() => {
                   if (validateInterests()) {
                     updateInterets(interest);
@@ -430,9 +483,9 @@ const InterestItems = ({
             </div>
           ) : (
             <Button
-              variant='primary'
-              className='my-10 font-semibold'
-              type='button'
+              variant="primary"
+              className="my-10 font-semibold"
+              type="button"
               onClick={() => {
                 if (validateInterests()) {
                   addInterests({ ...interest, id: nanoid() });
@@ -444,7 +497,7 @@ const InterestItems = ({
           )}
         </div>
       </div>
-      <div className='py-8'>
+      <div className="py-8">
         <DataTable
           columns={columns}
           data={interests}

@@ -98,3 +98,20 @@ export const read_customer = async (id: number) => {
     return axiosError(err);
   }
 };
+
+export interface CustomerParams {
+  email?: string;
+  phone?: string;
+  identification_number?: string;
+}
+
+export const find_customer = async (identifier: string) => {
+  try {
+    const res = await API.get(`/customers/find`, {
+      params: { query: identifier },
+    });
+    return queryResult(res, res.data); // Assuming queryResult and axiosError are defined
+  } catch (err) {
+    return axiosError(err);
+  }
+};

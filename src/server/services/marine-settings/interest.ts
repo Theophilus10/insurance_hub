@@ -90,3 +90,18 @@ export const read_interest = async (id: number) => {
   //   success: data && true,
   // };
 };
+
+export const read_interest_rate = () => {
+  const { data, error, isLoading, mutate } = useSWR(
+    "interests/interests_with_rates",
+    fetcher
+  );
+
+  return {
+    items: data ?? [],
+    isLoading,
+    isError: error,
+    mutate,
+    success: data && true,
+  };
+};
