@@ -90,9 +90,8 @@ export interface Transit {
 }
 
 export interface PolicyExtension {
-  extension_id: number;
+  extension: string;
   rate: number;
-  description: string;
 }
 
 export interface Policy {
@@ -153,4 +152,6 @@ export interface OpenCoverPolicy {
   distributionChannel: string;
   find_customer: string;
   limit_per_shipment: string;
+  created_at: string;
+  updated_at: string;
 }

@@ -9,105 +9,7 @@ import { InterestType } from "@app/components/single_transit_policy/partials/int
 import { TranshipmentType } from "@app/components/single_transit_policy/partials/transhipment";
 import { TransitType } from "@app/components/single_transit_policy/partials/transits";
 import { PolicyExtenxionsType } from "@app/components/single_transit_policy/partials/policy_extensions";
-
-const policyItems = [
-  {
-    item: "Construction Materials: Cement, PVC, Pipes, Brassware, Iron, Asbestos, etc.",
-    description: "yes",
-    rate: 2.27,
-    packageType: "NON-CONTAINERIZED",
-    cost: "TRY 1.00",
-  },
-  {
-    item: "Construction Materials: Cement, PVC, Pipes, Brassware, Iron, Asbestos, etc.",
-    description: "yes",
-    rate: 2.27,
-    packageType: "NON-CONTAINERIZED",
-    cost: "TRY 1.00",
-  },
-  {
-    item: "Construction Materials: Cement, PVC, Pipes, Brassware, Iron, Asbestos, etc.",
-    description: "yes",
-    rate: 2.27,
-    packageType: "NON-CONTAINERIZED",
-    cost: "TRY 1.00",
-  },
-  {
-    item: "Construction Materials: Cement, PVC, Pipes, Brassware, Iron, Asbestos, etc.",
-    description: "yes",
-    rate: 2.27,
-    packageType: "NON-CONTAINERIZED",
-    cost: "TRY 1.00",
-  },
-  {
-    item: "Construction Materials: Cement, PVC, Pipes, Brassware, Iron, Asbestos, etc.",
-    description: "yes",
-    rate: 2.27,
-    packageType: "NON-CONTAINERIZED",
-    cost: "TRY 1.00",
-  },
-];
-
-const policyTranshipments = [
-  {
-    from: "Nicaragua",
-    to: "Malaysia",
-    rate: 0.13,
-    description: "yes",
-  },
-  {
-    from: "Nicaragua",
-    to: "Malaysia",
-    rate: 0.13,
-    description: "yes",
-  },
-  {
-    from: "Nicaragua",
-    to: "Malaysia",
-    rate: 0.13,
-    description: "yes",
-  },
-  {
-    from: "Nicaragua",
-    to: "Malaysia",
-    rate: 0.13,
-    description: "yes",
-  },
-  {
-    from: "Nicaragua",
-    to: "Malaysia",
-    rate: 0.13,
-    description: "yes",
-  },
-];
-
-const policyExtension = [
-  {
-    extension: "Nicaragua",
-    rate: 1,
-    description: "none",
-  },
-  {
-    extension: "Nicaragua",
-    rate: 1,
-    description: "none",
-  },
-  {
-    extension: "Nicaragua",
-    rate: 1,
-    description: "none",
-  },
-  {
-    extension: "Nicaragua",
-    rate: 1,
-    description: "none",
-  },
-  {
-    extension: "Nicaragua",
-    rate: 1,
-    description: "none",
-  },
-];
+import FullPageLoader from "@app/components/layout/fullPageLoader";
 
 const Page = () => {
   const router = useRouter();
@@ -116,8 +18,12 @@ const Page = () => {
   const policyId = policyIdParam ? parseInt(policyIdParam) : 0;
   //   const fetchPolicyId = parseInt(params.previewId);
   const { items, mutate, isLoading, isError } = show_policy(policyId);
+
+  if (isLoading) {
+    return <FullPageLoader />;
+  }
   return (
-    <Card className="w-full pb-5 text-[#5D5A68] text-[0.938rem]">
+    <Card className="container mx-auto pb-5 text-[#5D5A68] text-[0.938rem]">
       <button className="bg-blue-200 w-full rounded-md shadow-md text-blue-800 font-semibold text-base cursor-pointer font-light py-2 ">
         Print
       </button>
@@ -140,7 +46,7 @@ const Page = () => {
           <label>Sailing Date:</label>
           <p className="text-right">{items?.sailing_date}</p>
           <label>Est. Arrival Date:</label>
-          <p className="text-right">October 4, 2023</p>
+          <p className="text-right">{items?.estimated_arrival_date}</p>
         </div>
       </div>
       <div className=" border-b-[1px] p-8 ">

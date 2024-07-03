@@ -14,9 +14,9 @@ import {
 import { nanoid } from "nanoid";
 
 export type PolicyExtenxionsType = {
-  extension: "";
+  extension: string;
   rate: number;
-  id: string;
+  id?: string;
 };
 
 type SelectType = {

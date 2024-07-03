@@ -27,6 +27,7 @@ import { Button } from "@app/components/ui/button";
 import {
   InputFormField,
   SelectFormField,
+  SelectFormFieldWithOnChange,
 } from "@app/components/forms/ShadcnFormFields";
 import Transhipment, {
   TranshipmentType,
@@ -146,7 +147,7 @@ const defaultValues = {
   transhipment: [],
   transits: [],
   interests: [],
-  policy_extension: [],
+  policy_extensions: [],
   policy_excess: "",
 };
 
@@ -170,7 +171,7 @@ const formSchema = z.object({
   shipping_type_id: z.number().min(1, { message: "Select a type" }),
   bank_id: z.number().min(1, { message: "Select a bank" }),
   carrier_id: z.number().min(1, { message: "Select a carrier" }),
-  currency: z.number().min(1, { message: "Select a currency" }),
+  currency: z.number(),
   exchange_rate: z.string().min(1, { message: "Enter a valid rate" }),
   commercial_invoice_number: z
     .string()
@@ -242,11 +243,11 @@ const formSchema = z.object({
       })
     )
     .min(1, { message: "Add interest items" }),
-  policy_extension: z
+  policy_extensions: z
     .array(
       z.object({
-        rate: z.number(),
         extension: z.string(),
+        rate: z.number(),
         id: z.string(),
       })
     )
@@ -268,6 +269,21 @@ const Page = () => {
   const [intermediaryBranches, setIntermediaryBranches] = useState([]);
   const [customerError, setCustomerError] = useState("");
   const [intermediaryErrors, setIntermediaryErrors] = useState({});
+  const [totals, setTotals] = useState({
+    markupAmount: 0,
+    dutyAmount: 0,
+    sumInsured: 0,
+    basicPremium: 0,
+  });
+  // const [transhipmentLoading, setTranshipmentlLoading] = useState<number>(0);
+  // const [transitLoading, setTransitLoading] = useState<number>(0);
+  // const [extensionLoading, setExtensionLoading] = useState<number>(0);
+  const [totalLoading, setTotalLoading] = useState<number>(0);
+  const [loadingAmount, setLoadingAmount] = useState<number>(0);
+  const [premiumPayable, setPremiumPayable] = useState<number>(0);
+  const [selectedCurrencyCode, setSelectedCurrencyCode] = useState("");
+  console.log(selectedCurrencyCode, "currency code");
+
   const { items, isLoading } = read_institutions();
   const { items: institutionTypes } = read_institution_types();
   const { items: branchesItems, isLoading: branchesLoading } = read_branches();
@@ -282,6 +298,68 @@ const Page = () => {
     resolver: zodResolver(formSchema),
     defaultValues,
   });
+
+  const interests = form.watch("interests");
+  const transhipmentValues = form.watch("transhipment");
+  const transitValues = form.watch("transits");
+  const extensionValues = form.watch("policy_extensions");
+
+  useEffect(() => {
+    const calculatedTotals = interests.reduce(
+      (acc: any, interest: any) => {
+        const { cost, freight, markup_rate, duty_rate, rate } = interest;
+        const markupAmount = (markup_rate / 100) * (cost + freight);
+        const dutyAmount = (duty_rate / 100) * (cost + freight);
+        const sumInsured = cost + freight + markupAmount + dutyAmount;
+        const basicPremium = sumInsured * (rate / 100);
+
+        return {
+          markupAmount: acc.markupAmount + markupAmount,
+          dutyAmount: acc.dutyAmount + dutyAmount,
+          sumInsured: acc.sumInsured + sumInsured,
+          basicPremium: acc.basicPremium + basicPremium,
+        };
+      },
+      {
+        markupAmount: 0,
+        dutyAmount: 0,
+        sumInsured: 0,
+        basicPremium: 0,
+      }
+    );
+
+    setTotals(calculatedTotals);
+  }, [interests]);
+
+  useEffect(() => {
+    const totalTranshipmentRates = transhipmentValues.reduce(
+      (acc, transhipment) => acc + transhipment.rate,
+      0
+    );
+
+    const totalTransitRates = transitValues.reduce(
+      (acc, transit) => acc + transit.rate,
+      0
+    );
+
+    const totalExtensionRates = extensionValues.reduce(
+      (acc, extension) => acc + extension.rate,
+      0
+    );
+
+    const totalLoading =
+      totalTranshipmentRates + totalTransitRates + totalExtensionRates;
+
+    setTotalLoading(totalLoading);
+    setLoadingAmount((totalLoading / 100) * (totals?.sumInsured || 0));
+    setPremiumPayable(loadingAmount + totals.basicPremium);
+  }, [
+    transhipmentValues,
+    transitValues,
+    extensionValues,
+    totals.sumInsured,
+    loadingAmount,
+  ]);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIntermediaryErrors({});
@@ -343,10 +421,11 @@ const Page = () => {
       port_of_destination: values.port_of_destination,
       sailing_date: values.sailing_date,
       estimated_arrival_date: values.estimated_arrival_date,
-      policy_extensions: values.policy_extension,
+      policy_extensions: values.policy_extensions,
       interests: values.interests,
       transhipments: values.transhipment,
       transits: values.transits,
+      premium_amount: premiumPayable,
       intermediary_branch_id: values.intermediary_branch_id,
       intermediary_id: values.intermediary_id,
       intermediary_type_id: values.intermediary_type_id,
@@ -593,12 +672,26 @@ const Page = () => {
                     "id"
                   )}
                 />
-                <SelectFormField
+                <SelectFormFieldWithOnChange
                   form={form}
                   name="currency"
                   label="Currency"
-                  options={convertDataToSelectObject(currencies)}
+                  options={
+                    currencies?.length
+                      ? currencies.map((currency: any) => ({
+                          label: currency?.name,
+                          value: currency?.id,
+                        }))
+                      : []
+                  }
+                  onChange={(value) => {
+                    const selectedCurrency = currencies.find(
+                      (c) => c.id === value
+                    );
+                    setSelectedCurrencyCode(selectedCurrency?.code);
+                  }}
                 />
+
                 <InputFormField
                   form={form}
                   name="exchange_rate"
@@ -777,16 +870,20 @@ const Page = () => {
               {selectedTab.toLowerCase() === "policy extension" && (
                 <PolicyExtenxions
                   addPolicyExtension={(policyExtenxion: PolicyExtenxionsType) =>
-                    addToTable(policyExtenxion, "policy_extension", form)
+                    addToTable(policyExtenxion, "policy_extensions", form)
                   }
-                  policyExtensions={form.watch("policy_extension")}
+                  policyExtensions={form.watch("policy_extensions")}
                   deletePolicyExtension={(id: string) =>
-                    deleteTableValue(id, "policy_extension", form)
+                    deleteTableValue(id, "policy_extensions", form)
                   }
                   updatePolicyExtension={(
-                    policy_extension: PolicyExtenxionsType
+                    policy_extensions: PolicyExtenxionsType
                   ) =>
-                    updateTableValue(policy_extension, "policy_extension", form)
+                    updateTableValue(
+                      policy_extensions,
+                      "policy_extensions",
+                      form
+                    )
                   }
                 />
               )}
@@ -806,23 +903,35 @@ const Page = () => {
 
                 <div className="space-y-4 py-1 my-3 border-b-2 border-t-2">
                   <p className={stylesPolicySummaryItemStyles}>
-                    <span>Sum Insured:</span> <span>GH₵0.00</span>
+                    <span>Sum Insured:</span>{" "}
+                    <span>
+                      {selectedCurrencyCode} {totals.sumInsured}
+                    </span>
                   </p>
                   <p className={stylesPolicySummaryItemStyles}>
-                    <span>Basic Premium:</span> <span>GH₵0.00</span>
+                    <span>Basic Premium:</span>{" "}
+                    <span>
+                      {selectedCurrencyCode} {totals.basicPremium}
+                    </span>
                   </p>
                   <p className={stylesPolicySummaryItemStyles}>
-                    <span>Loadings(%):</span> <span>0000%</span>
+                    <span>Loadings(%):</span> <span>{totalLoading} %</span>
                   </p>
                   <p className={stylesPolicySummaryItemStyles}>
-                    <span>Total Loadings:</span> <span>GH₵10.00</span>
+                    <span>Total Loadings:</span>{" "}
+                    <span>
+                      {selectedCurrencyCode} {loadingAmount}
+                    </span>
                   </p>
                   <p className={stylesPolicySummaryItemStyles}>
                     <span>Maintenance fee:</span> <span>3000</span>
                   </p>
                 </div>
                 <p className="flex items-center justify-between">
-                  <span>Premium Payable:</span> <span>GH₵100.00</span>
+                  <span>Premium Payable:</span>{" "}
+                  <span>
+                    {selectedCurrencyCode} {premiumPayable}
+                  </span>
                 </p>
               </div>
             </div>
