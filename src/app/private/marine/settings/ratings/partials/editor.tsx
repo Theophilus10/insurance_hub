@@ -47,26 +47,8 @@ const schema = z.object({
     .refine((value) => value !== 0, {
       message: "Interest is required",
     }),
-  containerized_rate: z
-    .string()
-    .min(1, "Containerized Rate is required")
-    .refine((value) => parseFloat(value) !== 0, {
-      message: "Containerized Rate is required",
-    })
-    .refine((value) => !isNaN(parseFloat(value)), {
-      message: "Containerized Rate must be a valid number",
-    })
-    .transform((value) => parseFloat(value)),
-  non_containerized_rate: z
-    .string()
-    .min(1, "Non-Containerized Rate is required")
-    .refine((value) => parseFloat(value) !== 0, {
-      message: "Non-Containerized Rate is required",
-    })
-    .refine((value) => !isNaN(parseFloat(value)), {
-      message: "Non-Containerized Rate must be a valid number",
-    })
-    .transform((value) => parseFloat(value)),
+  containerized_rate: z.string(),
+  non_containerized_rate: z.string(),
   exclusions: z
     .string()
     .min(1, "Exclusion is required")
@@ -93,10 +75,10 @@ const Editor: React.FC<EditorProps> = ({
   useEffect(() => {
     if (data) {
       setFormData({
-        cover_type_id: data.cover_type.id,
-        interest_id: data.interest.id,
-        containerized_rate: data.containerized_rate.toString(),
-        non_containerized_rate: data.non_containerized_rate.toString(),
+        cover_type_id: data?.cover_type.id,
+        interest_id: data?.interest.id,
+        containerized_rate: data?.containerized_rate?.toString(),
+        non_containerized_rate: data?.non_containerized_rate?.toString(),
         exclusions: data.exclusions,
         remarks: data.remarks,
         start_date: data.start_date,
@@ -158,13 +140,13 @@ const Editor: React.FC<EditorProps> = ({
           <InputField
             name="containerized_rate"
             label="Containerized Rate"
-            type="number"
+            type="text"
             required
           />
           <InputField
             name="non_containerized_rate"
             label="Non-Containerized Rate"
-            type="number"
+            type="text"
             required
           />
         </div>

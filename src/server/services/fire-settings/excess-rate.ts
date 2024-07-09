@@ -1,93 +1,101 @@
-// import useSWR from "swr";
-// import { format } from "date-fns";
-// import API from "@app/server/useAxios";
-// import {
-//   axiosError,
-//   callResult,
-//   fetcher,
-//   queryResult,
-// } from "@app/server/shared";
+import useSWR from "swr";
+import { format } from "date-fns";
+import { API } from "@app/server/useAxios";
+import {
+  axiosError,
+  callResult,
+  fetcher,
+  queryResult,
+} from "@app/server/shared";
 
-// export type IDiscount = {
-//   id: number;
-//   code: string;
-//   name: string;
-//   created_at: string;
-//   updated_at: string;
-// };
+export type PerilExcessType = {
+  id: number;
+  fire_excess_id: number;
+  fire_risk_class_id: number;
+  rate: number;
+  start_date: string;
+  end_date: string;
+  created_at: string;
+};
 
-// export const read_discounts = () => {
-//   const { data, error, isLoading, mutate } = useSWR(
-//     "/excess-rate/all",
-//     fetcher
-//   );
+export const read_fire_excess_rate = () => {
+  const { data, error, isLoading, mutate } = useSWR(
+    "/fire_excess_rates",
+    fetcher
+  );
 
-//   return {
-//     items: data
-//       ? data.map((x: IDiscount) => ({
-//           ...x,
-//           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
-//         }))
-//       : [],
-//     isLoading,
-//     isError: error,
-//     mutate,
-//     success: data && true,
-//   };
-// };
+  return {
+    items: data ?? [],
+    isLoading,
+    isError: error,
+    mutate,
+    success: data && true,
+  };
+};
 
-// export const create_discount = async (data: { code: string; name: string }) => {
-//   try {
-//     const res = await API.post("/excess-rate/", data);
-//     // console.log(res);
-//     return callResult(res, res.data);
-//   } catch (err) {
-//     // console.log(err);
+export const create_fire_excess_rate = async (data: {
+  data: {
+    fire_risk_class_id: number;
+    fire_excess_id: number;
+    rate: number;
+    start_date: string;
+    end_date: string;
+  };
+}) => {
+  try {
+    const res = await API.post("/fire_excess_rates", data);
+    // console.log(res);
+    return callResult(res, res.data);
+  } catch (err) {
+    // console.log(err);
 
-//     return axiosError(err);
-//   }
-// };
+    return axiosError(err);
+  }
+};
 
-// export const delete_discount = async (id: number) => {
-//   try {
-//     const res = await API.delete(`/excess-rate/${id}`);
-//     // console.log(res)
-//     return callResult(res, res.data);
-//   } catch (err) {
-//     return axiosError(err);
-//   }
-// };
+export const delete_fire_excess_rate = async (id: number) => {
+  try {
+    const res = await API.delete(`/fire_excess_rates/${id}`);
+    // console.log(res)
+    return callResult(res, res.data);
+  } catch (err) {
+    return axiosError(err);
+  }
+};
 
-// export const update_discount = async (
-//   id: number,
-//   data: {
-//     name: string;
-//     code: string;
-//   }
-// ) => {
-//   try {
-//     const res = await API.put(`/excess-rate/${id}`, data);
-//     return callResult(res, res.data);
-//   } catch (err) {
-//     return axiosError(err);
-//   }
-// };
+export const update_fire_excess_rate = async (
+  id: number,
+  data: {
+    fire_excess_id: number;
+    fire_risk_class_id: number;
+    rate: number;
+    start_date: string;
+    end_date: string;
+  }
+) => {
+  try {
+    const res = await API.put(`/fire_excess_rates/${id}`, data);
+    return callResult(res, res.data);
+  } catch (err) {
+    return axiosError(err);
+  }
+};
 
-// export const read_discount = async (id: number) => {
-//   try {
-//     const res = await API.get(`/excess-rate/${id}`);
-//     return queryResult(res, res.data);
-//   } catch (err) {
-//     return axiosError(err);
-//   }
-//   // const { error, data, isLoading } = useSWR(
-//   //   `/ratings/${id}`,
-//   //   fetcher
-//   // );
-//   // return {
-//   //   error,
-//   //   data,
-//   //   isLoading,
-//   //   success: data && true,
-//   // };
-// };
+export const read_excess_rate = async (id: number) => {
+  try {
+    const res = await API.get(`/fire_excess_rates/${id}`);
+    return queryResult(res, res.data);
+  } catch (err) {
+    return axiosError(err);
+  }
+  // const { error, data, isLoading } = useSWR(
+  //   `/ratings/${id}`,
+  //   fetcher
+  // );
+  // return {
+  //   error,
+  //   data,
+  //   isLoading,
+  //   success: data && true,
+  // };
+};

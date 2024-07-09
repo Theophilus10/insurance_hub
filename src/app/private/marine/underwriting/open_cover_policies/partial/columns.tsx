@@ -2,13 +2,13 @@
 
 import { Button } from "@app/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Edit, Eye, ThumbsUp } from "lucide-react";
+import { ArrowUpDown, Edit, Eye, PlusCircle, ThumbsUp } from "lucide-react";
 import { Checkbox } from "@app/components/ui/checkbox";
 import Link from "next/link";
 import Modal from "@app/components/ui/modal";
 import Approve from "@app/components/svg/approve";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { approve_policy } from "@app/server/services";
 import toast from "react-hot-toast";
 
@@ -135,49 +135,43 @@ export const columns: ColumnDef<Policies>[] = [
     header: "Actions",
     cell: ({ row }) => {
       const router = useRouter();
+
       const [openModal, setOpenModal] = useState(false);
       const handleLinkClick = () => {
-        setOpenModal(true);
+        router.push(
+          `/private/marine/underwriting/single_transit_policies?open_cover_number=${row.original.policy_number}&customer_id=${row?.original?.customer?.identification_number}`
+        );
       };
+      // Correct way to use useSearchParams to get customer_id
 
       const toggleModal = () => {
         setOpenModal(!openModal);
       };
 
-      const handleApprove = async () => {
-        try {
-          const response = await approve_policy(row.original.id);
-          console.log(response, "response");
-          if (response.success !== false) {
-            toast.success("Policy successfully approved.");
-            toggleModal();
-            router.replace("/private/marine/reporting/approved_policies");
-          } else {
-            toast.error("Failed to approve policy. Please try again later.");
-          }
-        } catch (error) {
-          console.error("Failed to approve policy:", error);
-          toast.error("Failed to approve policy. Please try again later.");
-        }
-      };
+      // const handleApprove = async () => {
+      //   try {
+      //     const response = await approve_policy(row.original.id);
+      //     console.log(response, "response");
+      //     if (response.success !== false) {
+      //       toast.success("Policy successfully approved.");
+      //       toggleModal();
+      //       router.replace("/private/marine/reporting/approved_policies");
+      //     } else {
+      //       toast.error("Failed to approve policy. Please try again later.");
+      //     }
+      //   } catch (error) {
+      //     console.error("Failed to approve policy:", error);
+      //     toast.error("Failed to approve policy. Please try again later.");
+      //   }
+      // };
       return (
         <div className="flex items-center gap-3 text-gray-500">
-          {/* <Link
-            href={{
-              pathname: `/private/commission/preview/${row?.original?.id}`,
-              query: {
-                commissionId: `${row.original.id}`,
-              },
-            }}
-          >
-            <EyeIcon />
-          </Link> */}
           <div className="">
             <div
               onClick={handleLinkClick}
               className="inline-flex items-center text-blue-500 hover:text-blue-700 cursor-pointer"
             >
-              <ThumbsUp />
+              <PlusCircle />
             </div>
           </div>
 

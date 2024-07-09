@@ -9,6 +9,17 @@ export const convertDataToSelectObject = (
     value: item[value],
   }));
 };
+export const convertDataToSelectObjectWithDescription = (
+  fire_risk_classes: any,
+  label: string = "description",
+  value: any = "id"
+) => {
+  if (!fire_risk_classes) return [];
+  return fire_risk_classes.map((item: any) => ({
+    label: item[label],
+    value: item[value],
+  }));
+};
 
 export const convertDataToSelectObjectNameAsValue = (
   data: any,

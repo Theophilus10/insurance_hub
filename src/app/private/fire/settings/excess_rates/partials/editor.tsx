@@ -3,64 +3,130 @@ import Form from "@app/components/forms/Form";
 import InputField from "@app/components/forms/InputField";
 import SelectField from "@app/components/forms/SelectField";
 import { Button } from "@app/components/ui/button";
-import React, { useEffect } from "react";
+import { showError, showSuccess } from "@app/lib/utils";
+import {
+  create_fire_excess_rate,
+  update_fire_excess_rate,
+} from "@app/server/services/fire-settings/excess-rate";
+import {
+  create_fire_peril_rate,
+  update_fire_peril_rate,
+} from "@app/server/services/fire-settings/peril-rating";
+import { PerilsType } from "@app/types/policyTypes";
+import React, { useEffect, useState } from "react";
 import * as z from "zod";
 
 const initialValues = {
-  excess: "",
-  riskClass: "",
-  rate: "",
-  startDate: "",
-  endDate: "",
+  fire_excess_id: 0,
+  fire_risk_class_id: 0,
+  rate: 0,
+  start_date: "",
+  end_date: "",
 };
-const schema = z.object({
-  // name: z
-  //   .string()
-  //   .min(1, "Name is ")
-  //   .min(3, "Enter a valid name")
-  //   .max(7, "Name too long"),
-  // email: z.string().min(1, "Email is ").email(),
-  // gender: z.string().min(1, "Gender is "),
-  // dob: z.string().min(1, "Date of Birth is "),
-});
 
-const Editor = ({ prevalues }: any) => {
-  useEffect(()=>{
-    if (prevalues){
-      
+interface EditorProps {
+  id?: number;
+  isDone: () => void;
+  edit?: boolean;
+  data?: any;
+  excesses: any[];
+  riskClass: any[];
+}
+const schema = z.object({
+  fire_risk_class_id: z.number().nonnegative(),
+  fire_excess_id: z.number().nonnegative(),
+  start_date: z.string(),
+  end_date: z.string(),
+  rate: z.any(),
+});
+const Editor: React.FC<EditorProps> = ({
+  id = 0,
+  edit = false,
+  isDone,
+  data,
+  excesses = [],
+  riskClass = [],
+}) => {
+  const [busy, setBusy] = useState(false);
+  const [formData, setFormData] = useState(initialValues);
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        fire_risk_class_id: data.fire_risk_class_id,
+        fire_excess_id: data.fire_excess_id,
+        start_date: data.start_date,
+        end_date: data.end_date,
+        rate: data.rate,
+      });
+    } else {
+      setFormData(initialValues);
     }
-  },[prevalues])
+  }, [data]);
+
+  const handleSubmit = async (values: Record<any, any>) => {
+    try {
+      setBusy(true);
+      const res = edit
+        ? await update_fire_excess_rate(id, {
+            fire_risk_class_id: values.fire_risk_class_id,
+            fire_excess_id: values.fire_excess_id,
+            start_date: values.start_date,
+            end_date: values.end_date,
+            rate: values.rate,
+          })
+        : await create_fire_excess_rate({
+            fire_risk_class_id: values.fire_risk_class_id,
+            fire_excess_id: values.fire_excess_id,
+            start_date: values.start_date,
+            end_date: values.end_date,
+            rate: values.rate,
+          });
+
+      if (res.success) {
+        showSuccess(
+          edit ? "Successfully updated rate" : "Successfully created rate"
+        );
+        isDone();
+      } else {
+        showError(res.message || "Failed to perform command");
+      }
+    } catch (err: any) {
+      showError(err?.message || err);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <Form
       schema={schema}
-      initialValues={prevalues || initialValues}
+      initialValues={initialValues}
+      onSubmit={handleSubmit}
       className="flex flex-col gap-6 w-full h-full px-2"
     >
       <div className="grid gap-4">
         <SelectField
-          name="excess"
-          label="Select Excess"
+          name="fire_excess_id"
+          label="Select Peril"
           required
-          options={[]}
+          options={excesses}
         />
         <SelectField
-          name="riskClass"
+          name="fire_risk_class_id"
           label="Select Risk Class"
           required
-          options={[]}
+          options={riskClass}
         />
         <InputField name="rate" label="Rate" type="number" />
-        {/* dates */}
+
         <div className="grid grid-cols-2 gap-4">
-          {/* start date */}
-          <InputField name="startDate" label="Start Date" type="date" />
-          {/* end date */}
-          <InputField name="endDate" label="End Date" type="date" />
+          <InputField name="start_date" label="Start Date" type="date" />
+
+          <InputField name="end_date" label="End Date" type="date" />
         </div>
       </div>
       <div className="ml-auto flex gap-4">
-        <Button label="Submit" variant="primary" />
+        <Button label="Submit" variant="primary" type="submit" busy={busy} />
         <Button label="Reset" variant="outline" />
       </div>
     </Form>

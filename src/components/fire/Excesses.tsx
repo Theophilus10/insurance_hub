@@ -1,26 +1,35 @@
-import { useState } from 'react';
-import { InputField } from '@app/components/forms/ShadcnFields';
-import { Button } from '@app/components/ui/button';
-import DataTable from '@app/components/datatable/datatable';
-import { ColumnDef } from '@tanstack/react-table';
-import { HeaderWithSorting } from '@app/components/datatable/columnHeaders';
-import { ExcessType } from '@app/types/policyTypes';
-import { validateForm } from '@app/helpers/index';
-import { nanoid } from 'nanoid';
+import { useState } from "react";
+import { InputField, SelectField } from "@app/components/forms/ShadcnFields";
+import { Button } from "@app/components/ui/button";
+import DataTable from "@app/components/datatable/datatable";
+import { ColumnDef } from "@tanstack/react-table";
+import { HeaderWithSorting } from "@app/components/datatable/columnHeaders";
+import { ExcessType } from "@app/types/policyTypes";
+import { validateForm } from "@app/helpers/index";
+import { nanoid } from "nanoid";
+import { Textarea } from "../ui/textarea";
 
-const defaultValues = { policyExcesses: '', excessRate: 0, id: '' };
+import { read_excesses } from "@app/server/services";
+
+const defaultValues = { id: "", rate: 0, excess: "", description: "" };
 
 const columns: ColumnDef<ExcessType>[] = [
   {
-    accessorKey: 'policyExcesses',
+    accessorKey: "excess",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='EXCESS' />;
+      return <HeaderWithSorting column={column} label="EXCESS" />;
     },
   },
   {
-    accessorKey: 'excessRate',
+    accessorKey: "rate",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='RATE' />;
+      return <HeaderWithSorting column={column} label="RATE" />;
+    },
+  },
+  {
+    accessorKey: "description",
+    header: ({ column }) => {
+      return <HeaderWithSorting column={column} label="DESCRIPTION" />;
     },
   },
 ];
@@ -41,14 +50,15 @@ const Excesses = ({
   const [excesses, setExcesses] = useState(defaultValues);
   const [updating, setUpdating] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const { items: fireExesses } = read_excesses();
 
   const onRowAction = (action: string, row: any) => {
     switch (action) {
-      case 'edit':
+      case "edit":
         setExcesses(row);
         setUpdating(true);
         break;
-      case 'delete':
+      case "delete":
         deleteItem(row.id);
         break;
       default:
@@ -62,30 +72,51 @@ const Excesses = ({
   };
 
   const handleInputChange = (field: string, value: string | number) => {
-    setExcesses(prev => ({ ...prev, [field]: value }));
+    setExcesses((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
     <div>
-      <div className='flex w-full py-5 items-center gap-5'>
-        <InputField
-          label='Policy Excesses'
-          onChange={e => handleInputChange('policyExcesses', e.target.value)}
-          className='w-full'
+      <div className="flex w-full py-5 items-center gap-5">
+        {/* <InputField
+          label="Policy Excesses"
+          onChange={(e) => handleInputChange("excess", e.target.value)}
+          className="w-full"
+          value={excesses.excess}
+        /> */}
+
+        <SelectField
+          label="Policy Excesses"
+          onChange={(e) => handleInputChange("excess", e.value)}
+          options={
+            fireExesses?.length
+              ? fireExesses.map((excess: any) => ({
+                  label: excess?.name,
+                  value: excess?.name,
+                }))
+              : []
+          }
+          className="w-full"
         />
         <InputField
-          label='Excess Rate'
-          onChange={e => handleInputChange('excessRate', +e.target.value)}
-          className='w-full'
-          type='number'
+          label="Excess Rate"
+          onChange={(e) => handleInputChange("rate", +e.target.value)}
+          className="w-full"
+          type="number"
+          value={excesses.rate}
         />
       </div>
+      <Textarea
+        label="Description"
+        onChange={(e) => handleInputChange("description", e.target.value)}
+        value={excesses.description}
+      />
       <div>
         {updating ? (
           <div>
             <Button
-              variant='link'
-              className='text-red-500'
+              variant="link"
+              className="text-red-500"
               onClick={() => {
                 reset();
                 setUpdating(false);
@@ -94,9 +125,9 @@ const Excesses = ({
               Clear
             </Button>
             <Button
-              variant='secondary'
-              className='my-10 font-semibold'
-              type='button'
+              variant="secondary"
+              className="my-10 font-semibold"
+              type="button"
               onClick={() => {
                 if (validateForm(setValidationErrors, excesses)) {
                   updateItem(excesses);
@@ -109,8 +140,8 @@ const Excesses = ({
           </div>
         ) : (
           <Button
-            className='my-3'
-            type='button'
+            className="my-3"
+            type="button"
             onClick={() => {
               if (validateForm(setValidationErrors, excesses)) {
                 addItem({ ...excesses, id: nanoid() });
@@ -118,7 +149,7 @@ const Excesses = ({
               }
             }}
           >
-            Add Peril
+            Add Excess
           </Button>
         )}
       </div>

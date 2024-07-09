@@ -16,12 +16,15 @@ export type IExcess = {
   updated_at: string;
 };
 
-export const read_excesses = () => {
-  const { data, error, isLoading, mutate } = useSWR("/fire_excesses", fetcher);
+export const read_fire_peril_class = () => {
+  const { data, error, isLoading, mutate } = useSWR(
+    "/fire_peril_classes",
+    fetcher
+  );
 
   return {
     items: data
-      ? data?.fire_excesses?.map((x: IExcess) => ({
+      ? data?.fire_peril_classes?.map((x: IExcess) => ({
           ...x,
           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
@@ -33,9 +36,12 @@ export const read_excesses = () => {
   };
 };
 
-export const create_excess = async (data: { code: string; name: string }) => {
+export const create_fire_peril_class = async (data: {
+  code: string;
+  name: string;
+}) => {
   try {
-    const res = await API.post("/fire_excesses", data);
+    const res = await API.post("/fire_peril_classes", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {
@@ -45,9 +51,9 @@ export const create_excess = async (data: { code: string; name: string }) => {
   }
 };
 
-export const delete_excess = async (id: number) => {
+export const delete_fire_peril_class = async (id: number) => {
   try {
-    const res = await API.delete(`/fire_excesses/${id}`);
+    const res = await API.delete(`/fire_peril_classes/${id}`);
     // console.log(res)
     return callResult(res, res.data);
   } catch (err) {
@@ -55,7 +61,7 @@ export const delete_excess = async (id: number) => {
   }
 };
 
-export const update_excess = async (
+export const update_fire_peril_class = async (
   id: number,
   data: {
     name: string;
@@ -63,16 +69,16 @@ export const update_excess = async (
   }
 ) => {
   try {
-    const res = await API.put(`/fire_excesses/${id}`, data);
+    const res = await API.put(`/fire_peril_classes/${id}`, data);
     return callResult(res, res.data);
   } catch (err) {
     return axiosError(err);
   }
 };
 
-export const read_excess = async (id: number) => {
+export const read_peril_class = async (id: number) => {
   try {
-    const res = await API.get(`/fire_excesses/${id}`);
+    const res = await API.get(`/fire_peril_classes/${id}`);
     return queryResult(res, res.data);
   } catch (err) {
     return axiosError(err);

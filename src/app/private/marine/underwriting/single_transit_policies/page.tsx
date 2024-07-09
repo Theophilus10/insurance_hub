@@ -63,6 +63,8 @@ import {
   read_customer_by_email,
   find_customer,
   CustomerParams,
+  CustomerDTO,
+  ICustomer,
 } from "@app/server/services";
 import { createSingleTransitPolicy } from "@app/server/services/policies/marine/index";
 import DocumentUploads from "@app/components/single_transit_policy/partials/document_uploads";
@@ -71,6 +73,8 @@ import IconButton from "@app/components/ui/IconButton";
 import toast from "react-hot-toast";
 import { DatePickerWithRange } from "@app/components/dateRange/dateRangePicker";
 import { Value } from "@radix-ui/react-select";
+import { useSearchParams } from "next/navigation";
+import { ICustomer } from "../../settings/shipping_types/partials/columns";
 
 const stylesPolicySummaryItemStyles =
   "flex items-center justify-between text-sm";
@@ -282,6 +286,9 @@ const Page = () => {
   const [loadingAmount, setLoadingAmount] = useState<number>(0);
   const [premiumPayable, setPremiumPayable] = useState<number>(0);
   const [selectedCurrencyCode, setSelectedCurrencyCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [customerIdFromUrl, setCustomerIdFromUrl] = useState<string>(null);
+
   console.log(selectedCurrencyCode, "currency code");
 
   const { items, isLoading } = read_institutions();
@@ -293,6 +300,10 @@ const Page = () => {
   const { items: ports } = read_ports();
   const { items: carriers } = read_carriers();
   const { items: currencies } = read_currencies();
+
+  const searchParams = useSearchParams();
+  // const customerId = searchParams.get("customer_id");
+  // console.log(customerId, "customerid");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -473,49 +484,66 @@ const Page = () => {
     }
   }, [form.watch("distribution_channel")]);
 
-  const setCustomerValues = async () => {
-    const searchValue = form.watch("find_customer");
-
-    const customer = await findCustomer(searchValue);
-
-    if (customer) {
-      console.log(customer, "customer info");
-      toast.success("Customer Found Successfully");
-      form.setValue("customer_details.id", customer.id);
-      form.setValue("customer_details.name", customer.name);
-      form.setValue("customer_details.phone", customer.phone);
-      form.setValue("customer_details.email", customer.email);
-      form.setValue(
-        "customer_details.identification_number",
-        customer.identification_number
-      );
-    } else {
-      form.setValue("customer_details.id", 0);
-      form.setValue("customer_details.name", "");
-      form.setValue("customer_details.phone", "");
-      form.setValue("customer_details.email", "");
-      form.setValue("customer_details.identification_number", "");
-      form.setValue("find_customer", ""); // Reset the search input field
-
+  const fetchCustomerDetails = async (customerId: string) => {
+    try {
+      const customer = await findCustomer(customerId);
+      if (customer) {
+        populateCustomerDetails(customer);
+        toast.success("Customer Found Successfully");
+      } else {
+        throw new Error("Customer not found");
+      }
+    } catch (error) {
+      clearCustomerDetails();
       toast.error("Customer not found. Please provide valid customer details.");
     }
   };
 
-  // const setCustomerValues = async () => {
-  //   const customer = await findCustomer(form.watch("customer_details.name"));
+  useEffect(() => {
+    const customerId = searchParams.get("customer_id");
+    if (customerId) {
+      setCustomerIdFromUrl(customerId);
+      fetchCustomerDetails(customerId);
+    }
+  }, [searchParams]);
 
-  //   if (customer) {
-  //     form.setValue("customer_details.id", customer?.id);
-  //     form.setValue("customer_details.name", customer?.name);
-  //     form.setValue("customer_details.phone", customer?.phone);
-  //     // form.setValue("customer_details.address", customer["postal_address"]);
-  //     form.setValue("customer_details.email", customer?.email);
-  //     // form.setValue("customer_details.ghanaCardNumber", customer?.id);
-  //   } else {
-  //     form.resetField("customer_details");
-  //     setCustomerError("Customer not found");
-  //   }
-  // };
+  const populateCustomerDetails = (customer: ICustomer) => {
+    form.setValue("customer_details.id", customer.id);
+    form.setValue("customer_details.name", customer.name);
+    form.setValue("customer_details.phone", customer.phone);
+    form.setValue("customer_details.email", customer.email);
+    form.setValue(
+      "customer_details.identification_number",
+      customer.identification_number
+    );
+  };
+
+  const clearCustomerDetails = () => {
+    form.setValue("customer_details.id", 0);
+    form.setValue("customer_details.name", "");
+    form.setValue("customer_details.phone", "");
+    form.setValue("customer_details.email", "");
+    form.setValue("customer_details.identification_number", "");
+    form.setValue("find_customer", ""); // Reset the search input field
+  };
+
+  const handleFindCustomerClick = async () => {
+    const searchValue = form.watch("find_customer");
+
+    if (searchValue) {
+      setLoading(true);
+      try {
+        await fetchCustomerDetails(searchValue);
+      } catch (error) {
+        console.error("Error fetching customer details:", error);
+        // Handle error as needed
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      toast.error("Please enter a customer ID to search.");
+    }
+  };
 
   console.log(form.watch(), "values");
   console.log(form.formState.errors, "errros");
@@ -596,25 +624,33 @@ const Page = () => {
                 <div className="text-lg md:text-xl font-extrabold">
                   Customer Info
                 </div>
+
                 <div className="flex flex-col md:flex-row md:space-x-20">
                   <div className="md:w-1/2">
-                    <div>
-                      <h3 className="font-semibold py-5">Policy To:</h3>
-                      <InputField
-                        label="Full Name, ID, or Email"
-                        name="find_customer"
-                        type="search"
-                        className="border m-2 rounded-md focus:outline-none focus:ring focus:border-blue-300"
-                      />
-                    </div>
-                    <div className="flex gap-6">
-                      <IconButton
-                        icon="mdi:search"
-                        color="primary"
-                        onClick={setCustomerValues}
-                      />
-                      <Button>Add New Customer</Button>
-                    </div>
+                    {!customerIdFromUrl && (
+                      <div>
+                        <h3 className="font-semibold py-5">Policy To:</h3>
+                        <div>
+                          <InputField
+                            label="Full Name, ID, or Email"
+                            name="find_customer"
+                            type="search"
+                            className="border mb-2 rounded-md focus:outline-none focus:ring focus:border-blue-300"
+                          />
+                        </div>
+                        <div className="flex gap-6">
+                          <Button
+                            type="button"
+                            className="bg-blue-500 hover:bg-blue-600"
+                            onClick={handleFindCustomerClick}
+                            disabled={loading}
+                          >
+                            {loading ? "Finding..." : "Find"}
+                          </Button>
+                          <Button>Add New Customer</Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="w-full bg-gray-100 p-4 rounded-md mt-6 md:mt-0 md:w-1/2 lg:max-w-[300px] xl:max-w-[400px]">
@@ -686,7 +722,7 @@ const Page = () => {
                   }
                   onChange={(value) => {
                     const selectedCurrency = currencies.find(
-                      (c) => c.id === value
+                      (c: any) => c.id === value
                     );
                     setSelectedCurrencyCode(selectedCurrency?.code);
                   }}
