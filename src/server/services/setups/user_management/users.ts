@@ -1,38 +1,47 @@
+import { API } from "@app/server/useAxios";
+import { axiosError, callResult } from "@app/server/shared";
 import useSWR from "swr";
-import { fetcher } from "../../../shared";
+import { fetcher } from "@app/server/shared";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
-import { axiosError, callResult, queryResult } from "@app/server/shared";
-import { IRole } from ".";
-import { IBranch } from "..";
 
-export interface IUser {
-  id: string;
-  branch_id: number;
-  first_name: string;
-  last_name: string;
+export interface Users {
+  id: number;
+  name: string;
   email: string;
-  contact_phone: string;
+  phone: string;
+  role: string;
+  institution_id: number;
+  institution_type_id: number;
+  branch_id: number;
+  region: string;
   created_at: string;
-  last_logged_in: string;
-  last_login_attempt: string;
-  branch: IBranch;
-  role: IRole;
+  updated_at: string;
 }
 
-export interface UserDTO {
-  first_name: string;
-  last_name: string;
+export interface UsersData {
+  name: string;
   email: string;
-  contact_phone: string;
+  phone: string;
+  role: string;
+  institution_id: number;
+  institution_type_id: number;
+  branch_id: number;
+  region: string;
+}
+
+export interface Roles {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export const read_users = () => {
-  const { data, error, isLoading, mutate } = useSWR("/users/all", fetcher);
+  const { data, error, isLoading, mutate } = useSWR("/users", fetcher);
 
   return {
     items: data
-      ? data.map((x: IUser) => ({
+      ? data?.users.map((x: Users) => ({
           ...x,
           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
@@ -44,40 +53,48 @@ export const read_users = () => {
   };
 };
 
-export const create_user = async (data: UserDTO) => {
+export const register_user = async (data: UsersData) => {
   try {
-    const res = await API.post("/users/", data);
-    // console.log(res);
+    const res = await API.post("/users", data);
+
     return callResult(res, res.data);
   } catch (err) {
     return axiosError(err);
   }
 };
 
-export const delete_user = async (id: number) => {
-  try {
-    const res = await API.delete(`/users/${id}`);
-    // console.log(res)
-    return callResult(res, res.data);
-  } catch (err) {
-    return axiosError(err);
-  }
+export const read_roles = () => {
+  const { data, error, isLoading, mutate } = useSWR("/roles", fetcher);
+
+  return {
+    items: data
+      ? data?.roles.map((x: Roles) => ({
+          ...x,
+          created_at: format(new Date(x.created_at), "dd MMMM yyy"),
+        }))
+      : [],
+    isLoading,
+    isError: error,
+    mutate,
+    success: data && true,
+  };
 };
 
-export const update_user = async (id: number, data: UserDTO) => {
-  try {
-    const res = await API.put(`/users/${id}`, data);
-    return callResult(res, res.data);
-  } catch (err) {
-    return axiosError(err);
-  }
-};
+// export const update_role = async (id: number, data: UsersData) => {
+//   try {
+//     const res = await axios.put(`/roles/${id}`, data);
+//     return callResult(res, res.data);
+//   } catch (err) {
+//     return axiosError(err);
+//   }
+// };
 
-export const read_user = async (id: number) => {
-  try {
-    const res = await API.get(`/users/${id}`);
-    return queryResult(res, res.data);
-  } catch (err) {
-    return axiosError(err);
-  }
-};
+// export const delete_role = async (id: number) => {
+//   try {
+//     const res = await axios.delete(`/roles/${id}`);
+
+//     return callResult(res, res.data);
+//   } catch (err) {
+//     return axiosError(err);
+//   }
+// };

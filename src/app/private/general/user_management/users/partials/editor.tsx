@@ -8,11 +8,32 @@ import {
   IBranch,
   IInstitution,
   IUser,
+  UsersData,
   create_user,
+  register_user,
   update_user,
 } from "@app/server/services";
 import React, { useEffect, useState } from "react";
 import * as z from "zod";
+
+const regions = [
+  { label: "AHAFO", value: "AHAFO" },
+  { label: "ASHANTI", value: "ASHANTI" },
+  { label: "BONO EAST", value: "BONO EAST" },
+  { label: "BRONG AHAFO", value: "BRONG AHAFO" },
+  { label: "CENTRAL", value: "CENTRAL" },
+  { label: "EASTERN", value: "EASTERN" },
+  { label: "GREATER ACCRA", value: "GREATER ACCRA" },
+  { label: "NORTH EAST", value: "NORTH EAST" },
+  { label: "NORTHERN", value: "NORTHERN" },
+  { label: "OTI", value: "OTI" },
+  { label: "SAVANNAH", value: "SAVANNAH" },
+  { label: "UPPER EAST", value: "UPPER EAST" },
+  { label: "UPPER WEST", value: "UPPER WEST" },
+  { label: "VOLTA", value: "VOLTA" },
+  { label: "WESTERN", value: "WESTERN" },
+  { label: "WESTERN NORTH", value: "WESTERN NORTH" },
+];
 interface EditorProps {
   id?: number;
   isDone: () => void;
@@ -25,17 +46,30 @@ interface EditorProps {
 }
 
 const initialValues = {
-  institution_type: 0,
-  institution: 0,
-  branch: 0,
-  first_name: "",
-  last_name: "",
+  institution_type_id: 0,
+  institution_id: 0,
+  branch_id: 0,
+  name: "",
   email: "",
-  contact_phone: "",
-  role: 0,
+  phone: "",
+  region: "",
+  role: "",
 };
 const schema = z.object({
-  name: z.string().min(1, "Name is required").min(3, "Name is too short"),
+  institution_type_id: z.number(),
+  institution_id: z.number(),
+  branch_id: z.number(),
+  name: z.string().min(2, {
+    message: "Name must be at least 2 characters.",
+  }),
+  email: z.string().min(2, {
+    message: "Provide a valid email address.",
+  }),
+  phone: z.string().min(2, {
+    message: "Phone must be at least 2 characters.",
+  }),
+  role: z.string(),
+  region: z.string(),
 });
 
 const Editor: React.FC<EditorProps> = ({
@@ -61,12 +95,12 @@ const Editor: React.FC<EditorProps> = ({
     }
   }, [data]);
 
-  const handleSubmit = async (values: Record<string, any>) => {
+  const handleSubmit = async (values: z.infer<typeof schema>) => {
     try {
       setBusy(true);
       const res = edit
         ? await update_user(id, { name: values.name })
-        : await create_user({ name: values.name });
+        : await register_user(values);
 
       if (res.success) {
         showSuccess(
@@ -91,7 +125,7 @@ const Editor: React.FC<EditorProps> = ({
     // setBranchList([]);
     // setFormData({ ...formData, branch: 0, institution: 0 });
     const x = institution.filter((m) => m.institution_type.id === e.value);
-    const d = x ? x.map((a) => ({ value: a.id, label: a.name })) : [];
+    const d = x ? x.map((a) => ({ value: a?.id, label: a?.name })) : [];
     setInstitutionList(d);
   };
 
@@ -99,8 +133,8 @@ const Editor: React.FC<EditorProps> = ({
     setBranchList([]);
     // setFormData({ ...formData, branch: 0 });
 
-    const x = branch.filter((m) => m.institution.id === e.value);
-    const d = x ? x.map((a) => ({ value: a.id, label: a.name })) : [];
+    const x = branch?.filter((m) => m?.institution?.id === e?.value);
+    const d = x ? x?.map((a) => ({ value: a?.id, label: a?.name })) : [];
     setBranchList(d);
   };
   return (
@@ -108,9 +142,10 @@ const Editor: React.FC<EditorProps> = ({
       schema={schema}
       initialValues={formData}
       className="flex flex-col gap-4 w-full h-full px-2"
+      onSubmit={handleSubmit}
     >
       <SelectField
-        name="institution_type"
+        name="institution_type_id"
         label="Institution Type"
         placeholder="Select institution type"
         options={institutionType}
@@ -118,37 +153,35 @@ const Editor: React.FC<EditorProps> = ({
       />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <SelectField
-          name="institution"
+          name="institution_id"
           label="Institution"
           placeholder="Select institution"
           options={instituitonsList}
           onChange={handleInstitutionChange}
         />
         <SelectField
-          name="branch"
+          name="branch_id"
           label="Branch"
           placeholder="Select branch"
           options={branchList}
         />
-        <InputField
-          name="first_name"
-          label="First Name"
-          required
-          placeholder="John"
-        />
-        <InputField
-          name="last_name"
-          label="Last Name"
-          required
-          placeholder="Doe"
-        />
       </div>
+      <InputField name="name" label="Name" required placeholder="John" />
       <InputField name="email" label="Email" placeholder="johndoe@email.com" />
       <InputField
-        name="contact_phone"
+        name="phone"
         label="Contact Phone"
         placeholder="233501234567"
         helpText={`Start with country code without ("+"). Example: 233501234567 for Ghana(233)`}
+      />
+      <SelectField
+        name="region"
+        label="Select Region"
+        required={true}
+        options={regions.map((region) => ({
+          label: region.label,
+          value: region.value,
+        }))}
       />
       <SelectField
         name="role"

@@ -15,9 +15,9 @@ import {
   read_branches,
   read_institution_types,
   read_institutions,
-  read_roles,
   read_users,
 } from "@app/server/services";
+import { read_roles } from "@app/server/services/setups/user_management/users";
 
 const Page = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -117,7 +117,7 @@ const Page = () => {
           role={
             role.items
               ? role.items.map((x: IRole) => ({
-                  value: x.id,
+                  value: x.name,
                   label: x.name,
                 }))
               : []

@@ -170,11 +170,15 @@ export const fireMenuItems: IMenuItem[] = [
     icon: "carbon:report-data",
     items: [
       {
-        title: "Active Policies",
-        path: "/private/fire/reporting/active_policies",
+        title: "Pending Policies",
+        path: "/private/fire/reporting/pending_policies",
       },
       {
-        title: "Revoked Policies",
+        title: "Approved Policies",
+        path: "/private/fire/reporting/approved_policies",
+      },
+      {
+        title: "Cancelled Policies",
         path: "/private/fire/reporting/revoked_policies",
       },
     ],

@@ -42,7 +42,6 @@ const Editor: React.FC<EditorProps> = ({
 
   useEffect(() => {
     if (data) {
-      console.log(data, "dating");
       setFormData({
         rate: data.rate,
         currency_id: data.currency_id,
