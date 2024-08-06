@@ -10,6 +10,7 @@ import { useForm } from "react-hook-form";
 import {
   InputFormField,
   SelectFormField,
+  SelectFormFieldWithOnChange,
   TextareaFormField,
 } from "@app/components/forms/ShadcnFormFields";
 import { Button } from "@app/components/ui/button";
@@ -27,6 +28,7 @@ import {
 import InputField from "@app/components/forms/InputField";
 import IconButton from "@app/components/ui/IconButton";
 import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 const distributionChannel = [
   { value: "indirect", label: "INDIRECT" },
@@ -245,8 +247,31 @@ const Create = () => {
     }
   };
 
-  console.log(form.watch(), "values");
-  console.log(form.formState.errors, "errros");
+  const { data: session } = useSession();
+  console.log(session, "eiii");
+
+  useEffect(() => {
+    if (session?.user?.user?.institution_type?.name == "Insurance Company") {
+      const institutionOption = {
+        label: session?.user?.user?.institution?.name,
+        value: session?.user?.user?.institution?.id,
+      };
+      const branchOption = {
+        label: session?.user?.user?.branch?.name,
+        value: session?.user?.user?.branch?.id,
+      };
+      console.log(institutionOption, "option");
+      form.setValue("institution_id", institutionOption.value);
+      form.setValue("branch_id", branchOption.value);
+    }
+  }, [session, form]);
+
+  // console.log(form.watch(), "values");
+  // console.log(form.formState.errors, "errros");
+
+  const filteredInstitution = items?.filter(
+    (item: any) => item?.institution_type?.name === "Insurance Company"
+  );
 
   return (
     <div>
@@ -260,17 +285,29 @@ const Create = () => {
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="border-b-[5px]">
                 <div className="p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8   ">
-                  <SelectFormField
+                  <SelectFormFieldWithOnChange
                     form={form}
                     name="institution_id"
                     label="Insurance Company"
-                    options={convertDataToSelectObject(items)}
+                    options={convertDataToSelectObject(
+                      filteredInstitution,
+                      "name",
+                      "id"
+                    )}
+                    disabled={
+                      session?.user?.user?.institution_type?.name ===
+                      "Insurance Company"
+                    }
                   />
-                  <SelectFormField
+                  <SelectFormFieldWithOnChange
                     form={form}
                     name="branch_id"
                     label="Branch Office"
-                    options={convertDataToSelectObject(branches)}
+                    options={convertDataToSelectObject(branches, "name", "id")}
+                    disabled={
+                      session?.user?.user?.institution_type?.name ===
+                      "Insurance Company"
+                    }
                   />
                 </div>
                 <div className="p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 ">

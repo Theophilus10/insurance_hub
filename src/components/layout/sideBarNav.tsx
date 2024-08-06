@@ -3,11 +3,12 @@ import React from "react";
 import IconifyIcon from "../icon";
 
 interface ISideBarNav {
-  title: string;
+  title?: string;
   path: string;
   icon?: string;
   iconSize?: number;
   addPadding?: boolean;
+  sidebarStatus?: boolean;
 }
 
 const SideBarNav: React.FC<ISideBarNav> = ({
@@ -16,6 +17,7 @@ const SideBarNav: React.FC<ISideBarNav> = ({
   icon,
   iconSize = 16,
   addPadding = false,
+  sidebarStatus = false,
 }) => {
   return (
     <Link

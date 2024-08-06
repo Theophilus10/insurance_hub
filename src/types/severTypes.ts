@@ -32,7 +32,7 @@ export interface Branch {
   region: string;
   position_of_person: string;
   contact_phone: string;
-  business_address: string;
+  // business_address: string;
   email: string;
   office_location: string;
   created_at: string;
@@ -50,18 +50,18 @@ export interface Role {
 export interface User {
   id: string;
   branch_id: number;
-  first_name: string;
-  last_name: string;
+  name: string;
+
   email: string;
-  contact_phone: string;
+  phone: string;
   created_at: string;
-  last_logged_in: string;
-  last_login_attempt: string;
+  // last_logged_in: string;
+  // last_login_attempt: string;
   branch: Branch;
   role: Role;
-  access_token: string;
-  refresh_token: string;
-  token_type: string;
+  // access_token: string;
+  // refresh_token: string;
+  // token_type: string;
 }
 
 export interface Interest {

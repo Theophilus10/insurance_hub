@@ -1,16 +1,16 @@
 .isActiveRoute {
-  @apply text-blue-600 bg-[#f5e9eb78] items-center flex border-l-[3px] border-blue-600 font-medium;
+  @apply text-white items-center flex border-l-[3px] border-blue-600 bg-blue-600 rounded m-2 font-medium;
 }
 
 .inactiveRoute {
   @apply py-1 border-l-[3px] border-transparent hover:text-blue-600 cursor-pointer font-normal;
 }
 .isActiveMenuList {
-  @apply  bg-[#f5e9eb78] py-1 border-l-[3px] border-blue-600;
+  @apply text-white py-1 border-l-[3px] border-blue-600 bg-blue-600 m-2 rounded;
 }
 
 .isNotActiveMenuList {
-  @apply  py-1 border-l-[3px] border-transparent;
+  @apply py-1 border-l-[3px] border-transparent;
 }
 /* .submenu {
   transition: height 0.3s ease-in-out;

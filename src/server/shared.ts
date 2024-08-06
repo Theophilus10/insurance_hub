@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { API } from "./useAxios";
+import API from "./useAxios";
 
 export const fetcher = async (url: string) => {
   const res = await API.get(url);

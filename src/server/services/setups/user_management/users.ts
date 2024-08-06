@@ -1,4 +1,4 @@
-import { API } from "@app/server/useAxios";
+import API from "@app/server/useAxios";
 import { axiosError, callResult } from "@app/server/shared";
 import useSWR from "swr";
 import { fetcher } from "@app/server/shared";
@@ -40,12 +40,7 @@ export const read_users = () => {
   const { data, error, isLoading, mutate } = useSWR("/users", fetcher);
 
   return {
-    items: data
-      ? data?.users.map((x: Users) => ({
-          ...x,
-          created_at: format(new Date(x.created_at), "dd MMMM yyy"),
-        }))
-      : [],
+    items: data ?? [],
     isLoading,
     isError: error,
     mutate,

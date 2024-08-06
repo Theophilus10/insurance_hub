@@ -1,5 +1,5 @@
 "use client";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 
 import Form from "@app/components/forms/Form";
 import { z } from "zod";
@@ -12,14 +12,18 @@ import logoUrl from "@app/assets/images/logo.png";
 import Image from "next/image";
 import IconifyIcon from "@app/components/icon";
 import IconButton from "@app/components/ui/IconButton";
+import toast from "react-hot-toast";
 
+interface Props {
+  callbackUrl?: string;
+}
 const initialValues = {
-  username: "",
+  email: "",
   password: "",
 };
 
 const schema = z.object({
-  username: z.string().min(1, "Email is required").email(),
+  email: z.string().min(1, "Email is required").email(),
   password: z
     .string()
     .min(1, "Password is required")
@@ -30,28 +34,81 @@ export default function LoginPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(false);
   const router = useRouter();
+
+  // const onSubmit = async (values: any) => {
+  //   try {
+  //     setBusy(true);
+  //     const res = await signIn("credentials", {
+  //       email: values.email,
+  //       password: values.password,
+  //       redirect: true,
+  //     });
+  //     if (res?.error) {
+  //       setError(true);
+  //       console.log("sigin-in error:", res?.error);
+  //       return;
+  //     }
+  //     setError(false);
+  //     // router.replace("/private/dashboard");
+  //   } catch (err) {
+  //     console.log(err);
+  //   } finally {
+  //     setBusy(false);
+  //   }
+  //   // console.log(values);
+  // };
+
   const onSubmit = async (values: any) => {
     try {
       setBusy(true);
       const res = await signIn("credentials", {
-        username: values.username,
+        email: values.email,
         password: values.password,
-        redirect: true,
+        redirect: true, // Use redirect: false to handle the response manually
       });
+
       if (res?.error) {
         setError(true);
-        console.log("sigin-in error:", res?.error);
+        console.log("sign-in error:", res?.error);
         return;
       }
       setError(false);
-      // router.replace("/private/dashboard");
+
+      // Fetch the session to get the token
+      const session = await getSession();
+      if (session) {
+        console.log("JWT Token:", session.accessToken); // Adjust the key if necessary
+      }
+
+      // router.replace('/private/dashboard');
     } catch (err) {
       console.log(err);
     } finally {
       setBusy(false);
     }
-    // console.log(values);
   };
+
+  // const onSubmit = async (values: any) => {
+  //   try {
+  //     const result = await signIn("credentials", {
+  //       email: values.email,
+  //       password: values.password,
+  //       redirect: true,
+  //     });
+
+  //     if (result?.error) {
+  //       toast.error(result?.error);
+  //       return;
+  //     }
+
+  //     toast.success("Welcome");
+  //     // router.push(props.callbackUrl ? props.callbackUrl : "/private/dashboard");
+  //   } catch (error) {
+  //     console.error("Error occurred during sign-in:", error);
+  //     toast.error("An error occurred during sign-in");
+  //   }
+  // };
+
   return (
     <div className="h-screen w-screen overflow-y-hidden bg-white">
       <div className="flex min-h-full max-h-full overflow-y-hidden">
@@ -104,7 +161,7 @@ export default function LoginPage() {
                 className="flex flex-col gap-6 mt-10"
               >
                 <InputField
-                  name="username"
+                  name="email"
                   label="Email"
                   required
                   placeholder="admin@insurance-hub.com"

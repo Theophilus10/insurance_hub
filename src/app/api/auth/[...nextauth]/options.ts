@@ -1,19 +1,29 @@
+import { UserLoginResponse } from "@app/types/AuthResponse";
+import axios from "axios";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-async function login(username: string, password: string) {
-  // Hardcoded user response
-  const hardcodedResponse = {
-    // access_token: "hardcoded_access_token",
-    username: "obed@gmail.com",
-    // Add any other user details you need here
-  };
+interface LoggedInUserData {
+  email: string;
+  password: string;
+}
 
-  // Simulate successful login
-  if (username === "obed@gmail.com" && password === "password") {
-    return Promise.resolve(hardcodedResponse);
-  } else {
-    return Promise.resolve(null);
+async function login(
+  email: string,
+  password: string
+): Promise<LoggedInUserData> {
+  try {
+    const response = await axios.post<UserLoginResponse>(
+      "http://localhost:4000/users/sign_in",
+      {
+        user: { email, password },
+      }
+    );
+
+    return response.data.status.data;
+  } catch (error) {
+    console.error("Authentication error:", error);
+    throw error;
   }
 }
 
@@ -29,13 +39,13 @@ export const options: NextAuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Email", type: "text" },
+        email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials: any, req) {
-        const { username, password } = credentials;
+        const { email, password } = credentials;
         try {
-          const user = await login(username, password);
+          const user = await login(email, password);
           return user;
         } catch (err) {
           console.log("Error:", err);
@@ -44,10 +54,18 @@ export const options: NextAuthOptions = {
       },
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token = { ...token, user };
+        // token = { ...token, user };
+        token.user = user;
+        console.log("JWT Token:", token);
       }
       return token;
     },
@@ -55,7 +73,6 @@ export const options: NextAuthOptions = {
       if (token) {
         session.user = token.user;
         session.expires = token.expires;
-        // console.log('session',session.user)
       }
       return session;
     },
@@ -63,11 +80,6 @@ export const options: NextAuthOptions = {
     //   return url.startsWith(baseUrl) ? url : baseUrl;
     // },
     async redirect({ url, baseUrl }) {
-      // console.log({ url, baseUrl });
-      // const session = await getSession();
-      // return session && (url === "/" || url === "/login")
-      //   ? "/private/dashboard"
-      //   : "/login";
       return "/private/dashboard";
     },
   },

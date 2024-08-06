@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { fetcher } from "../../../shared";
 import { format } from "date-fns";
-import { API } from "@app/server/useAxios";
+import API from "@app/server/useAxios";
 import { axiosError, callResult, queryResult } from "@app/server/shared";
 import { IInstitution } from ".";
 

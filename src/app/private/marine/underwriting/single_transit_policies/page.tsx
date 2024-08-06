@@ -65,6 +65,7 @@ import {
   CustomerParams,
   CustomerDTO,
   ICustomer,
+  BranchDTO,
 } from "@app/server/services";
 import { createSingleTransitPolicy } from "@app/server/services/policies/marine/index";
 import DocumentUploads from "@app/components/single_transit_policy/partials/document_uploads";
@@ -75,6 +76,7 @@ import { DatePickerWithRange } from "@app/components/dateRange/dateRangePicker";
 import { Value } from "@radix-ui/react-select";
 import { useSearchParams } from "next/navigation";
 import { ICustomer } from "../../settings/shipping_types/partials/columns";
+import { useSession } from "next-auth/react";
 
 const stylesPolicySummaryItemStyles =
   "flex items-center justify-between text-sm";
@@ -545,9 +547,31 @@ const Page = () => {
     }
   };
 
-  console.log(form.watch(), "values");
-  console.log(form.formState.errors, "errros");
+  // console.log(form.watch(), "values");
+  // console.log(form.formState.errors, "errros");
+  const { data: session } = useSession();
+  console.log(session, "eiii");
 
+  useEffect(() => {
+    if (session?.user?.user?.institution_type?.name == "Insurance Company") {
+      const institutionOption = {
+        label: session?.user?.user?.institution?.name,
+        value: session?.user?.user?.institution?.id,
+      };
+      const branchOption = {
+        label: session?.user?.user?.branch?.name,
+        value: session?.user?.user?.branch?.id,
+      };
+      console.log(institutionOption, "option");
+      form.setValue("institution_id", institutionOption.value);
+      form.setValue("branch_id", branchOption.value);
+    }
+  }, [session, form]);
+  // const insuranceCompany =
+  //   session?.user.user.institution_type.name === "Insurance Company";
+  const filteredInstitution = items?.filter(
+    (item: any) => item?.institution_type?.name === "Insurance Company"
+  );
   return (
     <Card className="container mx-auto">
       <CardTitle className="flex  items-center gap-2 font-thin border-b-[1px] p-5">
@@ -559,20 +583,38 @@ const Page = () => {
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="border-b-[5px]">
               <div className="p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8   ">
-                <SelectFormField
+                <SelectFormFieldWithOnChange
                   form={form}
                   name="institution_id"
                   label="Insurance Company"
-                  options={convertDataToSelectObject(items)}
+                  options={convertDataToSelectObject(
+                    filteredInstitution,
+                    "name",
+                    "id"
+                  )}
                   isLoading={isLoading}
                   placeholder="Select an insurance company"
+                  // onChange={(value) => {
+                  //   console.log("Selected value:", value);
+                  // }}
+                  disabled={
+                    session?.user?.user?.institution_type?.name ===
+                    "Insurance Company"
+                  }
                 />
-                <SelectFormField
+                <SelectFormFieldWithOnChange
                   form={form}
                   name="branch_id"
                   label="Branch Office"
-                  options={convertDataToSelectObject(branches)}
+                  options={convertDataToSelectObject(branches, "name", "id")}
                   placeholder="Select a branch office"
+                  // onChange={(value) => {
+                  //   console.log("Selected value:", value);
+                  // }}
+                  disabled={
+                    session?.user?.user?.institution_type?.name ===
+                    "Insurance Company"
+                  }
                 />
               </div>
               <div className="p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 ">

@@ -1,5 +1,5 @@
 import { axiosError, callResult, fetcher } from "@app/server/shared";
-import { API } from "@app/server/useAxios";
+import API from "@app/server/useAxios";
 import { OpenCoverPolicy, Policy } from "@app/types/severTypes";
 import useSWR from "swr";
 

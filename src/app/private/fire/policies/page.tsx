@@ -35,8 +35,6 @@ import {
   read_customer,
   read_banks,
   find_customer,
-  ICustomer,
-  ICustomer,
 } from "@app/server/services";
 import {
   BuildingItemDetailsType,
