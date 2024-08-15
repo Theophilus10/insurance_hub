@@ -58,14 +58,14 @@ const columns: ColumnDef<TranshipmentType>[] = [
 
 interface TranshipmentProps {
   transhipments: TranshipmentType[];
-  addTranshipments: (transhipment: TranshipmentType) => void;
+  addTranshipment: (transhipment: TranshipmentType) => void;
   updateTranshipment: (transhipment: TranshipmentType) => void;
   deleteTranshipment: (id: string) => void;
 }
 
 const Transhipment = ({
   transhipments,
-  addTranshipments,
+  addTranshipment,
   updateTranshipment,
   deleteTranshipment,
 }: TranshipmentProps) => {
@@ -115,6 +115,15 @@ const Transhipment = ({
     return Object.values(errors).every((error) => !error);
   };
 
+  const reset = () =>
+    setTranshipment({
+      id: "",
+      origin_country: "",
+      destination_country: "",
+      rate: 0,
+      description: "",
+    });
+
   const onRowAction = (action: string, row: any) => {
     switch (action) {
       case "edit":
@@ -128,15 +137,6 @@ const Transhipment = ({
         break;
     }
   };
-
-  const reset = () =>
-    setTranshipment({
-      id: "",
-      origin_country: "",
-      destination_country: "",
-      rate: 0,
-      description: "",
-    });
 
   return (
     <div className="p-3 2xl:px-10 box-border">
@@ -234,7 +234,7 @@ const Transhipment = ({
               type="button"
               onClick={() => {
                 if (validateForm()) {
-                  addTranshipments({ ...transhipment, id: nanoid() });
+                  addTranshipment({ ...transhipment, id: nanoid() });
                   reset();
                 }
               }}
@@ -247,7 +247,7 @@ const Transhipment = ({
       <div className="py-8">
         <DataTable
           columns={columns}
-          data={transhipments}
+          data={transhipments ?? []}
           showHeader={false}
           showActions
           onRowAction={onRowAction}

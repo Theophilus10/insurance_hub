@@ -1,3 +1,4 @@
+"use client";
 import React, { use, useEffect, useRef, useState } from "react";
 import SideBarNav from "./sideBarNav";
 import { IMenuItem } from "@app/types/appTypes";
@@ -11,7 +12,7 @@ interface ISideBar {
   generalRouteItems: IMenuItem[];
   basicRouteItems: IMenuItem[];
   settingsRouteItems?: IMenuItem[];
-  isSideBarOpen?: boolean;
+  isSideBarClose?: boolean;
 }
 
 interface IShowPoup {
@@ -25,7 +26,7 @@ const Sidebar: React.FC<ISideBar> = ({
   generalRouteItems,
   basicRouteItems,
   settingsRouteItems,
-  isSideBarOpen: isSideBarClosed,
+  isSideBarClose,
 }) => {
   // console.log(basicRouteItems, "basic");
   const pathName = usePathname();
@@ -104,19 +105,31 @@ const Sidebar: React.FC<ISideBar> = ({
         </ul>
       )}
       <ul className="flex flex-col side-menu gap-4 overflow-y-auto">
-        <span className={`text-sm text-gray-400 font-thin pl-2 `}>Basics</span>
+        <span className={`text-sm text-gray-400 font-thin pl-2 `}>
+          {isSideBarClose ? (
+            <div className="flex justify-center items-center text-black">
+              .......
+            </div>
+          ) : (
+            <div>Basics</div>
+          )}
+        </span>
         <li
-          className={`px-4 ml-[1px] ${
+          className={`px-4 ml-[1px]  ${
             isActive("/private/dashboard")
-              ? "active isActiveRoute h-10"
+              ? "active isActiveRoute"
               : " inactiveRoute "
           }`}
         >
-          {isSideBarClosed ? (
-            <SideBarNav
-              path="/private/dashboard"
-              icon="radix-icons:dashboard"
-            />
+          {isSideBarClose ? (
+            <div className="">
+              <SideBarNav
+                path="/private/dashboard"
+                icon="radix-icons:dashboard"
+                // iconSize={30}
+                className=""
+              />
+            </div>
           ) : (
             <div>
               <SideBarNav
@@ -127,7 +140,7 @@ const Sidebar: React.FC<ISideBar> = ({
             </div>
           )}
         </li>
-        {isSideBarClosed ? (
+        {isSideBarClose ? (
           <ul className="flex flex-col justify-center items-center gap-4">
             {basicRouteItems &&
               basicRouteItems.map((x, index) => (
@@ -142,10 +155,19 @@ const Sidebar: React.FC<ISideBar> = ({
                   onMouseLeave={handleLeave}
                   key={index}
                 >
-                  <IconifyIcon
-                    className=" pointer-events-none"
-                    icon={x.icon!}
-                  />
+                  {!x.items ? (
+                    <Link href={`${x.path}`}>
+                      <IconifyIcon
+                        className="pointer-events-none"
+                        icon={x.icon!}
+                      />
+                    </Link>
+                  ) : (
+                    <IconifyIcon
+                      className="pointer-events-none"
+                      icon={x.icon!}
+                    />
+                  )}
                 </div>
               ))}
           </ul>
@@ -161,7 +183,7 @@ const Sidebar: React.FC<ISideBar> = ({
                     item={x}
                     key={index}
                     index={index}
-                    isSideBarOpen={isSideBarClosed}
+                    isSideBarClose={isSideBarClose}
                     showBorder
                   />
                 ))}
@@ -169,12 +191,21 @@ const Sidebar: React.FC<ISideBar> = ({
           </li>
         )}
 
-        <span className={`text-sm text-gray-400 font-thin pl-2 pt-4`}>
+        {/* <span className={`text-sm text-gray-400 font-thin pl-2 pt-4`}>
           Setups
+        </span> */}
+        <span className={`text-sm text-gray-400 font-thin pl-2 `}>
+          {isSideBarClose ? (
+            <div className="flex justify-center items-center text-black">
+              .......
+            </div>
+          ) : (
+            <div>Setups</div>
+          )}
         </span>
         <li>
           {}
-          {isSideBarClosed ? (
+          {isSideBarClose ? (
             <ul className="flex flex-col justify-center items-center gap-4">
               {generalRouteItems &&
                 generalRouteItems.map((x, index) => (
@@ -205,13 +236,23 @@ const Sidebar: React.FC<ISideBar> = ({
             </ul>
           )}
         </li>
-        <span className={`text-sm text-gray-400 font-thin pl-2 pt-4`}>
+        {/* <span className={`text-sm text-gray-400 font-thin pl-2 pt-4`}>
           Settings
+        </span> */}
+
+        <span className={`text-sm text-gray-400 font-thin pl-2 `}>
+          {isSideBarClose ? (
+            <div className="flex justify-center items-center text-black">
+              .......
+            </div>
+          ) : (
+            <div>Settings</div>
+          )}
         </span>
 
         <li>
           {}
-          {isSideBarClosed ? (
+          {isSideBarClose ? (
             <ul className="flex flex-col justify-center items-center gap-4">
               {settingsRouteItems &&
                 settingsRouteItems.map((x, index) => (
@@ -247,7 +288,7 @@ const Sidebar: React.FC<ISideBar> = ({
             {settingsRouteItems &&
               settingsRouteItems.map((x, index) => (
                 <NestedItems
-                  isSideBarOpen={isSideBarClosed}
+                  isSideBarClose={isSideBarClose}
                   item={x}
                   key={index}
                   index={index}
@@ -265,14 +306,14 @@ const NestedItems: React.FC<{
   item: IMenuItem;
   index: number;
   showBorder: boolean;
-  isSideBarOpen?: boolean;
+  isSideBarClose?: boolean;
   setShowProducts?: any;
   handleLeave?: any;
 }> = ({
   item,
   index,
   showBorder = false,
-  isSideBarOpen,
+  isSideBarClose,
   setShowProducts,
   handleLeave,
 }) => {
@@ -304,8 +345,8 @@ const NestedItems: React.FC<{
           isActive(item.path!)
             ? showBorder
               ? "active isActiveRoute h-10"
-              : " text-blue-600"
-            : "hover:text-blue-600"
+              : " text-black"
+            : "hover:text-black"
         }`}
       >
         {/* <SideBarNav
@@ -315,7 +356,7 @@ const NestedItems: React.FC<{
           icon={item.icon}
         /> */}
 
-        {isSideBarOpen ? (
+        {isSideBarClose ? (
           <SideBarNav
             addPadding={!showBorder}
             // title={item.title}
@@ -346,7 +387,7 @@ const NestedItems: React.FC<{
       `}
       >
         <button
-          className="flex justify-between items-center w-full pr-2 hover:text-blue-600 "
+          className="flex justify-between items-center w-full pr-2 hover:text-black "
           onClick={() => toggleSubMenu(index)}
         >
           <div className="flex items-center gap-3 pl-4">

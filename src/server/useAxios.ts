@@ -1,38 +1,3 @@
-// import axios from "axios";
-// import { getSession } from "next-auth/react";
-
-// const url = process.env.NEXT_PUBLIC_BASE_URL;
-
-// const API = axios.create({
-//   baseURL: url,
-//   // withCredentials: true,
-//   headers: {
-//     "Content-Type": "application/json",
-//   },
-// });
-
-// // Set up a request interceptor to attach the token if available
-// API.interceptors.request.use(
-//   async (config) => {
-//     try {
-//       // Get session on each request
-//       const session = await getSession();
-//       const token = session?.user?.token;
-//       if (token) {
-//         config.headers["Authorization"] = `Bearer ${token}`;
-//       }
-//     } catch (error) {
-//       console.error("Failed to get session:", error);
-//     }
-//     return config;
-//   },
-//   (error) => {
-//     return Promise.reject(error);
-//   }
-// );
-
-// export default API;
-
 import axios from "axios";
 import { getSession, signOut } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";

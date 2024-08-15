@@ -86,3 +86,16 @@ export const showPromise = async ({
     throw err;
   }
 };
+
+export const debounce = <T extends (...args: any[]) => void>(
+  func: T,
+  delay: number
+) => {
+  let timeoutId: NodeJS.Timeout | null = null;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeoutId as NodeJS.Timeout);
+    timeoutId = setTimeout(() => {
+      func(...args);
+    }, delay);
+  };
+};

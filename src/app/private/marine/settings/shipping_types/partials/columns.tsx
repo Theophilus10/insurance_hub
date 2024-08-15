@@ -10,11 +10,13 @@ export type ICustomer = {
   id: number;
   code: number;
   name: string;
+  phone: string;
+  email: string;
+  identification_number: string;
   created_at: string;
 };
 
 export const columns: ColumnDef<ICustomer>[] = [
-  
   {
     accessorKey: "code",
     header: "Code",

@@ -89,6 +89,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
   return (
     // <PrivateRoute>
     <LayoutContext.Provider value={{ pageDetails, setPageDetails }}>
@@ -137,7 +138,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                     >
                       <IconifyIcon icon="eos-icons:products" fontSize={30} />
                     </button>
-                    <p className="text-[13px]">Products</p>
+                    {/* <p className="text-[13px]">Products</p> */}
                   </div>
                 </div>
 
@@ -167,11 +168,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
                           <button
                             key={product.name}
                             className="block w-full bg-white text-left p-2 mx-2 text-gray-800 hover:bg-gray-100 "
-                            onClick={() => {
-                              // Handle click on product item
-                              console.log(`Clicked on ${product.name}`);
-                              // You can add additional logic here for handling click events
-                            }}
+                            onClick={() => setActiveAppMenu(product)}
                           >
                             <div className="flex gap-5">
                               <IconifyIcon icon={product.icon} fontSize={20} />
@@ -211,7 +208,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
               generalRouteItems={generalMenuItems}
               basicRouteItems={menuItems}
               settingsRouteItems={settingsItems}
-              isSideBarOpen={hideSidebar}
+              isSideBarClose={hideSidebar}
             />
           </ScrollSection>
         </aside>

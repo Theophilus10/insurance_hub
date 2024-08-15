@@ -500,7 +500,7 @@ const InterestItems = ({
       <div className="py-8">
         <DataTable
           columns={columns}
-          data={interests}
+          data={interests ?? []}
           showHeader={false}
           showActions
           onRowAction={onRowAction}

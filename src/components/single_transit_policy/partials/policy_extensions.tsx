@@ -194,7 +194,7 @@ const PolicyExtenxions = ({
       <div className="py-8">
         <DataTable
           columns={columns}
-          data={policyExtensions}
+          data={policyExtensions ?? []}
           showHeader={false}
           showActions
           onRowAction={onRowAction}

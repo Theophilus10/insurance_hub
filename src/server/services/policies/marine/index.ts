@@ -1,14 +1,40 @@
-import { axiosError, callResult, fetcher } from "@app/server/shared";
+import {
+  axiosError,
+  callResult,
+  fetcher,
+  queryResult,
+} from "@app/server/shared";
 import API from "@app/server/useAxios";
 import { OpenCoverPolicy, Policy } from "@app/types/severTypes";
 import useSWR from "swr";
 
 export const createSingleTransitPolicy = async (data: Policy) => {
   try {
+    console.log("making api call");
     const response = await API.post("/policies", data);
+
     return response;
   } catch (error) {
+    console.log(error);
     return error;
+  }
+};
+
+export const patchSingleTransitPolicy = async (id: number, data: Policy) => {
+  try {
+    const res = await API.put(`/policies/${id}`, data);
+    return callResult(res, res.data);
+  } catch (err) {
+    return axiosError(err);
+  }
+};
+
+export const showSingleTransitPolicy = async (id: number) => {
+  try {
+    const res = await API.get(`/policies/${id}`);
+    return queryResult(res, res.data);
+  } catch (err) {
+    return axiosError(err);
   }
 };
 

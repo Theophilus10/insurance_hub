@@ -228,7 +228,7 @@ const Transits = ({
       <div className="py-8">
         <DataTable
           columns={columns}
-          data={transits}
+          data={transits ?? []}
           showHeader={false}
           showActions
           onRowAction={onRowAction}
