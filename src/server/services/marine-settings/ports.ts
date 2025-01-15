@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import { API } from "@app/server/useAxios";
 import {
   axiosError,
   callResult,
@@ -20,15 +20,10 @@ export type IPort = {
 };
 
 export const read_ports = () => {
-  const { data, error, isLoading, mutate } = useSWR("ports/all", fetcher);
+  const { data, error, isLoading, mutate } = useSWR("ports", fetcher);
 
   return {
-    items: data
-      ? data.map((x: IPort) => ({
-          ...x,
-          created_at: format(new Date(x.created_at), "dd MMMM yyy"),
-        }))
-      : [],
+    items: data ?? [],
     isLoading,
     isError: error,
     mutate,
@@ -43,7 +38,7 @@ export const create_port = async (data: {
   shipping_type_id: number;
 }) => {
   try {
-    const res = await API.post("ports/", data);
+    const res = await API.post("ports", data);
     return callResult(res, res.data);
   } catch (err) {
     return axiosError(err);
@@ -87,7 +82,7 @@ export const read_port = async (id: number) => {
 
 export const read_port_select = async () => {
   try {
-    const res = await API.get(`ports/allforselect`);
+    const res = await API.get(`ports`);
     return queryResult(res, res.data);
   } catch (err) {
     return axiosError(err);

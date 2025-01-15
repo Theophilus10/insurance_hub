@@ -97,6 +97,20 @@ export const marineMenuItems: IMenuItem[] = [
     ],
   },
   {
+    title: "In Progress",
+    icon: "carbon:progress-bar-round",
+    items: [
+      {
+        title: "STP In Progress",
+        path: "/private/marine/in-progress/single-transit",
+      },
+      {
+        title: "OCP In Progress",
+        path: "/private/marine/in-progress/open-cover",
+      },
+    ],
+  },
+  {
     title: "Reporting",
     icon: "carbon:report-data",
     items: [
@@ -146,10 +160,10 @@ export const marineSettings: IMenuItem[] = [
         title: "Carriers",
         path: "/private/marine/settings/carriers",
       },
-      {
-        title: "Exchange Rates",
-        path: "/private/marine/settings/exchange_rates",
-      },
+      // {
+      //   title: "Exchange Rates",
+      //   path: "/private/marine/settings/exchange_rates",
+      // },
     ],
   },
 ];
@@ -170,11 +184,15 @@ export const fireMenuItems: IMenuItem[] = [
     icon: "carbon:report-data",
     items: [
       {
-        title: "Active Policies",
-        path: "/private/fire/reporting/active_policies",
+        title: "Pending Policies",
+        path: "/private/fire/reporting/pending_policies",
       },
       {
-        title: "Revoked Policies",
+        title: "Approved Policies",
+        path: "/private/fire/reporting/approved_policies",
+      },
+      {
+        title: "Cancelled Policies",
         path: "/private/fire/reporting/revoked_policies",
       },
     ],
@@ -211,10 +229,10 @@ export const fireSettings: IMenuItem[] = [
         title: "Discounts",
         path: "/private/fire/settings/discounts",
       },
-      {
-        title: "Exchange Rate",
-        path: "/private/fire/settings/exchange_rate",
-      },
+      // {
+      //   title: "Exchange Rate",
+      //   path: "/private/fire/settings/exchange_rate",
+      // },
     ],
   },
 ];
@@ -390,6 +408,10 @@ export const generalMenuItems: IMenuItem[] = [
       {
         title: "Currencies",
         path: "/private/general/utilities/currencies",
+      },
+      {
+        title: "Exchange Rates",
+        path: "/private/marine/settings/exchange_rates",
       },
       { title: "Banks", path: "/private/general/utilities/banks" },
       {

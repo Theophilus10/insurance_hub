@@ -1,9 +1,9 @@
-import useSWR from 'swr';
-import { fetcher } from '../../../shared';
-import { format } from 'date-fns';
-import API from '@app/server/useAxios';
-import { axiosError, callResult, queryResult } from '@app/server/shared';
-import { IInstitution } from '.';
+import useSWR from "swr";
+import { fetcher } from "../../../shared";
+import { format } from "date-fns";
+import API from "@app/server/useAxios";
+import { axiosError, callResult, queryResult } from "@app/server/shared";
+import { IInstitution } from ".";
 
 export interface IBranch {
   id: number;
@@ -33,13 +33,13 @@ export interface BranchDTO {
 }
 
 export const read_branches = () => {
-  const { data, error, isLoading, mutate } = useSWR('/branches/all', fetcher);
+  const { data, error, isLoading, mutate } = useSWR("/branches", fetcher);
 
   return {
     items: data
       ? data.map((x: IBranch) => ({
           ...x,
-          created_at: format(new Date(x.created_at), 'dd MMMM yyy'),
+          created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
       : [],
     isLoading,
@@ -51,7 +51,7 @@ export const read_branches = () => {
 
 export const create_branch = async (data: BranchDTO) => {
   try {
-    const res = await API.post('/branches/', data);
+    const res = await API.post("/branches", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {
@@ -80,7 +80,7 @@ export const update_branch = async (id: number, data: BranchDTO) => {
 
 export const read_branch = async (id: number) => {
   try {
-    const res = await API.get(`/branch/${id}`);
+    const res = await API.get(`/branches/${id}`);
     return queryResult(res, res.data);
   } catch (err) {
     return axiosError(err);

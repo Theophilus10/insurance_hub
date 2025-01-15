@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { Button } from '@app/components/ui/button';
-import { ColumnDef } from '@tanstack/react-table';
-import { ArrowUpDown, Eye } from 'lucide-react';
-import { Checkbox } from '@app/components/ui/checkbox';
+import { Button } from "@app/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, Eye } from "lucide-react";
+import { Checkbox } from "@app/components/ui/checkbox";
 
 // This type is used to define the shape of our data.
 
@@ -17,63 +17,63 @@ export type Policies = {
 
 export const columns: ColumnDef<Policies>[] = [
   {
-    id: 'select',
+    id: "select",
     header: ({ table }) => (
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
+          (table.getIsSomePageRowsSelected() && "indeterminate")
         }
-        onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
-        aria-label='Select all'
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
       />
     ),
     cell: ({ row }) => (
       <Checkbox
         checked={row.getIsSelected()}
-        onCheckedChange={value => row.toggleSelected(!!value)}
-        aria-label='Select row'
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
       />
     ),
     enableSorting: false,
     enableHiding: false,
   },
   {
-    accessorKey: 'policyNumber',
+    accessorKey: "policyNumber",
     header: ({ column }) => {
       return (
         <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Policy #
-          <ArrowUpDown className='ml-2 h-4 w-4' />
+          <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
   },
   {
-    accessorKey: 'customerName',
+    accessorKey: "customerName",
     header: ({ column }) => {
       return (
         <Button
-          variant='ghost'
-          onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           Customer
-          <ArrowUpDown className='ml-2 h-4 w-4' />
+          <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
     cell: ({ row }) => {
       return (
-        <div className='flex items-center gap-2'>
-          <div className='bg-[#D6D1F7] text-[#2406F5] rounded-full w-8 h-8 flex items-center justify-center'>
-            <p>{row.original.customerName.split('')[0]}</p>
+        <div className="flex items-center gap-2">
+          <div className="bg-[#D6D1F7] text-[#2406F5] rounded-full w-8 h-8 flex items-center justify-center">
+            <p>{row.original.customerName.split("")[0]}</p>
           </div>
           <div>
             <p>{row.original.customerName}</p>
-            <p className='text-sm text-gray-500 '>
+            <p className="text-sm text-gray-500 ">
               {row.original.customerEmail}
             </p>
           </div>
@@ -82,20 +82,20 @@ export const columns: ColumnDef<Policies>[] = [
     },
   },
   {
-    accessorKey: 'openCoverNumber',
-    header: 'Open Cover Number',
+    accessorKey: "openCoverNumber",
+    header: "Open Cover Number",
   },
   {
-    accessorKey: 'createdAt',
-    header: 'Created Date',
+    accessorKey: "createdAt",
+    header: "Created Date",
   },
   {
-    id: 'actions',
+    id: "actions",
     cell: ({ row }) => {
       const payment = row.original;
 
       return (
-        <div className='flex items-center gap-3 text-gray-400'>
+        <div className="flex items-center gap-3 text-gray-400">
           <Eye />
         </div>
       );

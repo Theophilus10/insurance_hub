@@ -1,73 +1,73 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   InputField,
   SelectField,
   TextAreaField,
-} from '@app/components/forms/ShadcnFields';
-import { Button } from '@app/components/ui/button';
-import DataTable from '@app/components/datatable/datatable';
-import { ColumnDef } from '@tanstack/react-table';
-import { HeaderWithSorting } from '@app/components/datatable/columnHeaders';
-import { nanoid } from 'nanoid';
-import { BuildingItemDetailsType } from '@app/types/policyTypes';
-import { validateForm } from '@app/helpers/index';
+} from "@app/components/forms/ShadcnFields";
+import { Button } from "@app/components/ui/button";
+import DataTable from "@app/components/datatable/datatable";
+import { ColumnDef } from "@tanstack/react-table";
+import { HeaderWithSorting } from "@app/components/datatable/columnHeaders";
+import { nanoid } from "nanoid";
+import { BuildingItemDetailsType } from "@app/types/policyTypes";
+import { validateForm } from "@app/helpers/index";
 
 const regions = [
-  { label: 'Ahafo', value: 'Ahafo' },
-  { label: 'Ashanti', value: 'Ashanti' },
-  { label: 'Bono', value: 'Bono' },
-  { label: 'Bono East', value: 'Bono East' },
-  { label: 'Central', value: 'Central' },
-  { label: 'Eastern', value: 'Eastern' },
-  { label: 'Greater Accra', value: 'Greater Accra' },
-  { label: 'North East', value: 'North East' },
-  { label: 'Northern', value: 'Northern' },
-  { label: 'Oti', value: 'Oti' },
-  { label: 'Savannah', value: 'Savannah' },
-  { label: 'Upper East', value: 'Upper East' },
-  { label: 'Upper West', value: 'Upper West' },
-  { label: 'Volta', value: 'Volta' },
-  { label: 'Western', value: 'Western' },
-  { label: 'Western North', value: 'Western North' },
+  { label: "Ahafo", value: "Ahafo" },
+  { label: "Ashanti", value: "Ashanti" },
+  { label: "Bono", value: "Bono" },
+  { label: "Bono East", value: "Bono East" },
+  { label: "Central", value: "Central" },
+  { label: "Eastern", value: "Eastern" },
+  { label: "Greater Accra", value: "Greater Accra" },
+  { label: "North East", value: "North East" },
+  { label: "Northern", value: "Northern" },
+  { label: "Oti", value: "Oti" },
+  { label: "Savannah", value: "Savannah" },
+  { label: "Upper East", value: "Upper East" },
+  { label: "Upper West", value: "Upper West" },
+  { label: "Volta", value: "Volta" },
+  { label: "Western", value: "Western" },
+  { label: "Western North", value: "Western North" },
 ];
 
 const columns: ColumnDef<BuildingItemDetailsType>[] = [
   {
-    accessorKey: 'itemDescription',
+    accessorKey: "item_description",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='ITEM DESCRIPTION' />;
+      return <HeaderWithSorting column={column} label="ITEM DESCRIPTION" />;
     },
   },
   {
-    accessorKey: 'itemLocation',
+    accessorKey: "item_location",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='LOCATION' />;
+      return <HeaderWithSorting column={column} label="LOCATION" />;
     },
   },
   {
-    accessorKey: 'value',
+    accessorKey: "value",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='VALUE' />;
+      return <HeaderWithSorting column={column} label="VALUE" />;
     },
   },
   {
-    accessorKey: 'region',
+    accessorKey: "region",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='REGION' />;
+      return <HeaderWithSorting column={column} label="REGION" />;
     },
   },
 ];
 
 const initialBuildingItemState = {
-  id: '',
-  itemDescription: '',
+  id: "",
+  item_description: "",
   value: 0,
-  region: '',
-  collapseRate: 0,
-  fireRate: 0,
-  publicLiabilityRate: 0,
-  digitalAddress: '',
-  itemLocation: '',
+  region: "",
+  collapse_rate: 0,
+  fire_rate: 0,
+  public_liability_rate: 0,
+  digital_address: "",
+  item_location: "",
 };
 
 interface BuildingItemDetailsProps {
@@ -90,11 +90,11 @@ const BuildingItemDetails = ({
 
   const onRowAction = (action: string, row: any) => {
     switch (action) {
-      case 'edit':
+      case "edit":
         setBuildingItems(row);
         setUpdating(true);
         break;
-      case 'delete':
+      case "delete":
         deleteItem(row.id);
         break;
       default:
@@ -108,69 +108,71 @@ const BuildingItemDetails = ({
   };
 
   const handleInputChange = (field: string, value: string | number) => {
-    setBuildingItems(prev => ({ ...prev, [field]: value }));
+    setBuildingItems((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
     <div>
-      <div className='grid py-5  lg:grid-cols-2 gap-5 '>
+      <div className="grid py-5  lg:grid-cols-2 gap-5 ">
         <TextAreaField
-          label='Item Description:'
-          placeholder='Description'
-          className='lg:col-span-2'
-          onChange={e => handleInputChange('itemDescription', e.target.value)}
-          value={buildingItems.itemDescription}
+          label="Item Description:"
+          placeholder="Description"
+          className="lg:col-span-2"
+          onChange={(e) =>
+            handleInputChange("item_description", e.target.value)
+          }
+          value={buildingItems.item_description}
         />
         <InputField
-          label='Item Value:'
-          onChange={e => handleInputChange('value', +e.target.value)}
-          type='number'
+          label="Item Value:"
+          onChange={(e) => handleInputChange("value", +e.target.value)}
+          type="number"
           value={buildingItems.value}
         />
         <InputField
-          label='Fire Rate:'
-          onChange={e => handleInputChange('fireRate', +e.target.value)}
-          type='number'
-          value={buildingItems.fireRate}
+          label="Fire Rate:"
+          onChange={(e) => handleInputChange("fire_rate", +e.target.value)}
+          type="number"
+          value={buildingItems.fire_rate}
         />
         <InputField
-          label='Collapse Rate:'
-          onChange={e => handleInputChange('collapseRate', +e.target.value)}
-          type='number'
-          value={buildingItems.collapseRate}
+          label="Collapse Rate:"
+          onChange={(e) => handleInputChange("collapse_rate", +e.target.value)}
+          type="number"
+          value={buildingItems.collapse_rate}
         />
         <InputField
-          label='Public Liabilty Rate:'
-          onChange={e =>
-            handleInputChange('publicLiabilityRate', +e.target.value)
+          label="Public Liabilty Rate:"
+          onChange={(e) =>
+            handleInputChange("public_liability_rate", +e.target.value)
           }
-          type='number'
-          value={buildingItems.publicLiabilityRate}
+          type="number"
+          value={buildingItems.public_liability_rate}
         />
         <SelectField
-          label='Region'
-          onChange={e => handleInputChange('region', e.value)}
-          value={regions.find(c => c.value === buildingItems.region) || null}
+          label="Region"
+          onChange={(e) => handleInputChange("region", e.value)}
+          value={regions.find((c) => c.value === buildingItems.region) || null}
           options={regions}
         />
         <InputField
-          label='Digital Address'
-          onChange={e => handleInputChange('digitalAddress', e.target.value)}
-          value={buildingItems.digitalAddress}
+          label="Digital Address"
+          onChange={(e) => handleInputChange("digital_address", e.target.value)}
+          value={buildingItems.digital_address}
         />
         <TextAreaField
-          label='Location of item (include nearest landmark):'
-          placeholder='Description'
-          className='lg:col-span-2'
-          onChange={e => handleInputChange('itemLocation', e.target.value)}
-          value={buildingItems.itemLocation}
+          label="Location of item (include nearest landmark):"
+          placeholder="Description"
+          className="lg:col-span-2"
+          onChange={(e) => handleInputChange("item_location", e.target.value)}
+          value={buildingItems.item_location}
         />
       </div>
       {updating ? (
         <div>
           <Button
-            variant='link'
-            className='text-red-500'
+            variant="link"
+            className="text-red-500"
             onClick={() => {
               reset();
               setUpdating(false);
@@ -179,9 +181,9 @@ const BuildingItemDetails = ({
             Clear
           </Button>
           <Button
-            variant='secondary'
-            className='my-10 font-semibold'
-            type='button'
+            variant="secondary"
+            className="my-10 font-semibold"
+            type="button"
             onClick={() => {
               if (validateForm(setValidationErrors, buildingItems)) {
                 updateItem(buildingItems);
@@ -194,8 +196,8 @@ const BuildingItemDetails = ({
         </div>
       ) : (
         <Button
-          className='my-3'
-          type='button'
+          className="my-3"
+          type="button"
           onClick={() => {
             if (validateForm(setValidationErrors, buildingItems)) {
               addItem({ ...buildingItems, id: nanoid() });

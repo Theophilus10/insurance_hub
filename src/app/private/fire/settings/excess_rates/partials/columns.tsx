@@ -17,11 +17,11 @@ export type ICustomer = {
 
 export const columns: ColumnDef<ICustomer>[] = [
   {
-    accessorKey: "excess",
+    accessorKey: "fire_excess.name",
     header: "Excess",
   },
   {
-    accessorKey: "riskClass",
+    accessorKey: "fire_risk_class.description",
     header: "Risk Class",
   },
   {

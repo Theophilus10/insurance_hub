@@ -1,7 +1,7 @@
 import useSWR from "swr";
 import { fetcher } from "../../../shared";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import { API } from "@app/server/useAxios";
 import { axiosError, callResult, queryResult } from "@app/server/shared";
 
 export type IBank = {
@@ -13,11 +13,11 @@ export type IBank = {
 };
 
 export const read_banks = () => {
-  const { data, error, isLoading, mutate } = useSWR("/banks/all", fetcher);
+  const { data, error, isLoading, mutate } = useSWR("/banks", fetcher);
 
   return {
     items: data
-      ? data.map((x: IBank) => ({
+      ? data.banks.map((x: IBank) => ({
           ...x,
           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
@@ -31,7 +31,7 @@ export const read_banks = () => {
 
 export const create_bank = async (data: { name: string; code: string }) => {
   try {
-    const res = await API.post("/banks/", data);
+    const res = await API.post("/banks", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {

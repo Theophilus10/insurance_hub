@@ -37,7 +37,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   showAddButton?: boolean;
-  addButtonLabel?: string;
+  addButtonLabel?: any;
   addButtonFunction?: () => void;
   searchPlaceholder?: string;
   onRowAction?: (action: string, row: Record<string, any>) => void;
@@ -100,7 +100,7 @@ export default function DataTable<TData, TValue>({
                   variant="outline"
                   className="ml-auto border-teal-300 bg-teal-50 flex items-center gap-2"
                 >
-                  <IconifyIcon icon="ph:columns" fontSize={18}/>
+                  <IconifyIcon icon="ph:columns" fontSize={18} />
                   Columns
                 </Button>
               </DropdownMenuTrigger>

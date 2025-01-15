@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import { API } from "@app/server/useAxios";
 import {
   axiosError,
   callResult,
@@ -18,11 +18,11 @@ export type IInterest = {
 };
 
 export const read_interests = () => {
-  const { data, error, isLoading, mutate } = useSWR("interests/all", fetcher);
+  const { data, error, isLoading, mutate } = useSWR("interests", fetcher);
 
   return {
     items: data
-      ? data.map((x: IInterest) => ({
+      ? data.interests.map((x: IInterest) => ({
           ...x,
           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
@@ -40,7 +40,7 @@ export const create_interest = async (data: {
   description: string;
 }) => {
   try {
-    const res = await API.post("interests/", data);
+    const res = await API.post("interests", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {
@@ -89,4 +89,19 @@ export const read_interest = async (id: number) => {
   //   isLoading,
   //   success: data && true,
   // };
+};
+
+export const read_interest_rate = () => {
+  const { data, error, isLoading, mutate } = useSWR(
+    "interests/interests_with_rates",
+    fetcher
+  );
+
+  return {
+    items: data ?? [],
+    isLoading,
+    isError: error,
+    mutate,
+    success: data && true,
+  };
 };

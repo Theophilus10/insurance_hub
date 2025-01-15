@@ -3,11 +3,13 @@ import React from "react";
 import IconifyIcon from "../icon";
 
 interface ISideBarNav {
-  title: string;
+  title?: string;
   path: string;
   icon?: string;
   iconSize?: number;
+  className?: string;
   addPadding?: boolean;
+  sidebarStatus?: boolean;
 }
 
 const SideBarNav: React.FC<ISideBarNav> = ({
@@ -15,7 +17,9 @@ const SideBarNav: React.FC<ISideBarNav> = ({
   path,
   icon,
   iconSize = 16,
+  className,
   addPadding = false,
+  sidebarStatus,
 }) => {
   return (
     <Link
@@ -24,7 +28,7 @@ const SideBarNav: React.FC<ISideBarNav> = ({
         addPadding && "pl-3"
       }`}
     >
-      <IconifyIcon icon={icon!} fontSize={iconSize} />
+      <IconifyIcon icon={icon!} fontSize={iconSize} className={className} />
       {/* <div className={icon! && "hidden"} /> */}
       <span>{title}</span>
     </Link>

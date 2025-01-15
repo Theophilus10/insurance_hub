@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import { API } from "@app/server/useAxios";
 import {
   axiosError,
   callResult,
@@ -12,25 +12,17 @@ import { ICurrency } from "..";
 export type IExchangeRate = {
   id: number;
   rate: number;
-  name: string;
+  currency_id: number;
   created_at: string;
   updated_at: string;
   currency: ICurrency;
 };
 
 export const read_exchange_rates = () => {
-  const { data, error, isLoading, mutate } = useSWR(
-    "exchange-rates/all",
-    fetcher
-  );
+  const { data, error, isLoading, mutate } = useSWR("exchange_rates", fetcher);
 
   return {
-    items: data
-      ? data.map((x: IExchangeRate) => ({
-          ...x,
-          created_at: format(new Date(x.created_at), "dd MMMM yyy"),
-        }))
-      : [],
+    items: data ?? [],
     isLoading,
     isError: error,
     mutate,
@@ -40,10 +32,10 @@ export const read_exchange_rates = () => {
 
 export const create_exchange_rate = async (data: {
   rate: number;
-  country_id: number;
+  currency_id: number;
 }) => {
   try {
-    const res = await API.post("exchange-rates/", data);
+    const res = await API.post("exchange_rates/", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {
@@ -55,7 +47,7 @@ export const create_exchange_rate = async (data: {
 
 export const delete_exchange_rate = async (id: number) => {
   try {
-    const res = await API.delete(`exchange-rates/${id}`);
+    const res = await API.delete(`exchange_rates/${id}`);
     // console.log(res)
     return callResult(res, res.data);
   } catch (err) {
@@ -65,10 +57,10 @@ export const delete_exchange_rate = async (id: number) => {
 
 export const update_exchange_rate = async (
   id: number,
-  data: { rate: number; country_id: number }
+  data: { rate: number; currency_id: number }
 ) => {
   try {
-    const res = await API.put(`exchange-rates/${id}`, data);
+    const res = await API.put(`exchange_rates/${id}`, data);
     return callResult(res, res.data);
   } catch (err) {
     return axiosError(err);
@@ -77,7 +69,7 @@ export const update_exchange_rate = async (
 
 export const read_exchange_rate = async (id: number) => {
   try {
-    const res = await API.get(`exchange-rates/${id}`);
+    const res = await API.get(`exchange_rates/${id}`);
     return queryResult(res, res.data);
   } catch (err) {
     return axiosError(err);

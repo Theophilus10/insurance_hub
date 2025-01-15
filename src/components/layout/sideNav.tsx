@@ -29,7 +29,7 @@ const Sidebar: React.FC<ISideBar> = ({
           isActive && isSingleLayer
             ? "active isActiveRoute h-10"
             : isActive && !isSingleLayer
-            ? " text-blue-600 "
+            ? "text-blue-600!"
             : "inactiveRoute"
         } px-4 ml-[1px]`}
       >
@@ -113,16 +113,16 @@ const NestedItems: React.FC<{
     <ul className="">
       <li
         className={` ${
-          (subMenuItem === activeIndex && showBorder) 
-          // ||
-          // (showSideBorder && showBorder)
-          // (showSideBorder && showBorder)
+          subMenuItem === activeIndex && showBorder
+            ? // ||
+              // (showSideBorder && showBorder)
+              // (showSideBorder && showBorder)
 
-            ? "open isActiveMenuList"
+              "isActiveMenuList"
             : subMenuItem === activeIndex && !showBorder
-            ? "open"
+            ? ""
             : "closed isNotActiveMenuList"
-        } flex flex-col w-full overflow-hidden `}
+        } flex flex-col w-full overflow-hidden`}
       >
         <button
           className="flex justify-between items-center w-full pr-2 hover:text-blue-600 "
@@ -139,8 +139,7 @@ const NestedItems: React.FC<{
           />
         </button>
         {/* {(showSideBorder || subMenuItem === activeIndex) && */}
-        {(subMenuItem === activeIndex) &&
-
+        {subMenuItem === activeIndex &&
           items.map((item, index) => {
             return (
               // <div key={index} className="-mt-2 ">

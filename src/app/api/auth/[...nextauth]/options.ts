@@ -1,34 +1,33 @@
+import { UserLoginResponse } from "@app/types/AuthResponse";
+import axios from "axios";
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-async function login(username: string, password: string) {
-  try {
-    const formData = new URLSearchParams();
-    formData.append("username", username);
-    formData.append("password", password);
+interface LoggedInUserData {
+  email: string;
+  password: string;
+}
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/auth/login`,
+async function login(
+  email: string,
+  password: string
+): Promise<LoggedInUserData> {
+  try {
+    const response = await axios.post<LoggedInUserData>(
+      "http://localhost:4000/users/sign_in",
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formData.toString(),
+        user: { email, password },
       }
     );
 
-    const data = await response.json();
-    // console.log("data", data);
-
-    if (response.ok && data.access_token) {
-      return Promise.resolve({ ...data, username });
-    } else {
-      return Promise.resolve(null);
+    if (!response.data) {
+      throw new Error("Empty response");
     }
+
+    return response.data;
   } catch (error) {
     console.error("Authentication error:", error);
-    return Promise.resolve(null);
+    throw error;
   }
 }
 
@@ -36,55 +35,56 @@ export const options: NextAuthOptions = {
   pages: {
     signIn: "/login",
     // signOut: "/login",
-    // error: "",
+    // error: "/login",
     // verifyRequest: "",
     // newUser: "",
   },
   providers: [
     CredentialsProvider({
-      name: "Credentials",
-
+      id: "login",
       credentials: {
-        username: { label: "Email", type: "text" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials: any, req) {
-        const { username, password } = credentials;
+      async authorize(credentials: Record<string, string>) {
+        const { email, password } = credentials;
         try {
-          const user = await login(username, password);
+          const user = await login(email, password);
           return user;
         } catch (err) {
-          console.log("Error:", err);
+          // console.log("Error:", err);
           return null;
         }
       },
     }),
   ],
+  // session: {
+  //   strategy: "jwt",
+  // },
+  // jwt: {
+  //   secret: process.env.NEXTAUTH_SECRET,
+  // },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token = { ...token, user };
+        // token = { ...token, user };
+        token.user = user;
+        console.log("JWT Token:", token);
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.user = token;
+        session.user = token.user as any;
         session.expires = token.expires;
-        // console.log('session',session.user)
       }
       return session;
     },
     // async redirect(url, baseUrl) {
     //   return url.startsWith(baseUrl) ? url : baseUrl;
     // },
-    async redirect({ url, baseUrl }) {
-      // console.log({ url, baseUrl });
-      // const session = await getSession();
-      // return session && (url === "/" || url === "/login")
-      //   ? "/private/dashboard"
-      //   : "/login";
-      return "/private/dashboard";
-    },
+    // async redirect({ url, baseUrl }) {
+    //   return "/private/dashboard";
+    // },
   },
 };

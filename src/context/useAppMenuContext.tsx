@@ -14,7 +14,7 @@ import {
 import { IMenuItem } from "@app/types/appTypes";
 import { useEffect, useState } from "react";
 
-const appMenuKey = "appMenuKey";
+const appMenuKey: string = "appMenuKey";
 
 const appList: { name: string; icon: string }[] = [
   { name: "Marine", icon: "carbon:marine-warning" },

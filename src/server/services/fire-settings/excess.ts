@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import { API } from "@app/server/useAxios";
 import {
   axiosError,
   callResult,
@@ -17,11 +17,11 @@ export type IExcess = {
 };
 
 export const read_excesses = () => {
-  const { data, error, isLoading, mutate } = useSWR("/excesses/all", fetcher);
+  const { data, error, isLoading, mutate } = useSWR("/fire_excesses", fetcher);
 
   return {
     items: data
-      ? data.map((x: IExcess) => ({
+      ? data?.fire_excesses?.map((x: IExcess) => ({
           ...x,
           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
@@ -35,7 +35,7 @@ export const read_excesses = () => {
 
 export const create_excess = async (data: { code: string; name: string }) => {
   try {
-    const res = await API.post("/excesses/", data);
+    const res = await API.post("/fire_excesses", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {
@@ -47,7 +47,7 @@ export const create_excess = async (data: { code: string; name: string }) => {
 
 export const delete_excess = async (id: number) => {
   try {
-    const res = await API.delete(`/excesses/${id}`);
+    const res = await API.delete(`/fire_excesses/${id}`);
     // console.log(res)
     return callResult(res, res.data);
   } catch (err) {
@@ -63,7 +63,7 @@ export const update_excess = async (
   }
 ) => {
   try {
-    const res = await API.put(`/excesses/${id}`, data);
+    const res = await API.put(`/fire_excesses/${id}`, data);
     return callResult(res, res.data);
   } catch (err) {
     return axiosError(err);
@@ -72,7 +72,7 @@ export const update_excess = async (
 
 export const read_excess = async (id: number) => {
   try {
-    const res = await API.get(`/excesses/${id}`);
+    const res = await API.get(`/fire_excesses/${id}`);
     return queryResult(res, res.data);
   } catch (err) {
     return axiosError(err);

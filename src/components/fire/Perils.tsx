@@ -1,30 +1,39 @@
-import React, { useState } from 'react';
-import DataTable from '@app/components/datatable/datatable';
-import { InputField } from '@app/components/forms/ShadcnFields';
-import { Button } from '@app/components/ui/button';
-import { ColumnDef } from '@tanstack/react-table';
-import { HeaderWithSorting } from '@app/components/datatable/columnHeaders';
-import { PerilsType } from '@app/types/policyTypes';
-import { validateForm } from '@app/helpers/index';
-import { nanoid } from 'nanoid';
+import React, { useState } from "react";
+import DataTable from "@app/components/datatable/datatable";
+import { InputField, SelectField } from "@app/components/forms/ShadcnFields";
+import { Button } from "@app/components/ui/button";
+import { ColumnDef } from "@tanstack/react-table";
+import { HeaderWithSorting } from "@app/components/datatable/columnHeaders";
+import { PerilsType } from "@app/types/policyTypes";
+import { validateForm } from "@app/helpers/index";
+import { nanoid } from "nanoid";
+import { Textarea } from "../ui/textarea";
+import { read_fire_peril_class } from "@app/server/services/fire-settings/peril-class";
 
 const perilDefaultValues = {
-  id: '',
-  perilRate: 0,
-  additionalPeril: '',
+  id: "",
+  rate: 0,
+  peril: "",
+  description: "",
 };
 
 const columns: ColumnDef<PerilsType>[] = [
   {
-    accessorKey: 'additionalPeril',
+    accessorKey: "peril",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='ADDITIONAL PERIL' />;
+      return <HeaderWithSorting column={column} label="ADDITIONAL PERIL" />;
     },
   },
   {
-    accessorKey: 'perilRate',
+    accessorKey: "rate",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='LOCATION' />;
+      return <HeaderWithSorting column={column} label="RATE" />;
+    },
+  },
+  {
+    accessorKey: "description",
+    header: ({ column }) => {
+      return <HeaderWithSorting column={column} label="DEESCRIPTION" />;
     },
   },
 ];
@@ -38,14 +47,15 @@ const Perils = ({ addItem, deleteItem, items, updateItem }: PerilsProps) => {
   const [perils, setPerils] = useState(perilDefaultValues);
   const [updating, setUpdating] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
+  const { items: firePerils } = read_fire_peril_class();
 
   const onRowAction = (action: string, row: any) => {
     switch (action) {
-      case 'edit':
+      case "edit":
         setPerils(row);
         setUpdating(true);
         break;
-      case 'delete':
+      case "delete":
         deleteItem(row.id);
         break;
       default:
@@ -59,32 +69,51 @@ const Perils = ({ addItem, deleteItem, items, updateItem }: PerilsProps) => {
   };
 
   const handleInputChange = (field: string, value: string | number) => {
-    setPerils(prev => ({ ...prev, [field]: value }));
+    setPerils((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
     <div>
-      <div className='flex w-full py-5 items-center gap-5'>
-        <InputField
-          label='Additional Perils'
-          onChange={e => handleInputChange('additionalPeril', e.target.value)}
-          className='w-full'
-          value={perils.additionalPeril}
+      <div className="flex w-full py-5 items-center gap-5">
+        {/* <InputField
+          label="Additional Perils"
+          onChange={(e) => handleInputChange("peril", e.target.value)}
+          className="w-full"
+          value={perils.peril}
+        /> */}
+
+        <SelectField
+          label="Additional Perils"
+          onChange={(e) => handleInputChange("peril", e.value)}
+          options={
+            firePerils?.length
+              ? firePerils.map((peril: any) => ({
+                  label: peril?.name,
+                  value: peril?.name,
+                }))
+              : []
+          }
+          className="w-full"
         />
         <InputField
-          label='Peril Rate'
-          onChange={e => handleInputChange('perilRate', +e.target.value)}
-          className='w-full'
-          value={perils.perilRate}
-          type='number'
+          label="Peril Rate"
+          onChange={(e) => handleInputChange("rate", +e.target.value)}
+          className="w-full"
+          value={perils.rate}
+          type="number"
         />
       </div>
+      <Textarea
+        label="Description"
+        onChange={(e) => handleInputChange("description", e.target.value)}
+        value={perils.description}
+      />
       <div>
         {updating ? (
           <div>
             <Button
-              variant='link'
-              className='text-red-500'
+              variant="link"
+              className="text-red-500"
               onClick={() => {
                 reset();
                 setUpdating(false);
@@ -93,9 +122,9 @@ const Perils = ({ addItem, deleteItem, items, updateItem }: PerilsProps) => {
               Clear
             </Button>
             <Button
-              variant='secondary'
-              className='my-10 font-semibold'
-              type='button'
+              variant="secondary"
+              className="my-10 font-semibold"
+              type="button"
               onClick={() => {
                 if (validateForm(setValidationErrors, perils)) {
                   updateItem(perils);
@@ -108,8 +137,8 @@ const Perils = ({ addItem, deleteItem, items, updateItem }: PerilsProps) => {
           </div>
         ) : (
           <Button
-            className='my-3'
-            type='button'
+            className="my-3"
+            type="button"
             onClick={() => {
               if (validateForm(setValidationErrors, perils)) {
                 addItem({ ...perils, id: nanoid() });

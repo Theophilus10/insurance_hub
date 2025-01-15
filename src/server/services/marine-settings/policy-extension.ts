@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import { API } from "@app/server/useAxios";
 import {
   axiosError,
   callResult,
@@ -17,11 +17,14 @@ export type IPolicyExtension = {
 };
 
 export const read_policy_extensions = () => {
-  const { data, error, isLoading, mutate } = useSWR("extensions/all", fetcher);
+  const { data, error, isLoading, mutate } = useSWR(
+    "policy_extentions",
+    fetcher
+  );
 
   return {
     items: data
-      ? data.map((x: IPolicyExtension) => ({
+      ? data.policy_extentions.map((x: IPolicyExtension) => ({
           ...x,
           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
@@ -33,9 +36,12 @@ export const read_policy_extensions = () => {
   };
 };
 
-export const create_policy_extension = async (data: { name: string }) => {
+export const create_policy_extension = async (data: {
+  code: string;
+  name: string;
+}) => {
   try {
-    const res = await API.post("extensions/", data);
+    const res = await API.post("policy_extentions", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {
@@ -47,7 +53,7 @@ export const create_policy_extension = async (data: { name: string }) => {
 
 export const delete_policy_extension = async (id: number) => {
   try {
-    const res = await API.delete(`extensions/${id}`);
+    const res = await API.delete(`policy_extentions${id}`);
     // console.log(res)
     return callResult(res, res.data);
   } catch (err) {
@@ -57,10 +63,10 @@ export const delete_policy_extension = async (id: number) => {
 
 export const update_policy_extension = async (
   id: number,
-  data: { name: string }
+  data: { code: string; name: string }
 ) => {
   try {
-    const res = await API.put(`extensions/${id}`, data);
+    const res = await API.put(`policy_extentions/${id}`, data);
     return callResult(res, res.data);
   } catch (err) {
     return axiosError(err);
@@ -69,7 +75,7 @@ export const update_policy_extension = async (
 
 export const read_policy_extension = async (id: number) => {
   try {
-    const res = await API.get(`extensions/${id}`);
+    const res = await API.get(`policy_extentions/${id}`);
     return queryResult(res, res.data);
   } catch (err) {
     return axiosError(err);

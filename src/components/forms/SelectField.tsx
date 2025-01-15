@@ -48,9 +48,6 @@ const SelectField: React.FC<SelectInputProps> = ({
       ? "border-green-500"
       : "border-gray-300";
 
-  // useEffect(() => {
-  //   console.log(formState);
-  // }, [formState]);
   return (
     <div className="flex flex-col gap-1.5">
       <label className=" font-light">
@@ -58,16 +55,6 @@ const SelectField: React.FC<SelectInputProps> = ({
         {required && <span className="text-red-500 pl-1">*</span>}
       </label>
       <Select
-        // styles={{
-        //   control: (baseStyles, state) => ({
-        //     ...baseStyles,
-        //     borderColor: borderClass,
-        //   }),
-        // }}
-        // classNames={{
-        //   control: (state) => state.
-        // }}
-
         options={options}
         id={id}
         inputId={inputId}

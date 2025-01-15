@@ -45,11 +45,11 @@ export interface CustomerDTO {
 }
 
 export const read_customers = () => {
-  const { data, error, isLoading, mutate } = useSWR("/customers/all", fetcher);
+  const { data, error, isLoading, mutate } = useSWR("/customers", fetcher);
 
   return {
     items: data
-      ? data.map((x: ICustomer) => ({
+      ? data?.map((x: ICustomer) => ({
           ...x,
           created_at: format(new Date(x.created_at), "dd MMMM yyy"),
         }))
@@ -63,7 +63,7 @@ export const read_customers = () => {
 
 export const create_customer = async (data: CustomerDTO) => {
   try {
-    const res = await API.post("/customers/", data);
+    const res = await API.post("/customers", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {
@@ -94,6 +94,23 @@ export const read_customer = async (id: number) => {
   try {
     const res = await API.get(`/customers/${id}`);
     return queryResult(res, res.data);
+  } catch (err) {
+    return axiosError(err);
+  }
+};
+
+export interface CustomerParams {
+  email?: string;
+  phone?: string;
+  identification_number?: string;
+}
+
+export const find_customer = async (identifier: string) => {
+  try {
+    const res = await API.get(`/customers/find`, {
+      params: { query: identifier },
+    });
+    return queryResult(res, res.data); // Assuming queryResult and axiosError are defined
   } catch (err) {
     return axiosError(err);
   }

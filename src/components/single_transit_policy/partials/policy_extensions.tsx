@@ -1,18 +1,21 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
-import DataTable from '@app/components/datatable/datatable';
-import { ColumnDef } from '@tanstack/react-table';
-import { Button } from '@app/components/ui/button';
-import { HeaderWithSorting } from '@app/components/datatable/columnHeaders';
-import { InputField, SelectField } from '@app/components/forms/ShadcnFields';
-import { read_policy_extensions } from '@app/server/services';
-import { convertDataToSelectObject } from '@app/helpers/index';
-import { nanoid } from 'nanoid';
+import React, { useMemo, useState } from "react";
+import DataTable from "@app/components/datatable/datatable";
+import { ColumnDef } from "@tanstack/react-table";
+import { Button } from "@app/components/ui/button";
+import { HeaderWithSorting } from "@app/components/datatable/columnHeaders";
+import { InputField, SelectField } from "@app/components/forms/ShadcnFields";
+import { read_policy_extensions } from "@app/server/services";
+import {
+  convertDataToSelectObject,
+  convertDataToSelectObjectNameAsValue,
+} from "@app/helpers/index";
+import { nanoid } from "nanoid";
 
-export type PolicyExtenxionsType = {
-  extension: number;
-  exchangeRate: number;
+export type PolicyExtensionsType = {
+  extension: string;
+  rate: number;
   id: string;
 };
 
@@ -21,39 +24,40 @@ type SelectType = {
   value: number | string;
 };
 
-const columns: ColumnDef<PolicyExtenxionsType>[] = [
+const columns: ColumnDef<PolicyExtensionsType>[] = [
   {
-    accessorKey: 'extension',
+    accessorKey: "extension",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='Extension' />;
+      return <HeaderWithSorting column={column} label="Extension" />;
     },
   },
   {
-    accessorKey: 'exchangeRate',
+    accessorKey: "rate",
     header: ({ column }) => {
-      return <HeaderWithSorting column={column} label='Rate' />;
+      return <HeaderWithSorting column={column} label="Rate" />;
     },
   },
 ];
 
 interface PolicyExtenxionProps {
-  policyExtensions: PolicyExtenxionsType[];
-  addPolicyExtension: (policyExtension: PolicyExtenxionsType) => void;
-  updatePolicyExtension: (policyExtension: PolicyExtenxionsType) => void;
+  policyExtensions: PolicyExtensionsType[];
+  addPolicyExtensions: (policyExtension: PolicyExtensionsType) => void;
+  updatePolicyExtensions: (policyExtension: PolicyExtensionsType) => void;
   deletePolicyExtension: (id: string) => void;
 }
 
 const PolicyExtenxions = ({
-  addPolicyExtension,
+  addPolicyExtensions,
   policyExtensions,
-  updatePolicyExtension,
+  updatePolicyExtensions,
   deletePolicyExtension,
 }: PolicyExtenxionProps) => {
-  const [policyExtension, setPolicyExtension] = useState<PolicyExtenxionsType>({
-    exchangeRate: 0,
-    extension: 0,
-    id: '',
+  const [policyExtension, setPolicyExtension] = useState<PolicyExtensionsType>({
+    extension: "",
+    rate: 0,
+    id: "",
   });
+
   const [validationErrors, setValidationErrors] = useState({});
   const [updating, setUpdating] = useState(false);
   const {
@@ -62,45 +66,46 @@ const PolicyExtenxions = ({
   } = read_policy_extensions();
 
   const policyExtensionSelectItems = useMemo(
-    () => convertDataToSelectObject(policyExtensionItems),
+    () => convertDataToSelectObjectNameAsValue(policyExtensionItems),
     [policyExtensionItems]
   );
 
   const reset = () =>
     setPolicyExtension({
-      exchangeRate: 0,
-      extension: 0,
-      id: '',
+      extension: "",
+      rate: 0,
+      id: "",
     });
 
   const validateForm = () => {
     let errors = {
-      exchangeRate: '',
-      extension: '',
+      rate: "",
+      extension: "",
+      id: "",
     };
 
     // Add your validation logic here
-    if (!policyExtension.exchangeRate) {
-      errors.exchangeRate = 'Exchange rate is required';
+    if (!policyExtension.rate) {
+      errors.rate = "Rate is required";
     }
 
     if (!policyExtension.extension) {
-      errors.extension = 'Extension is required';
+      errors.extension = "Extension is required";
     }
 
     setValidationErrors(errors);
 
     // Return true if there are no validation errors, false otherwise
-    return Object.values(errors).every(error => !error);
+    return Object.values(errors).every((error) => !error);
   };
 
   const onRowAction = (action: string, row: any) => {
     switch (action) {
-      case 'edit':
+      case "edit":
         setPolicyExtension(row);
         setUpdating(true);
         break;
-      case 'delete':
+      case "delete":
         deletePolicyExtension(row.id);
         break;
       default:
@@ -109,15 +114,15 @@ const PolicyExtenxions = ({
   };
 
   return (
-    <div className='p-3 2xl:px-10 box-border'>
+    <div className="p-3 2xl:px-10 box-border">
       <div>
-        <div className='grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-10 items-center '>
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-10 items-center ">
           <SelectField
-            label='Policy Extension'
-            className='lg:col-span-2'
-            onChange={e => {
+            label="Policy Extension"
+            className="lg:col-span-2"
+            onChange={(e) => {
               if (e) {
-                setPolicyExtension(prev => {
+                setPolicyExtension((prev) => {
                   return { ...prev, extension: e.value };
                 });
               }
@@ -131,24 +136,24 @@ const PolicyExtenxions = ({
             }
           />
           <InputField
-            label='Extension Rate (%)'
-            onChange={e => {
+            label="Extension Rate (%)"
+            onChange={(e) => {
               if (e) {
-                setPolicyExtension(prev => {
-                  return { ...prev, exchangeRate: +e.target.value };
+                setPolicyExtension((prev) => {
+                  return { ...prev, rate: +e.target.value };
                 });
               }
             }}
-            type='number'
-            value={policyExtension.exchangeRate}
+            type="number"
+            value={policyExtension.rate}
           />
 
-          <div className='flex  justify-end '>
+          <div className="flex  justify-end ">
             {updating ? (
               <div>
                 <Button
-                  variant='link'
-                  className='text-red-500'
+                  variant="link"
+                  className="text-red-500"
                   onClick={() => {
                     reset();
                     setUpdating(false);
@@ -157,12 +162,12 @@ const PolicyExtenxions = ({
                   Clear
                 </Button>
                 <Button
-                  variant='secondary'
-                  className='my-10 font-semibold'
-                  type='button'
+                  variant="secondary"
+                  className="my-10 font-semibold"
+                  type="button"
                   onClick={() => {
                     if (validateForm()) {
-                      updatePolicyExtension(policyExtension);
+                      updatePolicyExtensions(policyExtension);
                       reset();
                     }
                   }}
@@ -172,12 +177,12 @@ const PolicyExtenxions = ({
               </div>
             ) : (
               <Button
-                variant='primary'
-                className='my-10 font-semibold'
-                type='button'
+                variant="primary"
+                className="my-10 font-semibold"
+                type="button"
                 onClick={() => {
                   if (validateForm()) {
-                    addPolicyExtension({ ...policyExtension, id: nanoid() });
+                    addPolicyExtensions({ ...policyExtension, id: nanoid() });
                   }
                 }}
               >
@@ -186,12 +191,12 @@ const PolicyExtenxions = ({
             )}
           </div>
         </div>
-        <div className='flex justify-end'></div>
+        <div className="flex justify-end"></div>
       </div>
-      <div className='py-8'>
+      <div className="py-8">
         <DataTable
           columns={columns}
-          data={policyExtensions}
+          data={policyExtensions ?? []}
           showHeader={false}
           showActions
           onRowAction={onRowAction}

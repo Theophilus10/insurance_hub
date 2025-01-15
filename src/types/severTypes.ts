@@ -32,7 +32,7 @@ export interface Branch {
   region: string;
   position_of_person: string;
   contact_phone: string;
-  business_address: string;
+  // business_address: string;
   email: string;
   office_location: string;
   created_at: string;
@@ -50,18 +50,18 @@ export interface Role {
 export interface User {
   id: string;
   branch_id: number;
-  first_name: string;
-  last_name: string;
+  name: string;
+
   email: string;
-  contact_phone: string;
+  phone: string;
   created_at: string;
-  last_logged_in: string;
-  last_login_attempt: string;
+  // last_logged_in: string;
+  // last_login_attempt: string;
   branch: Branch;
   role: Role;
-  access_token: string;
-  refresh_token: string;
-  token_type: string;
+  // access_token: string;
+  // refresh_token: string;
+  // token_type: string;
 }
 
 export interface Interest {
@@ -90,11 +90,17 @@ export interface Transit {
 }
 
 export interface PolicyExtension {
-  extension_id: number;
+  extension: string;
   rate: number;
-  description: string;
 }
-
+export interface Document {
+  id: number;
+  url: string;
+  filename: string;
+  content_type: string;
+  byte_size: number;
+  created_at: string;
+}
 export interface Policy {
   vessel_flag: string;
   flight_vessel_number: string;
@@ -104,24 +110,56 @@ export interface Policy {
   no_known_loss: string;
   exchange_rate: number;
   customer_id: number;
-  insurer_id: number;
+  institution_id: number;
   distribution_channel: string;
   issue_date: string;
   policy_excess: string;
   currency_id: number;
   shipping_type_id: number;
   carrier_id: number;
-  country_of_origin_id: number;
-  country_of_destination_id: number;
-  port_of_loading_id: number;
-  port_of_destination_id: number;
+  country_of_origin: string;
+  country_of_destination: string;
+  port_of_loading: string;
+  port_of_destination: string;
   sailing_date: string;
   estimated_arrival_date: string;
   interests: Interest[];
   transhipments: Transhipment[];
   transits: Transit[];
   policy_extensions: PolicyExtension[];
-  intermediary_id: number;
-  letter_of_credit_id: number;
+  intermediary_id: Institution;
+  intermediary_branch_id: Branch;
+  bank_id: number;
+  documents: Document[];
   open_cover_policy_id: number;
+}
+
+export interface OpenCoverPolicy {
+  institution_id: number;
+  branch_id: number;
+  customer_id: number;
+  distribution_channel: string;
+  intermediary_branch_id: number;
+  intermediary_type_id: number;
+  intermediary_id: number;
+  inception_date: string;
+  expiry_date: string;
+  limit_per_shippment: string;
+  estimated_annual_shipment_value: string;
+  declaration: string;
+  contracting_clause: string;
+  cancellation_clause: string;
+  conveyance: string;
+  voyages: string;
+  conditions: string;
+  policies_of_cover: string;
+  interest: string;
+  basis_of_valuation: string;
+  rates: string;
+  deductible: string;
+  distributionChannel: string;
+  find_customer: string;
+  limit_per_shipment: string;
+  created_at: string;
+  updated_at: string;
 }

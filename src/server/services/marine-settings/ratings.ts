@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import { format } from "date-fns";
-import API from "@app/server/useAxios";
+import { API } from "@app/server/useAxios";
 import {
   axiosError,
   callResult,
@@ -24,7 +24,7 @@ export type IRating = {
 };
 
 export const read_ratings = () => {
-  const { data, error, isLoading, mutate } = useSWR("/ratings/all", fetcher);
+  const { data, error, isLoading, mutate } = useSWR("/rates", fetcher);
 
   return {
     items: data
@@ -51,7 +51,7 @@ export const create_rating = async (data: {
   end_date: string;
 }) => {
   try {
-    const res = await API.post("/ratings/", data);
+    const res = await API.post("/rates", data);
     // console.log(res);
     return callResult(res, res.data);
   } catch (err) {
@@ -63,7 +63,7 @@ export const create_rating = async (data: {
 
 export const delete_rating = async (id: number) => {
   try {
-    const res = await API.delete(`/ratings/${id}`);
+    const res = await API.delete(`/rates/${id}`);
     // console.log(res)
     return callResult(res, res.data);
   } catch (err) {
@@ -85,7 +85,7 @@ export const update_rating = async (
   }
 ) => {
   try {
-    const res = await API.put(`/ratings/${id}`, data);
+    const res = await API.put(`/rates/${id}`, data);
     return callResult(res, res.data);
   } catch (err) {
     return axiosError(err);
@@ -94,7 +94,7 @@ export const update_rating = async (
 
 export const read_rating = async (id: number) => {
   try {
-    const res = await API.get(`/ratings/${id}`);
+    const res = await API.get(`/rates/${id}`);
     return queryResult(res, res.data);
   } catch (err) {
     return axiosError(err);
