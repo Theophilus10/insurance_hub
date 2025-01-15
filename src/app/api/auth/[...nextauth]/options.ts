@@ -13,14 +13,18 @@ async function login(
   password: string
 ): Promise<LoggedInUserData> {
   try {
-    const response = await axios.post<UserLoginResponse>(
+    const response = await axios.post<LoggedInUserData>(
       "http://localhost:4000/users/sign_in",
       {
         user: { email, password },
       }
     );
 
-    return response.data.status.data;
+    if (!response.data) {
+      throw new Error("Empty response");
+    }
+
+    return response.data;
   } catch (error) {
     console.error("Authentication error:", error);
     throw error;
@@ -31,35 +35,35 @@ export const options: NextAuthOptions = {
   pages: {
     signIn: "/login",
     // signOut: "/login",
-    // error: "",
+    // error: "/login",
     // verifyRequest: "",
     // newUser: "",
   },
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      id: "login",
       credentials: {
-        email: { label: "Email", type: "text" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials: any, req) {
+      async authorize(credentials: Record<string, string>) {
         const { email, password } = credentials;
         try {
           const user = await login(email, password);
           return user;
         } catch (err) {
-          console.log("Error:", err);
+          // console.log("Error:", err);
           return null;
         }
       },
     }),
   ],
-  session: {
-    strategy: "jwt",
-  },
-  jwt: {
-    secret: process.env.NEXTAUTH_SECRET,
-  },
+  // session: {
+  //   strategy: "jwt",
+  // },
+  // jwt: {
+  //   secret: process.env.NEXTAUTH_SECRET,
+  // },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -71,7 +75,7 @@ export const options: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (token) {
-        session.user = token.user;
+        session.user = token.user as any;
         session.expires = token.expires;
       }
       return session;
@@ -79,8 +83,8 @@ export const options: NextAuthOptions = {
     // async redirect(url, baseUrl) {
     //   return url.startsWith(baseUrl) ? url : baseUrl;
     // },
-    async redirect({ url, baseUrl }) {
-      return "/private/dashboard";
-    },
+    // async redirect({ url, baseUrl }) {
+    //   return "/private/dashboard";
+    // },
   },
 };

@@ -31,7 +31,7 @@ function StepperButton(props: withoutForm) {
             className="flex items-center gap-2 truncate h-full"
             size="lg"
           >
-            {isLastStep ? "Finsih" : "next "}
+            {isLastStep ? "Submit Proposal" : "next "}
           </Button>
         </nav>
       </nav>

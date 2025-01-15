@@ -13,19 +13,37 @@ import InterestItems, {
   InterestType,
 } from "@app/components/single_transit_policy/partials/interests_items";
 import PolicyExtenxions, {
-  PolicyExtenxionsType,
+  PolicyExtensionsType,
 } from "@app/components/single_transit_policy/partials/policy_extensions";
 import StepperButton from "@app/components/stepper/ui/StepperButton";
+import {
+  createSingleTransitPolicy,
+  patchSingleTransitPolicy,
+} from "@app/server/services";
+import {
+  STEP_QUERY_PARAM_KEY,
+  updateOrAppendUrlQueryParam,
+} from "@app/components/stepper/StepperComponents";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export const InterestAndPolicyExtentionDetailStep: React.FC<STPolicySchema> = ({
-  form,
-  ...rest
-}) => {
+interface InterestAndPolicyExtentionStepProps extends STPolicySchema {
+  params?: {
+    policy_id: string;
+  };
+}
+
+export const InterestAndPolicyExtentionDetailStep: React.FC<
+  InterestAndPolicyExtentionStepProps
+> = ({ form, params, ...rest }) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const policyIdParam = searchParams.get("policy_id");
+  const policyId = policyIdParam ? parseInt(policyIdParam) : 0;
   const { onNextStep, ...withoutOnNextStep } = rest;
   const [selectedTab, setSelectedTab] = useState("Interests / Items");
   const tabsList = ["Interests / Items", "Policy Extension"];
   const addToTable = (value: any, watchValue: string, form: any) =>
-    form.setValue(watchValue, [value, ...form.watch(watchValue)]);
+    form.setValue(watchValue, [value, ...form?.watch(watchValue)]);
 
   const updateTableValue = (value: any, watchValue: string, form: any) => {
     const withoutValue = form
@@ -42,13 +60,59 @@ export const InterestAndPolicyExtentionDetailStep: React.FC<STPolicySchema> = ({
     form.setValue(watchValue, filteredValues);
   };
 
+  console.log(form.watch("policy_extensions"), "watch");
   const handleOnNextStep = async () => {
-    const validationResult = await form.trigger([
-      "interests",
-      "policy_extensions",
-    ]);
-    if (validationResult) {
-      onNextStep();
+    // const isValid = await form.trigger(["transhipments", "transits"]);
+
+    // if (!isValid) {
+    //   return;
+    // }
+
+    const formData: any = {
+      interests: form.getValues("interests"),
+      policy_extensions: form.getValues("policy_extensions"),
+      current_step_index: 4,
+    };
+
+    console.log(formData, "tranship");
+
+    try {
+      const response: any = policyId
+        ? await patchSingleTransitPolicy(policyId, formData)
+        : await createSingleTransitPolicy(formData);
+
+      console.log(response, "sending request");
+
+      const id = response?.data?.policy?.id;
+      //   const status = response?.status;
+
+      // Check if the request was successful
+      if (response?.success || response?.status === 201) {
+        // Move to the next step
+        onNextStep();
+
+        if (id) {
+          // Update URL with policy ID and next step query parameter
+          const urlWithId = updateOrAppendUrlQueryParam(
+            window.location.href,
+            "policy_id",
+            id
+          );
+
+          const urlWithNextStep = updateOrAppendUrlQueryParam(
+            urlWithId,
+            STEP_QUERY_PARAM_KEY,
+            "Customer Information"
+          );
+
+          // Redirect to the updated URL
+          router.push(urlWithNextStep);
+        }
+      }
+    } catch (error: any) {
+      console.error(
+        error?.message || "An error occurred while processing the request."
+      );
     }
   };
   return (
@@ -100,15 +164,15 @@ export const InterestAndPolicyExtentionDetailStep: React.FC<STPolicySchema> = ({
         )}
         {selectedTab.toLowerCase() === "policy extension" && (
           <PolicyExtenxions
-            addPolicyExtension={(policyExtenxion: PolicyExtenxionsType) =>
-              addToTable(policyExtenxion, "policy_extensions", form)
+            addPolicyExtensions={(policyExtensions: PolicyExtensionsType) =>
+              addToTable(policyExtensions, "policy_extensions", form)
             }
             policyExtensions={form.watch("policy_extensions")}
             deletePolicyExtension={(id: string) =>
               deleteTableValue(id, "policy_extensions", form)
             }
-            updatePolicyExtension={(policy_extensions: PolicyExtenxionsType) =>
-              updateTableValue(policy_extensions, "policy_extensions", form)
+            updatePolicyExtensions={(policy_extension: PolicyExtensionsType) =>
+              updateTableValue(policy_extension, "policy_extensions", form)
             }
           />
         )}

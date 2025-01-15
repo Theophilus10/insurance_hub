@@ -345,8 +345,8 @@ const NestedItems: React.FC<{
           isActive(item.path!)
             ? showBorder
               ? "active isActiveRoute h-10"
-              : " text-black"
-            : "hover:text-black"
+              : " text-blue-600"
+            : "hover:text-blue-600"
         }`}
       >
         {/* <SideBarNav

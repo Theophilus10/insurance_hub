@@ -8,7 +8,7 @@ import { show_policy } from "@app/server/services";
 import { InterestType } from "@app/components/single_transit_policy/partials/interests_items";
 import { TranshipmentType } from "@app/components/single_transit_policy/partials/transhipment";
 import { TransitType } from "@app/components/single_transit_policy/partials/transits";
-import { PolicyExtenxionsType } from "@app/components/single_transit_policy/partials/policy_extensions";
+
 import FullPageLoader from "@app/components/layout/fullPageLoader";
 
 const Page = () => {
@@ -237,7 +237,7 @@ const Page = () => {
               </thead>
               <tbody>
                 {items?.policy_extentions?.map(
-                  (extension: PolicyExtenxionsType, index: number) => (
+                  (extension: any, index: number) => (
                     <tr
                       key={index}
                       className="w-full border-b border-gray-200 hover:bg-gray-100 transition duration-200"

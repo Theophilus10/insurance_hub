@@ -13,10 +13,10 @@ import {
 } from "@app/helpers/index";
 import { nanoid } from "nanoid";
 
-export type PolicyExtenxionsType = {
+export type PolicyExtensionsType = {
   extension: string;
   rate: number;
-  id?: string;
+  id: string;
 };
 
 type SelectType = {
@@ -24,7 +24,7 @@ type SelectType = {
   value: number | string;
 };
 
-const columns: ColumnDef<PolicyExtenxionsType>[] = [
+const columns: ColumnDef<PolicyExtensionsType>[] = [
   {
     accessorKey: "extension",
     header: ({ column }) => {
@@ -40,23 +40,24 @@ const columns: ColumnDef<PolicyExtenxionsType>[] = [
 ];
 
 interface PolicyExtenxionProps {
-  policyExtensions: PolicyExtenxionsType[];
-  addPolicyExtension: (policyExtension: PolicyExtenxionsType) => void;
-  updatePolicyExtension: (policyExtension: PolicyExtenxionsType) => void;
+  policyExtensions: PolicyExtensionsType[];
+  addPolicyExtensions: (policyExtension: PolicyExtensionsType) => void;
+  updatePolicyExtensions: (policyExtension: PolicyExtensionsType) => void;
   deletePolicyExtension: (id: string) => void;
 }
 
 const PolicyExtenxions = ({
-  addPolicyExtension,
+  addPolicyExtensions,
   policyExtensions,
-  updatePolicyExtension,
+  updatePolicyExtensions,
   deletePolicyExtension,
 }: PolicyExtenxionProps) => {
-  const [policyExtension, setPolicyExtension] = useState<PolicyExtenxionsType>({
-    rate: 0,
+  const [policyExtension, setPolicyExtension] = useState<PolicyExtensionsType>({
     extension: "",
+    rate: 0,
     id: "",
   });
+
   const [validationErrors, setValidationErrors] = useState({});
   const [updating, setUpdating] = useState(false);
   const {
@@ -71,8 +72,8 @@ const PolicyExtenxions = ({
 
   const reset = () =>
     setPolicyExtension({
-      rate: 0,
       extension: "",
+      rate: 0,
       id: "",
     });
 
@@ -80,6 +81,7 @@ const PolicyExtenxions = ({
     let errors = {
       rate: "",
       extension: "",
+      id: "",
     };
 
     // Add your validation logic here
@@ -165,7 +167,7 @@ const PolicyExtenxions = ({
                   type="button"
                   onClick={() => {
                     if (validateForm()) {
-                      updatePolicyExtension(policyExtension);
+                      updatePolicyExtensions(policyExtension);
                       reset();
                     }
                   }}
@@ -180,7 +182,7 @@ const PolicyExtenxions = ({
                 type="button"
                 onClick={() => {
                   if (validateForm()) {
-                    addPolicyExtension({ ...policyExtension, id: nanoid() });
+                    addPolicyExtensions({ ...policyExtension, id: nanoid() });
                   }
                 }}
               >

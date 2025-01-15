@@ -4,6 +4,7 @@ import { Button } from "@app/components/ui/button";
 import React, { useEffect, useState } from "react";
 import { FormSchema } from "../page";
 import {
+  createOpenCoverPolicy,
   createSingleTransitPolicy,
   find_customer,
   patchSingleTransitPolicy,
@@ -23,6 +24,8 @@ import {
   STEP_QUERY_PARAM_KEY,
   updateOrAppendUrlQueryParam,
 } from "@app/components/stepper/StepperComponents";
+import { useSession } from "next-auth/react";
+import { patchOpenCoverPolicy } from "@app/server/services/policies/marine/open_cover";
 
 const findCustomer = async (identifier: string) => {
   const customer = await find_customer(identifier);
@@ -123,6 +126,12 @@ export const CustomerDetailStep: React.FC<CustomerStepProps> = ({
       toast.error("Please enter a customer ID to search.");
     }
   };
+  const getCurrentUrl = window.location.href;
+  const isURLForOpenCoverPolicy = getCurrentUrl.includes("open_cover_policies");
+  console.log(isURLForOpenCoverPolicy, "url");
+  const isURLForSingleTranstPolicy = getCurrentUrl.includes(
+    "single_transit_policies"
+  );
 
   const handleOnNextStep = async () => {
     // Check Validation of current step
@@ -135,14 +144,35 @@ export const CustomerDetailStep: React.FC<CustomerStepProps> = ({
       return;
     }
 
-    const formData = {
+    const formData: any = {
       customer_id: form.getValues("customer_details.id"),
+      current_step_index: 1,
     };
 
     try {
-      const response = policyId
-        ? await patchSingleTransitPolicy(policyId, formData)
-        : await createSingleTransitPolicy(formData);
+      let response: any;
+
+      switch (true) {
+        case Boolean(policyId) && isURLForSingleTranstPolicy:
+          // If policyId exists and the URL is for Single Transit Policy, update the policy
+          response = await patchSingleTransitPolicy(policyId, formData);
+          break;
+
+        case Boolean(policyId) && isURLForOpenCoverPolicy:
+          // If policyId exists and the URL is for Open Cover Policy, update the policy
+          response = await patchOpenCoverPolicy(policyId, formData);
+          break;
+
+        case !Boolean(policyId) && isURLForOpenCoverPolicy:
+          // If policyId does not exist and the URL is for Open Cover Policy, create the policy
+          response = await createOpenCoverPolicy(formData);
+          break;
+
+        default:
+          // If none of the above cases match, assume it's a creation of Single Transit Policy
+          response = await createSingleTransitPolicy(formData);
+          break;
+      }
 
       const id = response?.data?.policy?.id;
       if (response?.success) {
@@ -166,28 +196,28 @@ export const CustomerDetailStep: React.FC<CustomerStepProps> = ({
           router.push(urlWithNextStep);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       toast.error(error?.message);
     }
   };
 
-  useEffect(() => {
-    const fetchDefaultValues = async () => {
-      if (!policyId) return;
+  // useEffect(() => {
+  //   const fetchDefaultValues = async () => {
+  //     if (!policyId) return;
 
-      try {
-        const response = await showSingleTransitPolicy(policyId);
-        if (response?.data) {
-          form.setValue("customer_details", response?.data.customer);
-        } else {
-          console.error("Unexpected response format", response);
-        }
-      } catch (error) {
-        console.error("Error fetching policy data", error);
-      }
-    };
-    fetchDefaultValues();
-  }, [form.reset, policyId, showSingleTransitPolicy]);
+  //     try {
+  //       const response = await showSingleTransitPolicy(policyId);
+  //       if (response?.data) {
+  //         form.setValue("customer_details", response?.data.customer);
+  //       } else {
+  //         console.error("Unexpected response format", response);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching policy data", error);
+  //     }
+  //   };
+  //   fetchDefaultValues();
+  // }, [form.reset, policyId, showSingleTransitPolicy]);
 
   return (
     <div>

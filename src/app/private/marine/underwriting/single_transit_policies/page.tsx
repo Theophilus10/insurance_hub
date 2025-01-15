@@ -22,9 +22,13 @@ import { Step } from "@app/components/stepper/stepperTypeDef";
 import { TranshipmentAndTransitStep } from "./stp-steps/TranshipmentAndTransitStep";
 import { InterestAndPolicyExtentionDetailStep } from "./stp-steps/InterestDetailStep";
 import { AttachmentStep } from "./stp-steps/AttachmentStep";
-import { createSingleTransitPolicy } from "@app/server/services";
+import {
+  createSingleTransitPolicy,
+  showSingleTransitPolicy,
+} from "@app/server/services";
+import FullPageLoader from "@app/components/layout/fullPageLoader";
 
-const STPolicySteps: Array<Step> = [
+export const STPolicySteps: Array<Step> = [
   {
     component: InsuranceCompanyOrIntermediaryStep,
     label: "Insurance Company & Intermidiary Detail",
@@ -70,7 +74,7 @@ export const defaultValues = {
   shipping_type_id: 0,
   bank_id: 0,
   carrier_id: 0,
-  currency: 0,
+  currency_id: 0,
   exchange_rate: "",
   commercial_invoice_number: "",
   bill_of_laden_number: "",
@@ -110,7 +114,7 @@ export const FormSchema = z.object({
   shipping_type_id: z.number().min(1, { message: "Select a type" }),
   bank_id: z.number().min(1, { message: "Select a bank" }),
   carrier_id: z.number().min(1, { message: "Select a carrier" }),
-  currency: z.number(),
+  currency_id: z.number(),
   exchange_rate: z.string().min(1, { message: "Enter a valid rate" }),
   commercial_invoice_number: z
     .string()
@@ -194,7 +198,23 @@ export const FormSchema = z.object({
   policy_excess: z.string(),
 });
 
-const Page = () => {
+// const getCurrentSTepIndexFromUrl = (url: string): number => {
+//   const urlObject = new URL(url);
+//   const queryParams = new URLSearchParams(urlObject.search);
+//   const stepValue = queryParams.get("step");
+//   return STPolicySteps.findIndex((step) => step.label == stepValue);
+// };
+
+interface ParamProps {
+  params?: {
+    policy_id: string;
+  };
+}
+
+const Page: React.FC<ParamProps> = ({ params }) => {
+  const searchParams = useSearchParams();
+  const policyIdParam = searchParams.get("policy_id");
+  const policyId = policyIdParam ? parseInt(policyIdParam) : 0;
   const [intermediaryErrors, setIntermediaryErrors] = useState({});
   const [totals, setTotals] = useState({
     markupAmount: 0,
@@ -217,7 +237,7 @@ const Page = () => {
   });
 
   const interests = form.watch("interests");
-  const transhipmentValues = form.watch("transhipment");
+  const transhipmentValues = form.watch("transhipments");
   const transitValues = form.watch("transits");
   const extensionValues = form.watch("policy_extensions");
 
@@ -315,49 +335,48 @@ const Page = () => {
       return intermediaryErrors;
     }
 
-    const formData = {
-      vessel_flag: values.vessel_flag,
-      flight_vessel_number: values.flight_vessel_number,
-      flight_vessel_name: values.flight_vessel_name,
-      bill_of_laden_number: values.bill_of_laden_number,
-      commercial_invoice_number: values.commercial_invoice_number,
-      no_known_loss: values.no_known_loss,
-      exchange_rate: +values.exchange_rate,
-      customer_id: values.customer_details.id,
-      institution_id: values.institution_id,
-      branch_id: values.branch_id,
-      distribution_channel: values.distribution_channel,
-      issue_date: values.issue_date,
-      policy_excess: values.policy_excess,
-      currency_id: values.currency,
-      shipping_type_id: values.shipping_type_id,
-      carrier_id: values.carrier_id,
-      country_of_importation: values.country_of_importation,
-      country_of_destination: values.country_of_destination,
-      port_of_loading: values.port_of_loading,
-      port_of_destination: values.port_of_destination,
-      sailing_date: values.sailing_date,
-      estimated_arrival_date: values.estimated_arrival_date,
-      policy_extensions: values.policy_extensions,
-      interests: values.interests,
-      transhipments: values.transhipment,
-      transits: values.transits,
-      premium_amount: premiumPayable,
-      intermediary_branch_id: values.intermediary_branch_id,
-      intermediary_id: values.intermediary_id,
-      intermediary_type_id: values.intermediary_type_id,
-      bank_id: values.bank_id,
-      open_cover_policy_id: values.open_cover_policy_id, // Adjust if there's a corresponding field
-    };
+    // const formData = {
+    //   vessel_flag: values.vessel_flag,
+    //   flight_vessel_number: values.flight_vessel_number,
+    //   flight_vessel_name: values.flight_vessel_name,
+    //   bill_of_laden_number: values.bill_of_laden_number,
+    //   commercial_invoice_number: values.commercial_invoice_number,
+    //   no_known_loss: values.no_known_loss,
+    //   exchange_rate: +values.exchange_rate,
+    //   customer_id: values.customer_details?.id,
+    //   institution_id: values.institution_id,
+    //   branch_id: values.branch_id,
+    //   distribution_channel: values.distribution_channel,
+    //   issue_date: values.issue_date,
+    //   policy_excess: values.policy_excess,
+    //   currency_id: values.currency,
+    //   shipping_type_id: values.shipping_type_id,
+    //   carrier_id: values.carrier_id,
+    //   country_of_importation: values.country_of_importation,
+    //   country_of_destination: values.country_of_destination,
+    //   port_of_loading: values.port_of_loading,
+    //   port_of_destination: values.port_of_destination,
+    //   sailing_date: values.sailing_date,
+    //   estimated_arrival_date: values.estimated_arrival_date,
+    //   policy_extensions: values.policy_extensions,
+    //   interests: values.interests,
+    //   transhipments: values.transhipments,
+    //   transits: values.transits,
+    //   premium_amount: premiumPayable,
+    //   intermediary_branch_id: values.intermediary_branch_id,
+    //   intermediary_id: values.intermediary_id,
+    //   intermediary_type_id: values.intermediary_type_id,
+    //   bank_id: values.bank_id,
+    //   open_cover_policy_id: values.open_cover_policy_id,
+    // };
 
-    const response = await createSingleTransitPolicy(formData);
+    // const response = await createSingleTransitPolicy(formData);
     // console.log(response);
   };
 
   // console.log(form.watch(), "values");
   // console.log(form.formState.errors, "errros");
   const { data: session } = useSession();
-  console.log(session, "eiii");
 
   useEffect(() => {
     if (session?.user?.user?.institution_type?.name == "Insurance Company") {
@@ -374,8 +393,38 @@ const Page = () => {
       form.setValue("branch_id", branchOption.value);
     }
   }, [session, form]);
-  // const insuranceCompany =
-  //   session?.user.user.institution_type.name === "Insurance Company";
+
+  useEffect(() => {
+    const fetchDefaultValues = async () => {
+      setLoading(true);
+
+      if (!policyId) {
+        setLoading(false);
+        return; // Exit early if there's no policyId
+      }
+
+      try {
+        const response = await showSingleTransitPolicy(policyId);
+
+        if (response?.data) {
+          form.reset(response.data);
+          form.setValue("customer_details", response.data.customer);
+        } else {
+          console.error("Unexpected response format", response);
+        }
+      } catch (error) {
+        console.error("Error fetching policy data", error);
+      } finally {
+        setLoading(false); // Ensure loading state is updated after the operation
+      }
+    };
+
+    fetchDefaultValues();
+  }, [form.reset, policyId, showSingleTransitPolicy]);
+
+  if (loading) {
+    return <FullPageLoader />;
+  }
 
   return (
     <Card className="container mx-auto">

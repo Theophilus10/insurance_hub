@@ -2,20 +2,17 @@
 
 import { Button } from "@app/components/ui/button";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, Edit, Eye, PlusCircle, ThumbsUp } from "lucide-react";
+import { ArrowUpDown, Award, Edit2Icon, XCircle } from "lucide-react";
 import { Checkbox } from "@app/components/ui/checkbox";
 import Link from "next/link";
-import Modal from "@app/components/ui/modal";
-import Approve from "@app/components/svg/approve";
-import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { approve_policy } from "@app/server/services";
-import toast from "react-hot-toast";
+import { STPolicySteps } from "../../underwriting/single_transit_policies/page";
+import { Step } from "@app/components/stepper/stepperTypeDef";
+import { useRouter } from "next/navigation";
 
 // This type is used to define the shape of our data.
 
 export type Policies = {
-  policy_number: string;
+  policyNumber: string;
   customerName: string;
   customerEmail: string;
   openCoverNumber: string;
@@ -65,7 +62,7 @@ export const columns: ColumnDef<Policies>[] = [
       );
     },
     cell: ({ row }: any) => {
-      const policyNumber = row.original.policy_number;
+      const policyNumber = row?.original?.policy_number;
 
       return (
         <Link
@@ -111,15 +108,11 @@ export const columns: ColumnDef<Policies>[] = [
     },
   },
   {
-    accessorKey: "limit_per_shipment",
-    header: "Limit Per Shippment",
+    accessorKey: "openCoverNumber",
+    header: "Open Cover Number",
   },
   {
-    accessorKey: "estimated_annual_shipment_value",
-    header: "Estimated Annual Shippment",
-  },
-  {
-    accessorKey: "inception_date",
+    accessorKey: "issue_date",
     header: "Inception Date",
   },
   {
@@ -135,48 +128,28 @@ export const columns: ColumnDef<Policies>[] = [
     header: "Actions",
     cell: ({ row }: any) => {
       const router = useRouter();
+      const stepIndex = row?.original?.current_step_index;
 
-      const [openModal, setOpenModal] = useState(false);
-      const handleLinkClick = () => {
-        router.push(
-          `/private/marine/underwriting/single_transit_policies?open_cover_number=${row.original.policy_number}&customer_id=${row?.original?.customer?.identification_number}`
-        );
+      const lastStep = STPolicySteps?.find(
+        (step: Step, index) => index == Number(stepIndex) + 1
+      )?.label;
+
+      console.log(lastStep, "last");
+
+      const myUrl = "/private/marine/underwriting/single_transit_policies";
+      const url = `${myUrl}?policy_id=${
+        row?.original?.id
+      }&step=${encodeURIComponent(lastStep!)}`;
+      const handleClick = () => {
+        router.push(url);
       };
-      // Correct way to use useSearchParams to get customer_id
-
-      const toggleModal = () => {
-        setOpenModal(!openModal);
-      };
-
-      // const handleApprove = async () => {
-      //   try {
-      //     const response = await approve_policy(row.original.id);
-      //     console.log(response, "response");
-      //     if (response.success !== false) {
-      //       toast.success("Policy successfully approved.");
-      //       toggleModal();
-      //       router.replace("/private/marine/reporting/approved_policies");
-      //     } else {
-      //       toast.error("Failed to approve policy. Please try again later.");
-      //     }
-      //   } catch (error) {
-      //     console.error("Failed to approve policy:", error);
-      //     toast.error("Failed to approve policy. Please try again later.");
-      //   }
-      // };
       return (
-        <div className="flex items-center gap-3 text-gray-500">
-          <div className="">
-            <div
-              onClick={handleLinkClick}
-              className="inline-flex items-center text-blue-500 hover:text-blue-700 cursor-pointer"
-            >
-              <PlusCircle />
-            </div>
-          </div>
-
-          <Edit />
-        </div>
+        <button
+          onClick={() => handleClick()}
+          className="flex justify-center items-center gap-3 text-white bg-blue-500 hover:bg-blue-600 border border-blue-500 hover:border-blue-600 rounded-lg shadow-lg transition-all duration-300 ease-in-out h-10 w-28"
+        >
+          Continue
+        </button>
       );
     },
   },

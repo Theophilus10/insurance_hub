@@ -6,7 +6,7 @@
   @apply py-1 border-l-[3px] border-transparent hover:text-blue-600 cursor-pointer font-normal;
 }
 .isActiveMenuList {
-  @apply text-white py-1 border-l-[3px] border-blue-600 bg-blue-600 m-2 rounded;
+  @apply text-black py-1 border-l-[3px] border-blue-600  m-2 rounded;
 }
 
 .isNotActiveMenuList {

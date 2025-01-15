@@ -58,7 +58,7 @@ export const columns: ColumnDef<Policies>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => {
+    cell: ({ row }: any) => {
       const policyNumber = row?.original?.policy_number;
 
       return (
@@ -88,7 +88,7 @@ export const columns: ColumnDef<Policies>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => {
+    cell: ({ row }: any) => {
       return (
         <div className="flex items-center gap-2">
           <div className="bg-[#D6D1F7] text-[#2406F5] rounded-full w-8 h-8 flex items-center justify-center">

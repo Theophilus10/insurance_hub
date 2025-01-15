@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import * as z from 'zod';
-import { Card, CardContent, CardTitle } from '@app/components/ui/card';
-import { ListTodo } from 'lucide-react';
-import { Form, FormItem, FormLabel } from '@app/components/ui/form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import * as z from "zod";
+import { Card, CardContent, CardTitle } from "@app/components/ui/card";
+import { ListTodo } from "lucide-react";
+import { Form, FormItem, FormLabel } from "@app/components/ui/form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import {
   InputFormField,
   SelectFormField,
   TextareaFormField,
-} from '@app/components/forms/ShadcnFormFields';
+} from "@app/components/forms/ShadcnFormFields";
 import {
   Select,
   SelectContent,
@@ -18,98 +18,96 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@app/components/ui/select';
-import { Button } from '@app/components/ui/button';
-import { Input } from '@app/components/ui/input';
+} from "@app/components/ui/select";
+import { Button } from "@app/components/ui/button";
+import { Input } from "@app/components/ui/input";
 import Transhipment, {
   TranshipmentType,
-} from '@app/components/single_transit_policy/partials/transhipment';
+} from "@app/components/single_transit_policy/partials/transhipment";
 import Transits, {
   TransitType,
-} from '@app/components/single_transit_policy/partials/transits';
+} from "@app/components/single_transit_policy/partials/transits";
 import InterestItems, {
   InterestType,
-} from '@app/components/single_transit_policy/partials/interests_items';
-import PolicyExtenxions, {
-  PolicyExtenxionsType,
-} from '@app/components/single_transit_policy/partials/policy_extensions';
-import { useState } from 'react';
+} from "@app/components/single_transit_policy/partials/interests_items";
+import PolicyExtenxions from "@app/components/single_transit_policy/partials/policy_extensions";
+import { useState } from "react";
 
 const tabsList = [
-  'Building/Item Details',
-  'Perils',
-  'Excesses',
-  'Document uploads',
+  "Building/Item Details",
+  "Perils",
+  "Excesses",
+  "Document uploads",
 ];
 
 const insuranceCompanies = [
-  { value: 'Hollard', label: 'Hollard' },
-  { value: 'GLICO', label: 'GLICO' },
-  { value: 'Providence', label: 'Providence' },
-  { value: 'New One', label: 'New One' },
-  { value: 'Another One', label: 'Another One' },
-  { value: 'We the best Insurance', label: 'We the best Insurance' },
+  { value: "Hollard", label: "Hollard" },
+  { value: "GLICO", label: "GLICO" },
+  { value: "Providence", label: "Providence" },
+  { value: "New One", label: "New One" },
+  { value: "Another One", label: "Another One" },
+  { value: "We the best Insurance", label: "We the best Insurance" },
 ];
-const companyBranches = [{ value: 'Kumasi', label: 'Kumasi' }];
+const companyBranches = [{ value: "Kumasi", label: "Kumasi" }];
 
 const customers = [
   {
     id: 1,
-    fullName: 'Hartwell Sygrove',
-    phoneNumber: '404-460-2527',
-    email: 'hsygrove0@psu.edu',
-    address: '13 Utah Lane',
-    ghanaCardNumber: '61.10.247.114',
+    fullName: "Hartwell Sygrove",
+    phoneNumber: "404-460-2527",
+    email: "hsygrove0@psu.edu",
+    address: "13 Utah Lane",
+    ghanaCardNumber: "61.10.247.114",
   },
   {
     id: 2,
-    fullName: 'Wendel Dunkerton',
-    phoneNumber: '209-839-9861',
-    email: 'wdunkerton1@answers.com',
-    address: '4 Briar Crest Pass',
-    ghanaCardNumber: '125.157.233.91',
+    fullName: "Wendel Dunkerton",
+    phoneNumber: "209-839-9861",
+    email: "wdunkerton1@answers.com",
+    address: "4 Briar Crest Pass",
+    ghanaCardNumber: "125.157.233.91",
   },
   {
     id: 3,
-    fullName: 'Tommie Shillaber',
-    phoneNumber: '463-578-8069',
-    email: 'tshillaber2@stumbleupon.com',
-    address: '3460 Hollow Ridge Place',
-    ghanaCardNumber: '242.40.128.92',
+    fullName: "Tommie Shillaber",
+    phoneNumber: "463-578-8069",
+    email: "tshillaber2@stumbleupon.com",
+    address: "3460 Hollow Ridge Place",
+    ghanaCardNumber: "242.40.128.92",
   },
   {
     id: 4,
-    fullName: 'Melissa Bednell',
-    phoneNumber: '336-667-7195',
-    email: 'mbednell3@bbb.org',
-    address: '150 Dawn Street',
-    ghanaCardNumber: '23.182.249.187',
+    fullName: "Melissa Bednell",
+    phoneNumber: "336-667-7195",
+    email: "mbednell3@bbb.org",
+    address: "150 Dawn Street",
+    ghanaCardNumber: "23.182.249.187",
   },
   {
     id: 5,
-    fullName: 'Clifford Fawlks',
-    phoneNumber: '834-758-6419',
-    email: 'cfawlks4@ycombinator.com',
-    address: '9 Carpenter Terrace',
-    ghanaCardNumber: '93.86.215.166',
+    fullName: "Clifford Fawlks",
+    phoneNumber: "834-758-6419",
+    email: "cfawlks4@ycombinator.com",
+    address: "9 Carpenter Terrace",
+    ghanaCardNumber: "93.86.215.166",
   },
 ];
 
 const formSchema = z.object({
-  insuranceCompany: z.string().min(1, { message: 'Select an institution' }),
-  branchOffice: z.string().min(1, { message: 'Select a branch' }),
-  distributionChannel: z.string().min(1, { message: 'Select a channel' }),
-  intermediaryType: z.string().min(1, { message: 'Select a type' }),
-  intermediaryName: z.string().min(1, { message: 'Select a name' }),
-  branchOfficeAddress: z.string().min(1, { message: 'Select an address' }),
+  insuranceCompany: z.string().min(1, { message: "Select an institution" }),
+  branchOffice: z.string().min(1, { message: "Select a branch" }),
+  distributionChannel: z.string().min(1, { message: "Select a channel" }),
+  intermediaryType: z.string().min(1, { message: "Select a type" }),
+  intermediaryName: z.string().min(1, { message: "Select a name" }),
+  branchOfficeAddress: z.string().min(1, { message: "Select an address" }),
   customerDetails: z.object({
     fullName: z.string(),
     ghanaCardNumber: z.string(),
     phoneNumber: z.string(),
     address: z.string(),
-    email: z.string().email({ message: 'Invalid email address' }),
+    email: z.string().email({ message: "Invalid email address" }),
   }),
-  inceptionDate: z.string().min(1, { message: 'Select a date' }),
+  inceptionDate: z.string().min(1, { message: "Select a date" }),
   transhipment: z.array(
     z.object({
       originCountry: z.string(),
@@ -130,31 +128,31 @@ const formSchema = z.object({
 const findCustomer = (fullName: string, id: string) => {
   const fullNameToLowerCase = fullName.toLowerCase();
   return customers.find(
-    customer =>
+    (customer) =>
       customer.fullName.toLowerCase() === fullNameToLowerCase &&
       customer.ghanaCardNumber === id
   );
 };
 
 const Page = () => {
-  const [selectedTab, setSelectedTab] = useState('');
+  const [selectedTab, setSelectedTab] = useState("");
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      insuranceCompany: '',
-      branchOffice: '',
-      branchOfficeAddress: '',
+      insuranceCompany: "",
+      branchOffice: "",
+      branchOfficeAddress: "",
       customerDetails: {
-        fullName: '',
-        address: '',
-        email: '',
-        ghanaCardNumber: '',
-        phoneNumber: '',
+        fullName: "",
+        address: "",
+        email: "",
+        ghanaCardNumber: "",
+        phoneNumber: "",
       },
-      distributionChannel: '',
-      intermediaryName: '',
-      inceptionDate: '',
-      intermediaryType: '',
+      distributionChannel: "",
+      intermediaryName: "",
+      inceptionDate: "",
+      intermediaryType: "",
       transhipment: [],
       transits: [],
     },
@@ -166,95 +164,95 @@ const Page = () => {
 
   const setCustomerValues = () => {
     const customer = findCustomer(
-      form.watch('customerDetails.fullName'),
-      form.watch('customerDetails.ghanaCardNumber')
+      form.watch("customerDetails.fullName"),
+      form.watch("customerDetails.ghanaCardNumber")
     );
     if (customer) {
-      form.setValue('customerDetails.fullName', customer.fullName);
-      form.setValue('customerDetails.phoneNumber', customer.phoneNumber);
-      form.setValue('customerDetails.address', customer.address);
-      form.setValue('customerDetails.email', customer.email);
+      form.setValue("customerDetails.fullName", customer.fullName);
+      form.setValue("customerDetails.phoneNumber", customer.phoneNumber);
+      form.setValue("customerDetails.address", customer.address);
+      form.setValue("customerDetails.email", customer.email);
       form.setValue(
-        'customerDetails.ghanaCardNumber',
+        "customerDetails.ghanaCardNumber",
         customer.ghanaCardNumber
       );
     } else {
-      form.setValue('customerDetails.address', '');
+      form.setValue("customerDetails.address", "");
     }
   };
   return (
     <div>
       <Card>
-        <CardTitle className='flex  items-center gap-2 font-thin border-b-[1px] p-5'>
+        <CardTitle className="flex  items-center gap-2 font-thin border-b-[1px] p-5">
           <ListTodo />
           Open Cover Policy
         </CardTitle>
-        <CardContent className='px-0'>
+        <CardContent className="px-0">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className='border-b-[5px]'>
-                <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8   '>
+              <div className="border-b-[5px]">
+                <div className="p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8   ">
                   <SelectFormField
                     form={form}
-                    name='insuranceCompany'
-                    label='Insurance Company'
+                    name="insuranceCompany"
+                    label="Insurance Company"
                     options={insuranceCompanies}
                   />
                   <SelectFormField
                     form={form}
-                    name='branchOffice'
-                    label='Branch Office'
+                    name="branchOffice"
+                    label="Branch Office"
                     options={companyBranches}
                   />
                 </div>
-                <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
+                <div className="p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 ">
                   <SelectFormField
                     form={form}
-                    name='distributionChannel'
-                    label='Distribution Channel'
+                    name="distributionChannel"
+                    label="Distribution Channel"
                     options={insuranceCompanies}
                     showWatchValue={false}
                   />
                   <SelectFormField
                     form={form}
-                    name='intermediaryType'
-                    label='Intermediary Type:'
+                    name="intermediaryType"
+                    label="Intermediary Type:"
                     options={insuranceCompanies}
                     showWatchValue={false}
                   />
                   <SelectFormField
                     form={form}
-                    name='intermediaryName'
-                    label='Intermediary Name:'
+                    name="intermediaryName"
+                    label="Intermediary Name:"
                     options={insuranceCompanies}
                   />
                   <SelectFormField
                     form={form}
-                    name='branchOffice'
-                    label='Branch Office of Intermediary:'
+                    name="branchOffice"
+                    label="Branch Office of Intermediary:"
                     options={insuranceCompanies}
                     showWatchValue={false}
                   />
                 </div>
-                <div className='p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 '>
+                <div className="p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8 ">
                   <FormItem>
                     <FormLabel> Policy To:</FormLabel>
-                    <div className='grid grid-cols-1 lg:grid-cols-2 gap-4'>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                       <Input
-                        placeholder='Full Name'
-                        {...form.register('customerDetails.fullName')}
+                        placeholder="Full Name"
+                        {...form.register("customerDetails.fullName")}
                       />
                       <Input
-                        placeholder='ID Number'
-                        {...form.register('customerDetails.ghanaCardNumber')}
+                        placeholder="ID Number"
+                        {...form.register("customerDetails.ghanaCardNumber")}
                       />
-                      <div className='flex items-center flex-wrap gap-4 px-5 '>
-                        <Button variant='primary' type='button'>
+                      <div className="flex items-center flex-wrap gap-4 px-5 ">
+                        <Button variant="primary" type="button">
                           Add New Customer
                         </Button>
                         <Button
-                          variant='secondary'
-                          type='button'
+                          variant="secondary"
+                          type="button"
                           onClick={setCustomerValues}
                         >
                           Find Customer
@@ -262,31 +260,31 @@ const Page = () => {
                       </div>
                     </div>
                   </FormItem>
-                  <div className='px-5 space-y-1 text-gray-700'>
-                    {form.watch('customerDetails.address') ? (
+                  <div className="px-5 space-y-1 text-gray-700">
+                    {form.watch("customerDetails.address") ? (
                       <>
-                        <p className='grid grid-cols-3 '>
-                          <span>Name:</span>{' '}
-                          <span>{form.watch('customerDetails.fullName')}</span>
+                        <p className="grid grid-cols-3 ">
+                          <span>Name:</span>{" "}
+                          <span>{form.watch("customerDetails.fullName")}</span>
                         </p>
-                        <p className='grid grid-cols-3'>
-                          <span>Telephone:</span>{' '}
+                        <p className="grid grid-cols-3">
+                          <span>Telephone:</span>{" "}
                           <span>
-                            {form.watch('customerDetails.phoneNumber')}
+                            {form.watch("customerDetails.phoneNumber")}
                           </span>
                         </p>
-                        <p className='grid grid-cols-3'>
-                          <span>Email:</span>{' '}
-                          <span>{form.watch('customerDetails.email')}</span>
+                        <p className="grid grid-cols-3">
+                          <span>Email:</span>{" "}
+                          <span>{form.watch("customerDetails.email")}</span>
                         </p>
-                        <p className='grid grid-cols-3'>
-                          <span>Address:</span>{' '}
-                          <span>{form.watch('customerDetails.address')}</span>
+                        <p className="grid grid-cols-3">
+                          <span>Address:</span>{" "}
+                          <span>{form.watch("customerDetails.address")}</span>
                         </p>
-                        <p className='grid grid-cols-3'>
-                          <span>Ghana Card No.:</span>{' '}
+                        <p className="grid grid-cols-3">
+                          <span>Ghana Card No.:</span>{" "}
                           <span>
-                            {form.watch('customerDetails.ghanaCardNumber')}
+                            {form.watch("customerDetails.ghanaCardNumber")}
                           </span>
                         </p>
                       </>
@@ -294,67 +292,67 @@ const Page = () => {
                       <p>
                         {(form.formState.errors.customerDetails?.address
                           ?.message &&
-                          'Select a Customer') ||
-                          'No Customer Found'}
+                          "Select a Customer") ||
+                          "No Customer Found"}
                       </p>
                     )}
                   </div>
                 </div>
               </div>
-              <div className='border-b-[5px]'>
-                <div className='p-10 grid lg:grid-cols-2 gap-8'>
-                  <div className='flex lg:col-span-2 items-center gap-10 md:gap-0 flex-wrap justify-between lg:justify-around'>
+              <div className="border-b-[5px]">
+                <div className="p-10 grid lg:grid-cols-2 gap-8">
+                  <div className="flex lg:col-span-2 items-center gap-10 md:gap-0 flex-wrap justify-between lg:justify-around">
                     <InputFormField
                       form={form}
-                      className='flex flex-col lg:flex-row items-start lg:items-center lg:w-[40%] '
-                      labelStyle=' lg:w-[40%] 2xl:w-[30%]'
-                      name='inceptionDate'
-                      label='Inception Date:'
-                      type='date'
+                      className="flex flex-col lg:flex-row items-start lg:items-center lg:w-[40%] "
+                      labelStyle=" lg:w-[40%] 2xl:w-[30%]"
+                      name="inceptionDate"
+                      label="Inception Date:"
+                      type="date"
                     />
                     <InputFormField
                       form={form}
-                      className='flex flex-col lg:flex-row items-start lg:items-center lg:w-[40%] '
-                      labelStyle=' lg:w-[40%] 2xl:w-[30%] '
-                      name='inceptionDate'
-                      label='Expiry Date:'
-                      type='date'
+                      className="flex flex-col lg:flex-row items-start lg:items-center lg:w-[40%] "
+                      labelStyle=" lg:w-[40%] 2xl:w-[30%] "
+                      name="inceptionDate"
+                      label="Expiry Date:"
+                      type="date"
                     />
                   </div>
                   <SelectFormField
                     options={[]}
                     form={form}
-                    name='inceptionDate'
-                    label='Currency'
+                    name="inceptionDate"
+                    label="Currency"
                   />
                   <InputFormField
                     form={form}
-                    name='inceptionDate'
-                    label='Exchange Rate'
-                    type='number'
+                    name="inceptionDate"
+                    label="Exchange Rate"
+                    type="number"
                   />
                   <SelectFormField
                     options={[]}
                     form={form}
-                    name='inceptionDate'
-                    label='Letter of Credit'
+                    name="inceptionDate"
+                    label="Letter of Credit"
                   />
                   <SelectFormField
                     options={[]}
                     form={form}
-                    name='inceptionDate'
-                    label='Risk Class'
+                    name="inceptionDate"
+                    label="Risk Class"
                   />
                 </div>
               </div>
-              <div className='border-b-[1px] p-10'>
-                <div className='lg:flex items-center hidden  gap-1  '>
-                  {tabsList.map(tab => (
+              <div className="border-b-[1px] p-10">
+                <div className="lg:flex items-center hidden  gap-1  ">
+                  {tabsList.map((tab) => (
                     <button
-                      type='button'
+                      type="button"
                       className={`${
                         tab.toLowerCase() === selectedTab.toLowerCase() &&
-                        'bg-blue-900 font-medium text-white'
+                        "bg-blue-900 font-medium text-white"
                       } px-4 py-2 rounded-md text-center`}
                       key={tab}
                       onClick={() => setSelectedTab(tab)}
@@ -363,13 +361,13 @@ const Page = () => {
                     </button>
                   ))}
                 </div>
-                <Select onValueChange={e => setSelectedTab(e)}>
-                  <SelectTrigger className='w-[180px] lg:hidden'>
-                    <SelectValue placeholder='Select a tab' />
+                <Select onValueChange={(e) => setSelectedTab(e)}>
+                  <SelectTrigger className="w-[180px] lg:hidden">
+                    <SelectValue placeholder="Select a tab" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {tabsList.map(tab => (
+                      {tabsList.map((tab) => (
                         <SelectItem key={tab} value={tab}>
                           {tab}
                         </SelectItem>
@@ -377,15 +375,15 @@ const Page = () => {
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                {selectedTab.toLowerCase() === 'excesses' && (
+                {selectedTab.toLowerCase() === "excesses" && (
                   <PolicyExtenxions
-                    addPolicyExtension={() => console.log('policy extension')}
+                    addPolicyExtension={() => console.log("policy extension")}
                     policyExtensions={[]}
                   />
                 )}
               </div>
-              <div className='flex items-end justify-end p-5'>
-                <Button variant='primary'>Submit Proposal</Button>
+              <div className="flex items-end justify-end p-5">
+                <Button variant="primary">Submit Proposal</Button>
               </div>
             </form>
           </Form>

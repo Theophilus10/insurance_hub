@@ -33,11 +33,9 @@ import {
   read_ports,
   read_carriers,
   read_currencies,
-  IPort,
   IBranch,
   IInstitution,
   read_customer,
-  read_customer_by_email,
   find_customer,
   CustomerParams,
   CustomerDTO,
@@ -64,7 +62,7 @@ export const PolicyDetailStep: React.FC<PolicyDetailStepProps> = ({
 }) => {
   const { onNextStep, ...withOutOnNextStep } = rest;
   const router = useRouter();
-  const [selectedCurrencyCode, setSelectedCurrencyCode] = useState("");
+
   const searchParams = useSearchParams();
   const policyIdParam = searchParams.get("policy_id");
   const policyId = policyIdParam ? parseInt(policyIdParam) : 0;
@@ -87,7 +85,7 @@ export const PolicyDetailStep: React.FC<PolicyDetailStepProps> = ({
       "issue_date",
       "no_known_loss",
       "shipping_type_id",
-      "currency",
+      "currency_id",
       "exchange_rate",
       "commercial_invoice_number",
       "bill_of_laden_number",
@@ -108,11 +106,11 @@ export const PolicyDetailStep: React.FC<PolicyDetailStepProps> = ({
       return;
     }
 
-    const formData = {
+    const formData: any = {
       issue_date: form.getValues("issue_date"),
       no_known_loss: form.getValues("no_known_loss"),
       shipping_type_id: form.getValues("shipping_type_id"),
-      currency: form.getValues("currency"),
+      currency_id: form.getValues("currency_id"),
       exchange_rate: form.getValues("exchange_rate"),
       commercial_invoice_number: form.getValues("commercial_invoice_number"),
       bill_of_laden_number: form.getValues("bill_of_laden_number"),
@@ -128,10 +126,11 @@ export const PolicyDetailStep: React.FC<PolicyDetailStepProps> = ({
       sailing_date: form.getValues("sailing_date"),
       estimated_arrival_date: form.getValues("estimated_arrival_date"),
       policy_excess: form.getValues("policy_excess"),
+      current_step_index: 2,
     };
 
     try {
-      const response = policyId
+      const response: any = policyId
         ? await patchSingleTransitPolicy(policyId, formData)
         : await createSingleTransitPolicy(formData);
 
@@ -163,7 +162,7 @@ export const PolicyDetailStep: React.FC<PolicyDetailStepProps> = ({
           router.push(urlWithNextStep);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         error?.message || "An error occurred while processing the request."
       );
@@ -199,22 +198,9 @@ export const PolicyDetailStep: React.FC<PolicyDetailStepProps> = ({
           />
           <SelectFormFieldWithOnChange
             form={form}
-            name="currency"
+            name="currency_id"
             label="Currency"
-            options={
-              currencies?.length
-                ? currencies.map((currency: any) => ({
-                    label: currency?.name,
-                    value: currency?.id,
-                  }))
-                : []
-            }
-            onChange={(value) => {
-              const selectedCurrency = currencies.find(
-                (c: any) => c.id === value
-              );
-              setSelectedCurrencyCode(selectedCurrency?.code);
-            }}
+            options={convertDataToSelectObject(currencies, "name", "id")}
           />
 
           <InputFormField

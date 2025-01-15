@@ -44,6 +44,12 @@ const Navbar: React.FC<INavbar> = ({
   const { data: session } = useSession();
   console.log(session, "session");
   const userName = session?.user?.user?.name;
+
+  const handleSignOut = () => {
+    signOut({
+      callbackUrl: "/login",
+    });
+  };
   return (
     <nav className="py-1.5 flex items-center">
       <IconButton
@@ -191,7 +197,7 @@ const Navbar: React.FC<INavbar> = ({
               <div className=" mt-1">
                 <button
                   // href="/logout"
-                  onClick={() => signOut()}
+                  onClick={handleSignOut}
                   className="px-4 py-3 w-full  bg-red-200/70 rounded-xl text-white flex gap-4 items-center justify between "
                 >
                   <nav className="p-1 h-5 w-5 aspect-square rounded-full text-gray-500  flex items-center justify-center">
@@ -219,39 +225,3 @@ const Navbar: React.FC<INavbar> = ({
 };
 
 export default Navbar;
-
-const AvatarButton = ({ user }: { user: User }) => {
-  return (
-    <div className="!p-0 sm:!p-1 h-10  max-w-[150px] flex items-center rounded-[5px] hover:bg-gray-100  active:outline-none active:border-none">
-      <Avatar className="sm:mr-2 w-9 h-9 bg-sky-300 text-sm object-cover">
-        <AvatarImage
-          src={""}
-          className="rounded-full w-full object-cover h-full"
-        />
-        <AvatarFallback className="w-full bg-sky-300">
-          {`${getInitials(user?.first_name)}${getInitials(user?.last_name)}`}
-        </AvatarFallback>
-      </Avatar>
-      <div className="hidden sm:block text-left text-xs sm:pr-2">
-        <div className="w-20 truncate">
-          <span className="font-semibold">{user?.first_name}</span>
-        </div>
-        <div
-          className={`text-gray-500 truncate w-20 ${
-            !user?.role?.name && "hidden"
-          }`}
-        >
-          <span>{user?.role?.name}</span>
-        </div>
-        {/* <p className={`text-gray-500 truncate w-20 flex ${!user.email}`}>
-          {user.email}
-        </p> */}
-      </div>
-      <IconifyIcon
-        icon="ep:arrow-down"
-        fontSize={16}
-        className="sm:block hidden"
-      />
-    </div>
-  );
-};

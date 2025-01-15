@@ -26,6 +26,7 @@ import {
   createSingleTransitPolicy,
   patchSingleTransitPolicy,
   showSingleTransitPolicy,
+  createOpenCoverPolicy,
 } from "@app/server/services";
 import React, { useEffect, useState } from "react";
 import { STPolicySchema } from "./CustomerDetailStep";
@@ -35,6 +36,7 @@ import StepperButton from "@app/components/stepper/ui/StepperButton";
 import { updateOrAppendUrlQueryParam } from "@app/components/stepper/StepperComponents";
 import { useRouter, useSearchParams } from "next/navigation";
 import { STEP_QUERY_PARAM_KEY } from "@app/components/stepper/StepperComponents";
+import { patchOpenCoverPolicy } from "@app/server/services/policies/marine/open_cover";
 
 interface InsuranceCompanyOrIntermediaryStepProps extends STPolicySchema {
   params?: {
@@ -64,6 +66,8 @@ export const InsuranceCompanyOrIntermediaryStep: React.FC<
   const { items: currencies } = read_currencies();
   const { onNextStep, ...withOutOnNextStep } = rest;
   const router = useRouter();
+
+  const userId = session?.user?.user?.id;
 
   useEffect(() => {
     if (branchesItems && !branchesLoading) {
@@ -125,63 +129,13 @@ export const InsuranceCompanyOrIntermediaryStep: React.FC<
     { value: "direct", label: "DIRECT" },
   ];
 
-  //   const handleOnNextStep = async () => {
-  //     const validationResult = await form.trigger([
-  //       "institution_id",
-  //       "branch_id",
-  //     ]);
-
-  //     if (validationResult) {
-  //       const formData = {
-  //         institution_id: form.getValues("institution_id"),
-  //         branch_id: form.getValues("branch_id"),
-  //         intermediary_type_id: form.getValues("intermediary_type_id"),
-  //         intermediary_id: form.getValues("intermediary_id"),
-  //         intermediary_branch_id: form.getValues("intermediary_branch_id"),
-  //         distribution_channel: form.getValues("distribution_channel"),
-  //       };
-
-  //       try {
-  //         let response;
-
-  //         if (policyId) {
-  //           response = await patchSingleTransitPolicy(policyId, formData);
-  //         } else {
-  //           response = await createSingleTransitPolicy(formData);
-  //         }
-
-  //         console.log(response, "sending request");
-
-  //         const id = response?.data?.policy?.id;
-  //         const status = response?.status;
-
-  //         if (status === 201) {
-  //           onNextStep();
-  //         }
-
-  //         if (status === 201 && id) {
-  //           const urlWithId = updateOrAppendUrlQueryParam(
-  //             window.location.href,
-  //             "policy_id",
-  //             id
-  //           );
-
-  //           const urlWithNextStep = updateOrAppendUrlQueryParam(
-  //             urlWithId,
-  //             STEP_QUERY_PARAM_KEY,
-  //             "Customer Information"
-  //           );
-
-  //           router.push(urlWithNextStep);
-  //         }
-  //       } catch (error) {
-  //         console.error(
-  //           error?.message || "An error occurred while processing the request."
-  //         );
-  //       }
-  //     }
-  //   };
-
+  const getCurrentUrl = window.location.href;
+  const isURLForOpenCoverPolicy = getCurrentUrl.includes("open_cover_policies");
+  console.log(isURLForOpenCoverPolicy, "url");
+  const isURLForSingleTranstPolicy = getCurrentUrl.includes(
+    "single_transit_policies"
+  );
+  console.log(isURLForSingleTranstPolicy, "url");
   const handleOnNextStep = async () => {
     const isValid = await form.trigger(["institution_id", "branch_id"]);
 
@@ -189,21 +143,41 @@ export const InsuranceCompanyOrIntermediaryStep: React.FC<
       return;
     }
 
-    const formData = {
+    const formData: any = {
       institution_id: form.getValues("institution_id"),
       branch_id: form.getValues("branch_id"),
       intermediary_type_id: form.getValues("intermediary_type_id"),
       intermediary_id: form.getValues("intermediary_id"),
       intermediary_branch_id: form.getValues("intermediary_branch_id"),
       distribution_channel: form.getValues("distribution_channel"),
+      user_id: userId,
+      current_step_index: 0,
     };
 
     try {
-      const response = policyId
-        ? await patchSingleTransitPolicy(policyId, formData)
-        : await createSingleTransitPolicy(formData);
+      let response: any;
 
-      console.log(response, "sending request");
+      switch (true) {
+        case Boolean(policyId) && isURLForSingleTranstPolicy:
+          // If policyId exists and the URL is for Single Transit Policy, update the policy
+          response = await patchSingleTransitPolicy(policyId, formData);
+          break;
+
+        case Boolean(policyId) && isURLForOpenCoverPolicy:
+          // If policyId exists and the URL is for Open Cover Policy, update the policy
+          response = await patchOpenCoverPolicy(policyId, formData);
+          break;
+
+        case !Boolean(policyId) && isURLForOpenCoverPolicy:
+          // If policyId does not exist and the URL is for Open Cover Policy, create the policy
+          response = await createOpenCoverPolicy(formData);
+          break;
+
+        default:
+          // If none of the above cases match, assume it's a creation of Single Transit Policy
+          response = await createSingleTransitPolicy(formData);
+          break;
+      }
 
       const id = response?.data?.policy?.id;
       //   const status = response?.status;
@@ -231,30 +205,12 @@ export const InsuranceCompanyOrIntermediaryStep: React.FC<
           router.push(urlWithNextStep);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(
         error?.message || "An error occurred while processing the request."
       );
     }
   };
-
-  useEffect(() => {
-    const fetchDefaultValues = async () => {
-      if (!policyId) return;
-
-      try {
-        const response = await showSingleTransitPolicy(policyId);
-        if (response?.data) {
-          form.reset(response?.data);
-        } else {
-          console.error("Unexpected response format", response);
-        }
-      } catch (error) {
-        console.error("Error fetching policy data", error);
-      }
-    };
-    fetchDefaultValues();
-  }, [form.reset, policyId, showSingleTransitPolicy]);
 
   return (
     <div>

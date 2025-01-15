@@ -29,19 +29,81 @@ import InputField from "@app/components/forms/InputField";
 import IconButton from "@app/components/ui/IconButton";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import OpenCoverDetailOne from "../ocp-steps/OpenCoverDetailOne";
+import OpenCoverDetailTwo from "../ocp-steps/OpenCoverDetailTwo";
+import {
+  CustomerDetailStep,
+  InsuranceCompanyOrIntermediaryStep,
+} from "../../single_transit_policies/stp-steps";
+import { Step } from "@app/components/stepper/stepperTypeDef";
+import { FormStepper } from "@app/components/stepper/StepperComponents";
+import { showOpenCoverPolicy } from "@app/server/services/policies/marine/open_cover";
+import { useSearchParams } from "next/navigation";
+import FullPageLoader from "@app/components/layout/fullPageLoader";
+
+export const STPolicySteps: Array<Step> = [
+  {
+    component: InsuranceCompanyOrIntermediaryStep,
+    label: "Insurance Company & Intermidiary Detail",
+  },
+  {
+    component: CustomerDetailStep,
+    label: "Customer Information",
+  },
+  {
+    component: OpenCoverDetailOne,
+    label: "Policy Details",
+  },
+  {
+    component: OpenCoverDetailTwo,
+    label: "Policy Details Second",
+  },
+];
 
 const distributionChannel = [
   { value: "indirect", label: "INDIRECT" },
   { value: "direct", label: "DIRECT" },
 ];
 
-const formSchema = z.object({
+export const defaultValues: any = {
+  institution_id: null,
+  branch_id: null,
+  customer_details: {
+    name: "",
+    email: "",
+    identification_number: "",
+    phone: "",
+    id: 0,
+  },
+  distribution_channel: "",
+  intermediary_branch_id: null,
+  intermediary_type_id: null,
+  intermediary_id: null,
+  inception_date: "",
+
+  expiry_date: "",
+  limit_per_shipment: "",
+  estimated_annual_shipment_value: "",
+  declaration: "",
+  contracting_clause: "",
+  cancellation_clause: "",
+  conveyance: "",
+  voyages: "",
+  conditions: "",
+  policies_of_cover: "",
+  interest: "",
+  basis_of_valuation: "",
+  rates: "",
+  deductible: "",
+};
+
+export const OpenCoverFormSchema = z.object({
   institution_id: z.number().min(1, { message: "Select an institution" }),
   branch_id: z.number().min(1, { message: "Select a branch" }),
   distribution_channel: z.string().min(1, { message: "Select a channel" }),
-  intermediary_branch_id: z.number(),
-  intermediary_type_id: z.number(),
-  intermediary_id: z.number(),
+  intermediary_branch_id: z.any(),
+  intermediary_type_id: z.any(),
+  intermediary_id: z.any(),
   customer_details: z.object({
     name: z.string(),
     identification_number: z.string(),
@@ -52,7 +114,7 @@ const formSchema = z.object({
   find_customer: z.string(),
   inception_date: z.string().min(1, { message: "Select a date" }),
   expiry_date: z.string().min(1, { message: "Select a date" }),
-  limit_per_shippment: z.string(),
+  limit_per_shipment: z.string(),
   estimated_annual_shipment_value: z.string(),
   declaration: z.string(),
   contracting_clause: z.string(),
@@ -74,48 +136,28 @@ const findCustomer = async (identifier: string) => {
   return customer.data;
 };
 
-const Create = () => {
+interface ParamProps {
+  params?: {
+    policy_id: string;
+  };
+}
+
+const Create: React.FC<ParamProps> = () => {
+  const searchParams = useSearchParams();
+  const policyIdParam = searchParams.get("policy_id");
+  const policyId = policyIdParam ? parseInt(policyIdParam) : 0;
   const [branches, setBranches] = useState([]);
   const [intermediaryNames, setIntermediaryNames] = useState([]);
   const [intermediaryBranches, setIntermediaryBranches] = useState([]);
   const [intermediaryErrors, setIntermediaryErrors] = useState({});
+  const [loading, setLoading] = useState(false);
   const { items, isLoading } = read_institutions();
   const { items: institutionTypes } = read_institution_types();
   const { items: branchesItems, isLoading: branchesLoading } = read_branches();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      institution_id: 0,
-      branch_id: 0,
-      customer_details: {
-        name: "",
-        email: "",
-        identification_number: "",
-        phone: "",
-        id: 0,
-      },
-      distribution_channel: "",
-      intermediary_branch_id: 0,
-      intermediary_type_id: 0,
-      intermediary_id: 0,
-      inception_date: "",
-
-      expiry_date: "",
-      limit_per_shippment: "",
-      estimated_annual_shipment_value: "",
-      declaration: "",
-      contracting_clause: "",
-      cancellation_clause: "",
-      conveyance: "",
-      voyages: "",
-      conditions: "",
-      policies_of_cover: "",
-      interest: "",
-      basis_of_valuation: "",
-      rates: "",
-      deductible: "",
-    },
+  const form = useForm<z.infer<typeof OpenCoverFormSchema>>({
+    resolver: zodResolver(OpenCoverFormSchema),
+    defaultValues,
   });
   useEffect(() => {
     if (branchesItems && !branchesLoading) {
@@ -153,7 +195,35 @@ const Create = () => {
     }
   }, [form.watch("distribution_channel")]);
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  useEffect(() => {
+    const fetchDefaultValues = async () => {
+      setLoading(true);
+
+      if (!policyId) {
+        setLoading(false);
+        return; // Exit early if there's no policyId
+      }
+
+      try {
+        const response: any = await showOpenCoverPolicy(policyId);
+
+        if (response?.data) {
+          form.reset(response.data);
+          form.setValue("customer_details", response.data.customer);
+        } else {
+          console.error("Unexpected response format", response);
+        }
+      } catch (error) {
+        console.error("Error fetching policy data", error);
+      } finally {
+        setLoading(false); // Ensure loading state is updated after the operation
+      }
+    };
+
+    fetchDefaultValues();
+  }, [form.reset, policyId, showOpenCoverPolicy]);
+
+  const onSubmit = async (values: any) => {
     setIntermediaryErrors({});
     if (values.distribution_channel !== "direct") {
       if (values.intermediary_type_id === 0) {
@@ -190,8 +260,8 @@ const Create = () => {
       return intermediaryErrors;
     }
 
-    const formData = {
-      customer_id: values.customer_details.id,
+    const formData: any = {
+      customer_id: values.customer_details?.id,
       institution_id: values.institution_id,
       branch_id: values.branch_id,
       distribution_channel: values.distribution_channel,
@@ -199,7 +269,7 @@ const Create = () => {
       intermediary_id: values.intermediary_id,
       intermediary_type_id: values.intermediary_type_id,
       expiry_date: values.expiry_date,
-      limit_per_shippment: values.limit_per_shippment,
+      limit_per_shippment: values?.limit_per_shippment,
       estimated_annual_shipment_value: values.estimated_annual_shipment_value,
       declaration: values.declaration,
       contracting_clause: values.contracting_clause,
@@ -273,6 +343,10 @@ const Create = () => {
     (item: any) => item?.institution_type?.name === "Insurance Company"
   );
 
+  if (loading) {
+    return <FullPageLoader />;
+  }
+
   return (
     <div>
       <Card>
@@ -283,7 +357,7 @@ const Create = () => {
         <CardContent className="px-0">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className="border-b-[5px]">
+              {/* <div className="border-b-[5px]">
                 <div className="p-10 border-b-[1px] grid grid-cols-1 md:grid-cols-2 gap-8   ">
                   <SelectFormFieldWithOnChange
                     form={form}
@@ -404,109 +478,13 @@ const Create = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-              <div className="p-10 grid lg:grid-cols-2 gap-8">
-                <div className="flex lg:col-span-2 items-center gap-10 md:gap-0 flex-wrap justify-between lg:justify-around">
-                  <InputFormField
-                    form={form}
-                    className="flex flex-col lg:flex-row items-start lg:items-center lg:w-[40%] "
-                    labelStyle=" lg:w-[40%] 2xl:w-[30%]"
-                    name="inception_date"
-                    label="Inception Date:"
-                    type="date"
-                  />
-                  <InputFormField
-                    form={form}
-                    className="flex flex-col lg:flex-row items-start lg:items-center lg:w-[40%] "
-                    labelStyle=" lg:w-[40%] 2xl:w-[30%] "
-                    name="expiry_date"
-                    label="Expiry Date:"
-                    type="date"
-                  />
-                </div>
-                <InputFormField
-                  form={form}
-                  name="limit_per_shippment"
-                  label="Limit Per Shipment/Bottom"
-                  type="number"
-                />
-                <InputFormField
-                  form={form}
-                  name="estimated_annual_shipment_value"
-                  label="Estimated Annual Shipment Value"
-                  type="number"
-                />
-                <TextareaFormField
-                  form={form}
-                  name="declaration"
-                  label="Policy Declaration"
-                  className="lg:col-span-2"
-                />
-                <TextareaFormField
-                  form={form}
-                  name="contracting_clause"
-                  label="Contracting Clause"
-                  className="lg:col-span-2"
-                />
-                <TextareaFormField
-                  form={form}
-                  name="cancellation_clause"
-                  label="Cancellation Clause"
-                  className="lg:col-span-2"
-                />
-                <TextareaFormField
-                  form={form}
-                  name="conveyance"
-                  label="Conveyance"
-                  className="lg:col-span-2"
-                />
-                <TextareaFormField
-                  form={form}
-                  name="voyages"
-                  label="Voyages"
-                  className="lg:col-span-2"
-                />
-                <TextareaFormField
-                  form={form}
-                  name="conditions"
-                  label="Conditions"
-                  className="lg:col-span-2"
-                />
-                <TextareaFormField
-                  form={form}
-                  name="policies_of_cover"
-                  label="Policies"
-                  className="lg:col-span-2"
-                />
-                <TextareaFormField
-                  form={form}
-                  name="interest"
-                  label="Interest"
-                  className="lg:col-span-2"
-                />
-                <TextareaFormField
-                  form={form}
-                  name="basis_of_valuation"
-                  label="Base Of Valuations"
-                  className="lg:col-span-2"
-                />
-                <TextareaFormField
-                  form={form}
-                  name="rates"
-                  label="Rates"
-                  className="lg:col-span-2"
-                />
-                <TextareaFormField
-                  form={form}
-                  name="deductible"
-                  label="Dedcuctible"
-                  className="lg:col-span-2"
-                />
-              </div>
-              <div className="flex items-end justify-end p-5">
-                <Button variant="primary">Submit Open Cover</Button>
-              </div>
+              <FormStepper
+                steps={STPolicySteps}
+                form={form}
+                onStepCompleted={onSubmit}
+              />
             </form>
           </Form>
         </CardContent>

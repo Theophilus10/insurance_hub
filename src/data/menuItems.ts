@@ -97,6 +97,20 @@ export const marineMenuItems: IMenuItem[] = [
     ],
   },
   {
+    title: "In Progress",
+    icon: "carbon:progress-bar-round",
+    items: [
+      {
+        title: "STP In Progress",
+        path: "/private/marine/in-progress/single-transit",
+      },
+      {
+        title: "OCP In Progress",
+        path: "/private/marine/in-progress/open-cover",
+      },
+    ],
+  },
+  {
     title: "Reporting",
     icon: "carbon:report-data",
     items: [

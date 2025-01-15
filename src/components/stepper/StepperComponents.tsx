@@ -47,6 +47,7 @@ export function updateOrAppendUrlQueryParam(
 ): string {
   const urlObject = new URL(url);
   const queryParams = new URLSearchParams(urlObject.search);
+  console.log(queryParams, "queryParams");
 
   if (value === null || value === "") {
     if (queryParams.has(key)) {
@@ -169,7 +170,8 @@ export const FormStepper = (props: IFormStepper) => {
   };
 
   useEffect(() => {
-    if (searchParams.get(STEP_QUERY_PARAM_KEY) == null) return;
+    const cslabel = searchParams.get(STEP_QUERY_PARAM_KEY);
+    if (cslabel == null) return;
     setCurrentStepLabel(searchParams.get(STEP_QUERY_PARAM_KEY) as string);
   }, [searchParams.get(STEP_QUERY_PARAM_KEY)]);
 

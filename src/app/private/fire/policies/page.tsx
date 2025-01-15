@@ -267,7 +267,7 @@ const Page = () => {
 
     const formData = {
       exchange_rate: +values.exchange_rate,
-      customer_id: values.customer_details.id,
+      customer_id: values.customer_details?.id,
       institution_id: values.institution_id,
       branch_id: values.branch_id,
       distribution_channel: values.distribution_channel,

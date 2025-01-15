@@ -93,7 +93,14 @@ export interface PolicyExtension {
   extension: string;
   rate: number;
 }
-
+export interface Document {
+  id: number;
+  url: string;
+  filename: string;
+  content_type: string;
+  byte_size: number;
+  created_at: string;
+}
 export interface Policy {
   vessel_flag: string;
   flight_vessel_number: string;
@@ -123,6 +130,7 @@ export interface Policy {
   intermediary_id: Institution;
   intermediary_branch_id: Branch;
   bank_id: number;
+  documents: Document[];
   open_cover_policy_id: number;
 }
 

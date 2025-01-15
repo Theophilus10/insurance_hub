@@ -83,7 +83,7 @@ const columns: ColumnDef<InterestType>[] = [
 ];
 
 interface InteresProps {
-  interests: InterestType[];
+  interests: any[];
   addInterests: (interest: InterestType) => void;
   updateInterets: (interest: InterestType) => void;
   deleteInterest: (id: string) => void;

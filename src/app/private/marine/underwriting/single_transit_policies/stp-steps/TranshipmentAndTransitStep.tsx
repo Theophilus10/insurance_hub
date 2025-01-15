@@ -16,18 +16,34 @@ import Transits, {
   TransitType,
 } from "@app/components/single_transit_policy/partials/transits";
 import StepperButton from "@app/components/stepper/ui/StepperButton";
+import {
+  createSingleTransitPolicy,
+  patchSingleTransitPolicy,
+} from "@app/server/services";
+import {
+  STEP_QUERY_PARAM_KEY,
+  updateOrAppendUrlQueryParam,
+} from "@app/components/stepper/StepperComponents";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // <STPolicySchema>: This part is a TypeScript type annotation.
 // It specifies the shape of the props that the TabsStepper component will receive.
 
-export const TranshipmentAndTransitStep: React.FC<STPolicySchema> = ({
-  form,
-  ...rest
-}) => {
+interface TranshipmentTransitStepProps extends STPolicySchema {
+  params?: {
+    policy_id: string;
+  };
+}
+export const TranshipmentAndTransitStep: React.FC<
+  TranshipmentTransitStepProps
+> = ({ form, params, ...rest }) => {
+  const searchParams = useSearchParams();
+  const policyIdParam = searchParams.get("policy_id");
+  const policyId = policyIdParam ? parseInt(policyIdParam) : 0;
   const { onNextStep, ...withoutOnNextStep } = rest;
   const [selectedTab, setSelectedTab] = useState("transhipment");
   const tabsList = ["Transhipment", "Transit"];
-
+  const router = useRouter();
   const addToTable = (value: any, watchValue: string, form: any) =>
     form.setValue(watchValue, [value, ...form.watch(watchValue)]);
 
@@ -47,9 +63,57 @@ export const TranshipmentAndTransitStep: React.FC<STPolicySchema> = ({
   };
 
   const handleOnNextStep = async () => {
-    const validationResult = await form.trigger(["transhipment", "transits"]);
-    if (validationResult) {
-      onNextStep();
+    // const isValid = await form.trigger(["transhipments", "transits"]);
+
+    // if (!isValid) {
+    //   return;
+    // }
+
+    const formData = {
+      transhipments: form.getValues("transhipments"),
+      transits: form.getValues("transits"),
+      current_step_index: 3,
+    };
+
+    console.log(formData, "tranship");
+
+    try {
+      const response = policyId
+        ? await patchSingleTransitPolicy(policyId, formData)
+        : await createSingleTransitPolicy(formData);
+
+      console.log(response, "sending request");
+
+      const id = response?.data?.policy?.id;
+      //   const status = response?.status;
+
+      // Check if the request was successful
+      if (response?.success || response?.status === 201) {
+        // Move to the next step
+        onNextStep();
+
+        if (id) {
+          // Update URL with policy ID and next step query parameter
+          const urlWithId = updateOrAppendUrlQueryParam(
+            window.location.href,
+            "policy_id",
+            id
+          );
+
+          const urlWithNextStep = updateOrAppendUrlQueryParam(
+            urlWithId,
+            STEP_QUERY_PARAM_KEY,
+            "Customer Information"
+          );
+
+          // Redirect to the updated URL
+          router.push(urlWithNextStep);
+        }
+      }
+    } catch (error) {
+      console.error(
+        error?.message || "An error occurred while processing the request."
+      );
     }
   };
   return (

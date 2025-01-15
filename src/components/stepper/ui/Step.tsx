@@ -52,7 +52,7 @@ const step = forwardRef(
     }
 
     const resetScrollHeight = () =>
-      setScrollHeight(stepperContent!.current!.scrollHeight);
+      setScrollHeight(stepperContent!?.current!?.scrollHeight);
 
     const debouncedResetScrollHeight = debounce(resetScrollHeight, 300);
 

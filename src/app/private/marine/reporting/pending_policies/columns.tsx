@@ -64,7 +64,7 @@ export const columns: ColumnDef<Policies>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => {
+    cell: ({ row }: any) => {
       const policyNumber = row.original.policy_number;
 
       return (
@@ -94,7 +94,7 @@ export const columns: ColumnDef<Policies>[] = [
         </Button>
       );
     },
-    cell: ({ row }) => {
+    cell: ({ row }: any) => {
       return (
         <div className="flex items-center gap-2">
           <div className="bg-[#D6D1F7] text-[#2406F5] rounded-full w-8 h-8 flex items-center justify-center">
@@ -129,7 +129,8 @@ export const columns: ColumnDef<Policies>[] = [
   {
     id: "actions",
     header: "Actions",
-    cell: ({ row }) => {
+    cell: ({ row }: any) => {
+      console.log(row, "row");
       const router = useRouter();
       const [openModal, setOpenModal] = useState(false);
       const handleLinkClick = () => {
@@ -155,6 +156,12 @@ export const columns: ColumnDef<Policies>[] = [
           console.error("Failed to approve policy:", error);
           toast.error("Failed to approve policy. Please try again later.");
         }
+      };
+
+      const handleEdit = (id: number) => {
+        router.push(
+          `/private/marine/underwriting/single_transit_policies?policy_id=${id}`
+        );
       };
       return (
         <div className="flex items-center gap-3 text-gray-500">
@@ -193,19 +200,12 @@ export const columns: ColumnDef<Policies>[] = [
                 <p>Policy Number: {row.original.policy_number}</p>
                 <p>Customer: {row.original.customer.name}</p>
                 <p>Currency: {row.original.currency.code}</p>
-                {/* <p>
-                  Sum Insured: {row.original.currency.symbol}
-                  {row.original.sum_insured}
-                </p>
-                <p>
-                  Premium Payable: {row.original.currency.symbol}
-                  {row.original.premium_payable}
-                </p> */}
               </div>
             </Modal>
           </div>
-
-          <Edit />
+          <div onClick={() => handleEdit(row.original.id)}>
+            <Edit />
+          </div>
         </div>
       );
     },

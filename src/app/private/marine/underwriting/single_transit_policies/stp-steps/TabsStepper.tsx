@@ -17,9 +17,7 @@ import Transits, {
 import InterestItems, {
   InterestType,
 } from "@app/components/single_transit_policy/partials/interests_items";
-import PolicyExtenxions, {
-  PolicyExtenxionsType,
-} from "@app/components/single_transit_policy/partials/policy_extensions";
+import PolicyExtenxions from "@app/components/single_transit_policy/partials/policy_extensions";
 import PolicyExcess from "@app/components/single_transit_policy/partials/policy_excess";
 import {
   convertDataToSelectObject,
@@ -131,14 +129,14 @@ export const TabsStepper: React.FC<STPolicySchema> = ({ form }) => {
         )}
         {selectedTab.toLowerCase() === "policy extension" && (
           <PolicyExtenxions
-            addPolicyExtension={(policyExtenxion: PolicyExtenxionsType) =>
+            addPolicyExtension={(policyExtenxion: any) =>
               addToTable(policyExtenxion, "policy_extensions", form)
             }
             policyExtensions={form.watch("policy_extensions")}
             deletePolicyExtension={(id: string) =>
               deleteTableValue(id, "policy_extensions", form)
             }
-            updatePolicyExtension={(policy_extensions: PolicyExtenxionsType) =>
+            updatePolicyExtension={(policy_extensions: any) =>
               updateTableValue(policy_extensions, "policy_extensions", form)
             }
           />

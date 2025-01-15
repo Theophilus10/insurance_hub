@@ -47,12 +47,28 @@ export const createOpenCoverPolicy = async (data: OpenCoverPolicy) => {
   }
 };
 
+export const read_policy_in_progress = () => {
+  const { data, error, isLoading, mutate } = useSWR(
+    "/policies/in_progress_policies",
+    fetcher
+  );
+  console.log(data, "data in progress");
+  return {
+    items: data ?? [],
+
+    isLoading,
+    isError: error,
+    mutate,
+    success: data && true,
+  };
+};
+
 export const read_policy_pending = () => {
   const { data, error, isLoading, mutate } = useSWR(
     "/policies/pending_policies",
     fetcher
   );
-  console.log(data, "data");
+
   return {
     items: data ?? [],
 
@@ -80,7 +96,7 @@ export const read_policy_approve = () => {
     "/policies/active_policies",
     fetcher
   );
-  console.log(data, "data");
+
   return {
     items: data ?? [],
 
@@ -119,7 +135,7 @@ export const read_policy_cancelled = () => {
     "/policies/cancelled_policies",
     fetcher
   );
-  console.log(data, "data");
+
   return {
     items: data ?? [],
 
@@ -128,4 +144,14 @@ export const read_policy_cancelled = () => {
     mutate,
     success: data && true,
   };
+};
+
+export const delete_upload = async (docId: number) => {
+  try {
+    const res = await API.delete(`/delete_document/${docId}`);
+    // console.log(res)
+    return callResult(res, res.data);
+  } catch (err) {
+    return axiosError(err);
+  }
 };
